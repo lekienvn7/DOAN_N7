@@ -15,7 +15,7 @@ const Header = () => {
   const isLoginPage = location.pathname === "/login"; // Kiểm tra URL hiện tại
 
   return (
-    <div className="header__container sticky flex flex-row items-center text-center m-[0px_25px] p-[10px] h-[50px] gap-[40px] w-screen bg-[#f8f9fa]">
+    <div className="header__container sticky flex flex-row items-center text-center m-[0px_25px] p-[10px] h-[50px] gap-[40px] w-screen bg-[#f8f9fa">
       <HeaderLogo />
       <div className="sticky left-[500px]">
         <Menu />
