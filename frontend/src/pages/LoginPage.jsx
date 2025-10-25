@@ -1,8 +1,6 @@
 import React from "react";
-import Header from "@/components/Header/Header";
 import LoginBox from "@/components/LoginPage/LoginBox";
 import { motion, AnimatePresence } from "framer-motion";
-import Layout from "./Layout";
 
 const LoginPage = () => {
   return (

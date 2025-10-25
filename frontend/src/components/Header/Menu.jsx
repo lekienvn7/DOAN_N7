@@ -17,7 +17,7 @@ const Menu = () => {
     { name: "Trang chủ", path: "/" },
     { name: "Kho vật tư", path: "/repository" },
     { name: "Thiết bị/Dụng cụ", path: "/material" },
-    { name: "Báo cáo", path: "/report" },
+    { name: "Thông báo", path: "/notice" },
     { name: "Quản lý/Phân quyền", path: "/role" },
   ];
 

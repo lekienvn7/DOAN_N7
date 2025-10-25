@@ -8,6 +8,7 @@ import LoginPage from "./pages/LoginPage";
 import MaterialPage from "./pages/MaterialPage";
 import RolePage from "./pages/RolePage";
 import ReportPage from "./pages/ReportPage";
+import NoticePage from "./pages/NoticePage";
 import ErrorRepo from "./pages/ErrorRepo";
 import ErrorMaterial from "./pages/ErrorMaterial";
 import ErrorReport from "./pages/ErrorReport";
@@ -67,6 +68,14 @@ function App() {
               element={
                 <Layout className="bg-[#1d1d1f]">
                   <ReportPage />
+                </Layout>
+              }
+            />
+            <Route
+              path="/notice"
+              element={
+                <Layout className="bg-[#1d1d1f]">
+                  <NoticePage />
                 </Layout>
               }
             />
