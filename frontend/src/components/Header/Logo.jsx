@@ -23,7 +23,8 @@ const HeaderLogo = () => {
     <header className="flex items-center justify-between mt-[10px]">
       <Link
         to="/"
-        className="header__logo font-qurova no-underline text-[30px] font-bold hover:text-[#2a2a2a]"
+        className="header__logo font-qurova no-underline
+        text-[#FFFFFF] text-[30px] font-bold hover:text-[#E5E5E7]"
       >
         {userName}
       </Link>

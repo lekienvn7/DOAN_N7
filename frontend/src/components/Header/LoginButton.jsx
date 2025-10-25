@@ -17,7 +17,9 @@ const SearchBox = () => {
   const handleLogout = () => {
     logout();
     toast.success("Đăng xuất thành công!");
-    navigate("/login");
+    setTimeout(() => {
+      window.location.href = "/login";
+    }, 500);
   };
 
   return (
@@ -27,7 +29,7 @@ const SearchBox = () => {
           onClick={handleLogout}
           className="
         group flex items-center gap-0 overflow-hidden whitespace-nowrap
-        rounded-md  text-black font-bold px-3 py-2 
+        rounded-md  text-[#ffffff] font-bold px-3 py-2 
        transition-all duration-500 ease-out hover:gap-2 cursor-pointer"
         >
           <LogIn className="size-5 group-hover:color-[]" strokeWidth={3} />
@@ -44,7 +46,7 @@ const SearchBox = () => {
           onClick={handleLogin}
           className="
                 group flex items-center gap-0 overflow-hidden whitespace-nowrap
-                rounded-md  text-black font-bold px-3 py-2 
+                rounded-md  text-[#ffffff] font-bold px-3 py-2 
                 transition-all duration-500 ease-out hover:gap-2 cursor-pointer
                 "
         >

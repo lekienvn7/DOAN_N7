@@ -3,12 +3,6 @@ import HeaderLogo from "./Logo";
 import Menu from "./Menu";
 import LoginButton from "./LoginButton";
 import { useLocation } from "react-router-dom";
-import {
-  motion,
-  AnimatePresence,
-  useAnimation,
-  easeInOut,
-} from "framer-motion";
 
 const Header = () => {
   const location = useLocation();

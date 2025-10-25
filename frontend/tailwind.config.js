@@ -19,6 +19,7 @@ module.exports = {
     extend: {
       fontFamily: {
         qurova: ["Qurova", "sans-serif"],
+        sporting: ["Sporting", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",

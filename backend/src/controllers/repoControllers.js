@@ -59,7 +59,14 @@ export const getRepository = async (req, res) => {
 
 export const addRepository = async (req, res) => {
   try {
-    const { repoName, location, managerUserID, materials, repoType } = req.body;
+    const {
+      repoName,
+      location,
+      managerUserID,
+      materials,
+      equipments,
+      repoType,
+    } = req.body;
 
     // Tạo mã kho tự động
     const count = await Repository.countDocuments();
@@ -123,10 +130,13 @@ export const addRepository = async (req, res) => {
 
     if (Array.isArray(materials) && materials.length > 0) {
       for (const item of materials) {
-        // Cho phép nhập bằng materialID hoặc _id
-        const material =
+        let material = null;
+
+        // Cho phép nhập bằng _id, materialID hoặc materialName
+        material =
           (await Material.findById(item.material).catch(() => null)) ||
-          (await Material.findOne({ materialID: item.material }));
+          (await Material.findOne({ materialID: item.material })) ||
+          (await Material.findOne({ name: item.material }));
 
         if (!material) {
           return res.status(404).json({
@@ -135,6 +145,7 @@ export const addRepository = async (req, res) => {
           });
         }
 
+        // Kiểm tra vật tư có phù hợp với loại kho không
         const isValidType = Array.isArray(material.type)
           ? material.type.includes(repoType)
           : material.type === repoType;
@@ -148,6 +159,44 @@ export const addRepository = async (req, res) => {
 
         validMaterials.push({
           material: material._id,
+          quantity: item.quantity || 0,
+        });
+      }
+    }
+
+    const validEquipments = [];
+
+    if (Array.isArray(equipments) && equipments.length > 0) {
+      for (const item of equipments) {
+        let equipment = null;
+
+        // Cho phép nhập bằng _id, equipmentID hoặc equipmentName
+        equipment =
+          (await Equipment.findById(item.equipment).catch(() => null)) ||
+          (await Equipment.findOne({ equipmentID: item.equipment })) ||
+          (await Equipment.findOne({ equipmentName: item.equipment }));
+
+        if (!equipment) {
+          return res.status(404).json({
+            success: false,
+            message: `Không tìm thấy thiết bị '${item.equipment}'!`,
+          });
+        }
+
+        // Kiểm tra loại thiết bị (nếu cần ràng buộc theo loại kho)
+        const isValidType = Array.isArray(equipment.type)
+          ? equipment.type.includes(repoType)
+          : equipment.type === repoType;
+
+        if (!isValidType) {
+          return res.status(400).json({
+            success: false,
+            message: `Thiết bị '${equipment.equipmentName}' (loại ${equipment.type}) không hợp với kho '${repoType}'!`,
+          });
+        }
+
+        validEquipments.push({
+          equipment: equipment._id,
           quantity: item.quantity || 0,
         });
       }

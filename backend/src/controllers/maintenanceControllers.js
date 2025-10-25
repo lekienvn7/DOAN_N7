@@ -1,4 +1,4 @@
-import Maintenance from "../models/maintenance.js";
+import Maintenance from "../models/Maintenance.js";
 import Material from "../models/Material.js";
 import Repository from "../models/Repository.js";
 import User from "../models/User.js";

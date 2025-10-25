@@ -1,11 +1,16 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import notFound from "../assets/images/404NotFound.png";
-import vegeta from "../assets/images/vegeta.jpg";
+import goku from "../assets/images/goku.jpg";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
-const NotFound = () => {
+const ErrorReport = () => {
   const navigate = useNavigate();
+  const handleLogin = () => {
+    toast.success("Xin mời đăng nhập!");
+    navigate("/login");
+  };
 
   return (
     <AnimatePresence mode="wait">
@@ -20,32 +25,26 @@ const NotFound = () => {
         }}
         className="flex items-center justify-center mt-[80px]"
       >
-        <div className="flex flex-row gap-[20px] items-center justify-center">
-          <div className="flex flex-col mt-[50px] gap-[20px] items-center justify-center">
-            <img
-              src={notFound}
-              alt="404 Not Found"
-              className="w-[70%] brightness-0 invert"
-            />
+        <div className="flex flex-row gap-[50px] items-center justify-center">
+          <div className="flex flex-col my-auto gap-[30px] items-center justify-center">
+            <p className="font-sporting mt-[220px] text-white text-[90px] ">
+              NO ROLE!
+            </p>
             <button
-              onClick={() => navigate("/") || (window.location.href = "/")}
+              onClick={handleLogin}
               className="flex items-center justify-center text-white text-2xl w-[250px]
-               bg-none p-[10px] border-[5px] border-[#5E5E60] rounded-[24px]
-               hover:bg-[#5E5E60] hover:scale-[1.03]
-               transition-all duration-[350ms] ease-[cubic-bezier(0.32,0.72,0,1)]"
+                 bg-none p-[10px] border-[5px] border-[#5E5E60] rounded-[24px]
+                 hover:bg-[#5E5E60] hover:scale-[1.03]
+                 transition-all duration-[350ms] ease-[cubic-bezier(0.32,0.72,0,1)]"
             >
-              Quay về
+              Đăng nhập
             </button>
           </div>
-          <img
-            src={vegeta}
-            alt="Vegeta"
-            className="w-[30%] brightness-0 invert"
-          />
+          <img src={goku} alt="Goku" className="w-[50%] brightness-0 invert" />
         </div>
       </motion.div>
     </AnimatePresence>
   );
 };
 
-export default NotFound;
+export default ErrorReport;

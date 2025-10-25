@@ -20,9 +20,9 @@ export const getAllMaterials = async (req, res) => {
 
 export const addMaterial = async (req, res) => {
   try {
-    const { name, type, maintenanceCycle, repoID } = req.body;
+    const { name, type, repoID, quantity, unit } = req.body;
 
-    if (!name || !type || !unit) {
+    if (!name || !type || !unit || !quantity) {
       return res.status(400).json({
         success: false,
         message: "Thiếu thông tin vật tư bắt buộc!",
@@ -69,7 +69,8 @@ export const addMaterial = async (req, res) => {
       materialID,
       name,
       type: typeArray,
-      maintenanceCycle: maintenanceCycle || 1,
+      quantity,
+      unit,
     });
 
     res.status(201).json({
@@ -89,14 +90,12 @@ export const addMaterial = async (req, res) => {
 
 export const updateMaterial = async (req, res) => {
   try {
-    const { status, quantity, repairedAt, maintenanceCycle } = req.body;
+    const { status, quantity } = req.body;
     const updatedMaterial = await Material.findOneAndUpdate(
       { materialID: req.params.id },
       {
         status,
         quantity,
-        repairedAt,
-        maintenanceCycle,
       },
       { new: true }
     );

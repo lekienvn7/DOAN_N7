@@ -6,7 +6,6 @@ import Layout from "./Layout";
 
 const LoginPage = () => {
   return (
-    <Layout className="bg-white">
       <div className="flex justify-center items-center min-h-[calc(100vh-80px)]">
         <AnimatePresence mode="wait">
           <motion.div
@@ -23,7 +22,6 @@ const LoginPage = () => {
           </motion.div>
         </AnimatePresence>
       </div>
-    </Layout>
   );
 };
 

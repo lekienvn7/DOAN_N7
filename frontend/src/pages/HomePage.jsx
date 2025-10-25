@@ -3,7 +3,7 @@ import Header from "@/components/Header/Header.jsx";
 import Layout from "./Layout";
 
 const HomePage = () => {
-  return <Layout className="bg-white"></Layout>;
+  return <div></div>;
 };
 
 export default HomePage;

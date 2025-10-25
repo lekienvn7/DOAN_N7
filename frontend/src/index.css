@@ -12,6 +12,35 @@
 }
 
 @font-face {
+  font-family: "Sporting";
+  src: url("./assets/fonts/SportingOutline/SportingOutline-x3e85.ttf")
+    format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@keyframes apple-hover {
+  0% {
+    transform: scale(1) translateY(0);
+    filter: brightness(100%) blur(0px);
+    opacity: 1;
+    box-shadow: var(--shadow-md);
+  }
+  40% {
+    transform: scale(1.03) translateY(-1px);
+    filter: brightness(108%) blur(0.2px);
+    opacity: 0.97;
+    box-shadow: var(--shadow-lg);
+  }
+  100% {
+    transform: scale(1) translateY(0);
+    filter: brightness(102%) blur(0px);
+    opacity: 1;
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+@font-face {
   font-family: "Qurova";
   src: url("./assets/fonts/Qurova/QurovademoRegular-DYgy0.otf")
     format("opentype");
@@ -109,9 +138,16 @@
       0 4px 6px -4px hsl(218 36% 18% / 0.1);
     --shadow-glow: 0 0 20px hsl(258 89% 65% / 0.3);
 
-    /* Transitions */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    --transition-smooth: all 0.32s cubic-bezier(0.32, 0.72, 0, 1);
+
+    /* Apple bounce transition — bật nhẹ kiểu iOS icon */
+    --transition-bounce: all 0.45s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Optional: thêm “quick” cho nút bấm */
+    --transition-fast: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+
+    /* Optional: thêm “soft-out” cho hiệu ứng fade hoặc blur */
+    --transition-soft: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 
     --radius: 0.5rem;
 

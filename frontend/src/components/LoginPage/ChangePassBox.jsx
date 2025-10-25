@@ -87,37 +87,41 @@ const ChangePasswordBox = ({ user, navigate }) => {
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 50 }}
         transition={{ duration: 0.3 }}
-        className="w-[560px] h-[550px] p-[30px] flex flex-col gap-[20px] items-center bg-white shadow-[0_0_15px_rgba(0,0,0,0.25)] p-6 rounded-[12px]"
+        className="w-[560px] h-[560px] p-[30px] flex flex-col gap-[20px] items-center bg-[#1d1d1f] shadow-[0_30px_60px_rgba(0,0,0,0.85),_0_-10px_30px_rgba(0,0,0,0.4),_0_0_50px_rgba(255,255,255,0.05)] p-6 rounded-[12px]"
       >
         <img src={logoUneti} alt="logo_uneti" className="w-[100px]" />
-        <h2 className="text-2xl font-bold">Cập nhật mật khẩu mới</h2>
-        <p className="">Đổi mật khẩu bắt buộc khi lần đầu đăng nhập</p>
+        <h2 className="text-2xl text-[#ffffff] font-bold">
+          Cập nhật mật khẩu mới
+        </h2>
+        <p className="text-[#A1A1A6]">
+          Đổi mật khẩu bắt buộc khi lần đầu đăng nhập
+        </p>
         <input
           type="password"
           placeholder="Mật khẩu cũ"
           value={oldPass}
           onChange={(e) => setOldPass(e.target.value)}
-          className="w-[410px] px-4 py-3 border border-gray-300 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
         />
         <input
           type="password"
           placeholder="Mật khẩu mới"
           value={newPass}
           onChange={(e) => setNewPass(e.target.value)}
-          className="w-[410px] px-4 py-3 border border-gray-300 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
         />
         <input
           type="password"
           placeholder="Nhập lại mật khẩu mới"
           value={confirmPass}
           onChange={(e) => setConfirmPass(e.target.value)}
-          className="w-[410px] px-4 py-3 border border-gray-300 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
         />
 
         <button
           onClick={handleChangePassword}
           disabled={loading}
-          className="w-[410px] h-[50px] bg-black text-white font-bold rounded-[24px] hover:bg-[#2f576f] transition-all duration-300"
+          className="w-[410px] h-[50px] bg-[#0A84FF] text-white font-bold rounded-[24px] hover:scale-105 hover:bg-[#2997FF] transition-all duration-300"
         >
           {loading ? "Đang cập nhật..." : "Xác nhận"}
         </button>

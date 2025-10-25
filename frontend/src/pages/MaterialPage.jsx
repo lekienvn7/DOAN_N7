@@ -1,12 +1,9 @@
 import React from "react";
 import Header from "@/components/Header/Header";
+import Layout from "./Layout";
 
 const MaterialPage = () => {
-  return (
-    <div className="home__header flex flex-row items-center bg-[#f8f9fa]">
-      <Header />
-    </div>
-  );
+  return <div>MaterialPage</div>;
 };
 
 export default MaterialPage;

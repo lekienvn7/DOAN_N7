@@ -13,10 +13,10 @@ const TransactionSchema = new mongoose.Schema(
       ref: "Repository",
       required: true,
     },
+    equipment: { type: mongoose.Schema.Types.ObjectId, ref: "Equipment" },
     material: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Material",
-      required: true,
     },
     type: {
       type: String,
