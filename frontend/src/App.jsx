@@ -1,18 +1,26 @@
 import { Toaster } from "sonner";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import HomePage from "./pages/HomePage";
+import HomePage from "./pages/MenuPage/HomePage";
 import NotFound from "./pages/NotFound";
-import UserPage from "./pages/UserPage";
-import RepoPage from "./pages/RepoPage";
-import LoginPage from "./pages/LoginPage";
-import MaterialPage from "./pages/MaterialPage";
-import RolePage from "./pages/RolePage";
-import ReportPage from "./pages/ReportPage";
-import NoticePage from "./pages/NoticePage";
-import ErrorRepo from "./pages/ErrorRepo";
-import ErrorMaterial from "./pages/ErrorMaterial";
-import ErrorReport from "./pages/ErrorReport";
-import ErrorUser from "./pages/ErrorUser";
+import UserPage from "./pages/MenuPage/UserPage";
+import WHpage from "./pages/MenuPage/Warehouse";
+import ElectricWH from "./pages/MenuPage/RepoPages/ElectricWH";
+import ChemicalWH from "./pages/MenuPage/RepoPages/ChemicalWH";
+import IotWH from "./pages/MenuPage/RepoPages/IotWH";
+import TechnologyWH from "./pages/MenuPage/RepoPages/TechnologyWH";
+import MechanicalWH from "./pages/MenuPage/RepoPages/MechanicalWH";
+import AutoWH from "./pages/MenuPage/RepoPages/AutoWH";
+import TelecomWH from "./pages/MenuPage/RepoPages/TelecomWH";
+import FashionWH from "./pages/MenuPage/RepoPages/FashionWH";
+import LoginPage from "./pages/MenuPage/LoginPage";
+import MaterialPage from "./pages/MenuPage/MaterialPage";
+import RolePage from "./pages/MenuPage/RolePage";
+import ReportPage from "./pages/MenuPage/ReportPage";
+import NoticePage from "./pages/MenuPage/NoticePage";
+import ErrorRepo from "./pages/ErrorPage/ErrorRepo";
+import ErrorMaterial from "./pages/ErrorPage/ErrorMaterial";
+import ErrorReport from "./pages/ErrorPage/ErrorReport";
+import ErrorUser from "./pages/ErrorPage/ErrorUser";
 import Layout from "./pages/Layout";
 import { AuthProvider } from "./context/authContext";
 
@@ -35,10 +43,20 @@ function App() {
               path="/repository"
               element={
                 <Layout className="bg-[#1d1d1f]">
-                  <RepoPage />
+                  <WHpage />
                 </Layout>
               }
-            />
+            >
+              <Route path="electric" element={<ElectricWH />} />
+              <Route path="chemical" element={<ChemicalWH />} />
+              <Route path="iot" element={<IotWH />} />
+              <Route path="technology" element={<TechnologyWH />} />
+              <Route path="mechanical" element={<MechanicalWH />} />
+              <Route path="automotive" element={<AutoWH />} />
+              <Route path="telecom" element={<TelecomWH />} />
+              <Route path="fashion" element={<FashionWH />} />
+            </Route>
+
             <Route
               path="/material"
               element={

@@ -121,7 +121,7 @@ const ChangePasswordBox = ({ user, navigate }) => {
         <button
           onClick={handleChangePassword}
           disabled={loading}
-          className="w-[410px] h-[50px] bg-[#0A84FF] text-white font-bold rounded-[24px] hover:scale-105 hover:bg-[#2997FF] transition-all duration-300"
+          className="w-[410px] h-[50px] bg-[#0A84FF] cursor-pointer text-white font-bold rounded-[24px] hover:scale-105 hover:bg-[#2997FF] transition-all duration-300"
         >
           {loading ? "Đang cập nhật..." : "Xác nhận"}
         </button>

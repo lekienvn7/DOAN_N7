@@ -45,19 +45,22 @@ const LoginBox = () => {
       // Nếu đăng nhập thất bại
       if (!data.success) {
         toast.error(data.message || "Sai tài khoản hoặc mật khẩu");
-        return;
+        return; // Không load trang
       }
 
-      // Lưu token và thông tin user
+      // Nếu đăng nhập thành công
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
       toast.success("Đăng nhập thành công");
       toast.success(`Xin chào ${data.user.fullName}!`, { duration: 2000 });
 
+      // Dùng navigate để chuyển ngay UI, sau đó reload nhẹ để reset context
       setTimeout(() => {
-        setLoading(false);
-        window.location.href = "/"; // Không reload app
+        navigate("/"); // Chuyển route trước
+        setTimeout(() => {
+          window.location.reload(); // Reload sau để đảm bảo load lại AuthProvider, context, v.v.
+        }, 1); // Chờ 150ms cho navigate hoạt động trước
       }, 500);
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
@@ -150,7 +153,7 @@ const LoginBox = () => {
               className="w-[410px] h-[55px] rounded-[24px] bg-[#0A84FF]
                          text-white font-bold hover:bg-[#2997FF] hover:scale-105
                          transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.2)]
-                         flex items-center justify-center"
+                         flex items-center justify-center cursor-pointer"
             >
               {loading ? (
                 <div className="flex items-center gap-2">
@@ -201,7 +204,7 @@ const LoginBox = () => {
               className="w-[410px] h-[55px] rounded-[24px] bg-[#0A84FF]
                          text-white font-bold hover:bg-[#2997FF] hover:scale-105
                          transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.2)]
-                         flex items-center justify-center"
+                         flex items-center justify-center cursor-pointer"
             >
               {loading ? (
                 <div className="flex items-center gap-2">

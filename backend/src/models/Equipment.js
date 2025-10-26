@@ -17,7 +17,16 @@ const equipmentSchema = new mongoose.Schema(
       {
         // Loại thiết bị
         type: String,
-        enum: ["Điện", "Cơ khí", "Hóa chất"],
+        enum: [
+          "Điện",
+          "Hóa chất",
+          "Cơ khí",
+          "Nhúng",
+          "Công nghệ thông tin",
+          "Ô tô",
+          "Điện tử",
+          "Thời trang",
+        ],
         required: true,
         trim: true,
       },

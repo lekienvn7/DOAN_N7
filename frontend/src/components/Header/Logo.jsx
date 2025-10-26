@@ -24,7 +24,7 @@ const HeaderLogo = () => {
       <Link
         to="/"
         className="header__logo font-qurova no-underline
-        text-[#FFFFFF] text-[30px] font-bold hover:text-[#E5E5E7]"
+        text-[#FFFFFF] text-[25px] font-bold hover:text-[#E5E5E7]"
       >
         {userName}
       </Link>

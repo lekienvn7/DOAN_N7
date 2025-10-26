@@ -1,6 +1,5 @@
 import React from "react";
 import { LogIn } from "lucide-react";
-import { Button } from "../ui/button";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
@@ -18,7 +17,7 @@ const SearchBox = () => {
     logout();
     toast.success("Đăng xuất thành công!");
     setTimeout(() => {
-      window.location.href = "/login";
+      window.location.href = "/";
     }, 500);
   };
 

@@ -1,5 +1,22 @@
 import Material from "../models/Material.js";
 
+const detectRepoType = (repoName) => {
+  if (repoName.toLowerCase().includes("điện")) return "Điện";
+  if (repoName.toLowerCase().includes("hóa")) return "Hóa chất";
+  if (repoName.toLowerCase().includes("cơ khí")) return "Cơ khí";
+  if (repoName.toLowerCase().includes("nhúng")) return "Nhúng";
+  if (repoName.toLowerCase().includes("công nghệ thông tin"))
+    return "Công nghệ thông tin";
+  if (
+    repoName.toLowerCase().includes("oto") ||
+    repoName.toLowerCase().includes("ô tô")
+  )
+    return "Ô tô";
+  if (repoName.toLowerCase().includes("điện tử")) return "Điện tử";
+  if (repoName.toLowerCase().includes("thời trang")) return "Thời trang";
+  return null;
+};
+
 export const getAllMaterials = async (req, res) => {
   try {
     const materials = await Material.find();
@@ -20,20 +37,32 @@ export const getAllMaterials = async (req, res) => {
 
 export const addMaterial = async (req, res) => {
   try {
-    const { name, type, repoID, quantity, unit } = req.body;
+    const { name, type, repoID, quantity, unit, description, icon, createdBy } =
+      req.body;
 
-    if (!name || !type || !unit || !quantity) {
+    // Kiểm tra dữ liệu bắt buộc
+    if (!name || !type || !unit || quantity == null) {
       return res.status(400).json({
         success: false,
         message: "Thiếu thông tin vật tư bắt buộc!",
       });
     }
 
-    // Nếu type chỉ là 1 giá trị, ép về mảng
+    // Chuyển type về mảng nếu chưa phải
     const typeArray = Array.isArray(type) ? type : [type];
 
-    // Kiểm tra từng type có hợp lệ không
-    const validTypes = ["Điện", "Cơ khí", "Hóa chất", "Khác"];
+    // Danh sách loại vật tư hợp lệ
+    const validTypes = [
+      "Điện",
+      "Hóa chất",
+      "Cơ khí",
+      "Nhúng",
+      "Công nghệ thông tin",
+      "Ô tô",
+      "Điện tử",
+      "Thời trang",
+    ];
+
     const invalidType = typeArray.find((t) => !validTypes.includes(t));
     if (invalidType) {
       return res.status(400).json({
@@ -42,7 +71,7 @@ export const addMaterial = async (req, res) => {
       });
     }
 
-    // Nếu có repoID, kiểm tra ràng buộc loại kho
+    // Nếu có repoID → kiểm tra loại kho có trùng với loại vật tư không
     if (repoID) {
       const repo = await Repository.findOne({ repoID });
       if (!repo) {
@@ -53,7 +82,7 @@ export const addMaterial = async (req, res) => {
       }
 
       const repoType = detectRepoType(repo.repoName);
-      if (!typeArray.includes(repoType)) {
+      if (repoType && !typeArray.includes(repoType)) {
         return res.status(400).json({
           success: false,
           message: `Kho '${repo.repoName}' chỉ nhận vật tư loại '${repoType}'!`,
@@ -61,16 +90,29 @@ export const addMaterial = async (req, res) => {
       }
     }
 
-    // Sinh ID tự động
-    const count = await Material.countDocuments();
-    const materialID = `VT${count + 1}`;
+    // Kiểm tra người tạo
+    const existingUser = await User.findOne({ userID: createdBy });
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy tài khoản người tạo!",
+      });
+    }
 
+    // Sinh mã vật tư tự động
+    const count = await Material.countDocuments();
+    const materialID = `VT${String(count + 1).padStart(3, "0")}`;
+
+    // Tạo vật tư mới
     const newMaterial = await Material.create({
       materialID,
       name,
-      type: typeArray,
+      type: typeArray[0], // gán category chính
       quantity,
       unit,
+      description,
+      icon,
+      createdBy: existingUser._id,
     });
 
     res.status(201).json({
@@ -79,10 +121,10 @@ export const addMaterial = async (req, res) => {
       data: newMaterial,
     });
   } catch (error) {
-    console.error("Lỗi khi gọi addMaterial:", error);
+    console.error("Lỗi khi thêm vật tư:", error);
     res.status(500).json({
       success: false,
-      message: "Lỗi hệ thống!",
+      message: "Lỗi hệ thống khi thêm vật tư!",
       error: error.message,
     });
   }
@@ -90,13 +132,27 @@ export const addMaterial = async (req, res) => {
 
 export const updateMaterial = async (req, res) => {
   try {
-    const { status, quantity } = req.body;
+    const { status, quantity, description, addType, removeType } = req.body;
+
+    // Chuẩn bị đối tượng cập nhật
+    const updateOps = {
+      $set: { status, quantity, description },
+    };
+
+    if (addType)
+      updateOps.$addToSet = {
+        type: { $each: Array.isArray(addType) ? addType : [addType] },
+      };
+
+    if (removeType)
+      updateOps.$pull = {
+        type: { $in: Array.isArray(removeType) ? removeType : [removeType] },
+      };
+
+    // Thực hiện cập nhật
     const updatedMaterial = await Material.findOneAndUpdate(
       { materialID: req.params.id },
-      {
-        status,
-        quantity,
-      },
+      updateOps,
       { new: true }
     );
 
@@ -107,9 +163,13 @@ export const updateMaterial = async (req, res) => {
       });
     }
 
-    res.status(200).json(updatedMaterial);
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật vật tư thành công!",
+      data: updatedMaterial,
+    });
   } catch (error) {
-    console.error("Lỗi khi gọi updateMaterial: ", error);
+    console.error("Lỗi khi gọi updateMaterial:", error);
     res.status(500).json({
       success: false,
       message: "Lỗi hệ thống!",

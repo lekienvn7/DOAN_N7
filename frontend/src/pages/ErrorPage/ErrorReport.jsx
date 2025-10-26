@@ -1,13 +1,11 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import notFound from "../assets/images/404NotFound.png";
-import goku from "../assets/images/goku.jpg";
+import goku from "../../assets/images/goku.jpg";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
-const ErrorMaterial = () => {
+const ErrorReport = () => {
   const navigate = useNavigate();
-
   const handleLogin = () => {
     toast.success("Xin mời đăng nhập!");
     navigate("/login");
@@ -33,10 +31,10 @@ const ErrorMaterial = () => {
             </p>
             <button
               onClick={handleLogin}
-              className="flex items-center justify-center text-white text-2xl w-[250px]
-               bg-none p-[10px] border-[5px] border-[#5E5E60] rounded-[24px]
-               hover:bg-[#5E5E60] hover:scale-[1.03]
-               transition-all duration-[350ms] ease-[cubic-bezier(0.32,0.72,0,1)]"
+              className="flex items-center justify-center cursor-pointer text-white text-2xl w-[250px]
+                 bg-none p-[10px] border-[5px] border-[#5E5E60] rounded-[24px]
+                 hover:bg-[#5E5E60] hover:scale-[1.03]
+                 transition-all duration-[350ms] ease-[cubic-bezier(0.32,0.72,0,1)]"
             >
               Đăng nhập
             </button>
@@ -48,4 +46,4 @@ const ErrorMaterial = () => {
   );
 };
 
-export default ErrorMaterial;
+export default ErrorReport;

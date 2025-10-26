@@ -11,6 +11,14 @@
   font-style: normal;
 }
 
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @font-face {
   font-family: "Sporting";
   src: url("./assets/fonts/SportingOutline/SportingOutline-x3e85.ttf")

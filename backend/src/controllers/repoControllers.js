@@ -1,5 +1,6 @@
 import Repository from "../models/Repository.js";
 import Material from "../models/Material.js";
+import Equipment from "../models/Equipment.js";
 import User from "../models/User.js";
 import { detectRepoType } from "../utils/repoUtils.js";
 
@@ -14,8 +15,7 @@ export const getAllRepository = async (req, res) => {
           select: "roleName -_id",
         },
       })
-      .populate("materials.material", "name type status -_id")
-      .select("-repoType");
+      .populate("materials.material", "name type status -_id");
 
     res.status(200).json({
       success: true,
@@ -66,11 +66,10 @@ export const addRepository = async (req, res) => {
       materials,
       equipments,
       repoType,
+      repoID,
     } = req.body;
 
     // Tạo mã kho tự động
-    const count = await Repository.countDocuments();
-    const repoID = `KH${count + 1}`;
 
     // Kiểm tra đầu vào
     if (!repoName || !repoType) {
@@ -157,10 +156,21 @@ export const addRepository = async (req, res) => {
           });
         }
 
+        // Kiểm tra số lượng còn lại có đủ không
+        if (material.quantity < item.quantity) {
+          return res.status(400).json({
+            success: false,
+            message: `Vật tư '${material.name}' không đủ số lượng để thêm (hiện có ${material.quantity}, yêu cầu ${item.quantity})`,
+          });
+        }
+
+        // Nếu ok hết thì thêm vào danh sách hợp lệ
         validMaterials.push({
           material: material._id,
           quantity: item.quantity || 0,
         });
+        material.quantity -= item.quantity;
+        await material.save();
       }
     }
 
@@ -310,7 +320,7 @@ export const updateRepository = async (req, res) => {
       data: updatedRepo,
     });
   } catch (error) {
-    console.error("❌ Lỗi khi gọi updateRepository:", error);
+    console.error("Lỗi khi gọi updateRepository:", error);
     res.status(500).json({
       success: false,
       message: "Lỗi hệ thống!",
@@ -324,6 +334,12 @@ export const deleteRepository = async (req, res) => {
     const deleteRepository = await Repository.findOneAndDelete({
       repoID: req.params.id,
     });
+    if (!deleteRepository) {
+      res.status(404).json({
+        success: false,
+        message: "Không tìm thấy kho!",
+      });
+    }
     if (deleteRepository.materials.length > 0) {
       return res.status(400).json({
         success: false,
@@ -336,7 +352,7 @@ export const deleteRepository = async (req, res) => {
       data: deleteRepository,
     });
   } catch (error) {
-    console.error("❌ Lỗi khi gọi deleteRepository:", error);
+    console.error("Lỗi khi gọi deleteRepository:", error);
     res.status(500).json({
       success: false,
       message: "Lỗi hệ thống!",
