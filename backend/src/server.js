@@ -38,7 +38,7 @@ app.use("/api/user", userRoutes);
 
 app.use("/api/role", roleRoutes);
 
-app.use("/api/repo", repoRoutes);
+app.use("/api/repository", repoRoutes);
 
 app.use("/api/transaction", transactionRoutes);
 

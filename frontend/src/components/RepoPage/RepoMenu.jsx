@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   PlugZap,
@@ -15,36 +15,33 @@ import axiosClient from "@/api/axiosClient";
 
 const RepoMenu = () => {
   const location = useLocation();
+  const [repos, setRepos] = useState([]);
 
   const iconMap = {
-    Điện: PlugZap,
-    "Hóa chất": FlaskConical,
-    Nhúng: Network,
-    "Công nghệ thông tin": Computer,
-    "Cơ khí": Wrench,
-    "Ô tô": Car,
-    "Điện tử": Cpu,
-    "Thời trang": Shirt,
+    electric: PlugZap,
+    chemical: FlaskConical,
+    iot: Network,
+    technology: Computer,
+    mechanical: Wrench,
+    automotive: Car,
+    telecom: Cpu,
+    fashion: Shirt,
   };
 
-  const repoList = [
-    { name: "Kho điện", path: "/repository/electric", icon: PlugZap },
-    { name: "Kho hóa chất", path: "/repository/chemical", icon: FlaskConical },
-    { name: "Kho nhúng/IoT", path: "/repository/iot", icon: Network },
-    {
-      name: "Kho Công nghệ thông tin",
-      path: "/repository/technology",
-      icon: Computer,
-    },
-    { name: "Kho cơ khí", path: "/repository/mechanical", icon: Wrench },
-    { name: "Kho công nghệ oto", path: "/repository/automotive", icon: Car },
-    {
-      name: "Kho điện tử/viễn thông",
-      path: "/repository/telecom",
-      icon: Cpu,
-    },
-    { name: "Kho thời trang", path: "/repository/fashion", icon: Shirt },
-  ];
+  useEffect(() => {
+    const fetchRepos = async () => {
+      try {
+        const res = await axiosClient.get("/repository");
+        if (res.data.success) {
+          setRepos(res.data.data);
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải danh sách kho:", error);
+      }
+    };
+
+    fetchRepos();
+  }, []);
 
   return (
     <motion.ul
@@ -57,17 +54,18 @@ const RepoMenu = () => {
       }}
       className="flex flex-row flex-wrap gap-[65px] items-center justify-center"
     >
-      {repoList.map((item, index) => {
-        const Icon = item.icon;
-        const isActive = location.pathname === item.path;
+      {repos.map((repo, index) => {
+        const Icon = iconMap[repo.repoID] || PlugZap;
+        const path = `/repository/${repo.repoID.toLowerCase()}`;
+        const isActive = location.pathname === path;
 
         return (
           <li
-            key={index}
+            key={repo.repoID || index}
             className="flex flex-col items-center justify-center gap-2"
           >
             <Link
-              to={item.path}
+              to={path}
               className={`group flex flex-col items-center text-center transition-all duration-300 hover:scale-105 ${
                 isActive ? "text-white" : "text-[#A1A1A6] hover:text-white"
               }`}
@@ -80,7 +78,7 @@ const RepoMenu = () => {
                     : "text-[#A1A1A6] group-hover:text-white"
                 }`}
               />
-              <p className="mt-1 text-[15px] font-medium">{item.name}</p>
+              <p className="mt-1 text-[15px] font-medium">{repo.repoName}</p>
             </Link>
           </li>
         );
