@@ -99,17 +99,17 @@ const LoginBox = () => {
   return (
     <div
       className="
-        login-box
-        w-[560px] h-[550px]
+        login-box 
+        w-[560px] h-[600px]
         rounded-[24px] flex flex-col items-center
         p-[30px] shadow-[0_30px_60px_rgba(0,0,0,0.85),_0_-10px_30px_rgba(0,0,0,0.4),_0_0_50px_rgba(255,255,255,0.05)]
-        bg-[#1d1d1f] overflow-hidden relative
+        bg-bgmain overflow-hidden relative
       "
     >
       <img
         src={logoUneti}
         alt="logo_uneti"
-        className="w-[120px] brightness-0 invert"
+        className="w-[80px] brightness-[0%] invert-[100%]"
       />
 
       <AnimatePresence mode="wait">
@@ -122,8 +122,13 @@ const LoginBox = () => {
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center gap-[25px] mt-5"
           >
-            <p className="text-[25px] font-bold text-center text-[#ffffff]">
-              Đăng nhập vào tài khoản được cấp
+            <p className="text-[48px] font-satoshi font-bold text-textpri">
+              ĐĂNG NHẬP
+            </p>
+
+            <p className="text-[16px] w-[410px] text-textsec text-center">
+              Sử dụng tài khoản được cấp của bạn. Nếu đây là lần đầu, hãy đổi
+              mật khẩu ngay sau đó!
             </p>
 
             <input
@@ -150,8 +155,8 @@ const LoginBox = () => {
 
             <button
               onClick={handleLogin}
-              className="w-[410px] h-[55px] rounded-[24px] bg-[#0A84FF]
-                         text-white font-bold hover:bg-[#2997FF] hover:scale-105
+              className="w-[410px] h-[55px] rounded-[24px] bg-[#0a84ff]
+                         text-white font-bold hover:bg-[#0066cc]
                          transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.2)]
                          flex items-center justify-center cursor-pointer"
             >
@@ -167,7 +172,7 @@ const LoginBox = () => {
 
             <p
               onClick={() => setShowForgot(true)}
-              className="text-[#0A84FF] text-sm cursor-pointer hover:underline transition-all duration-200"
+              className="text-[#0a84ff] text-sm cursor-pointer hover:underline transition-all duration-200"
             >
               Quên mật khẩu?
             </p>
@@ -181,10 +186,10 @@ const LoginBox = () => {
             transition={{ duration: 0.3 }}
             className="flex flex-col items-center gap-[25px] mt-5"
           >
-            <p className="text-[25px] font-bold text-center text-[#ffffff]">
+            <p className="text-[48px] text-center font-satoshi font-bold text-textpri">
               Khôi phục mật khẩu
             </p>
-            <p className="text-[#A1A1A6] text-center w-[400px] text-sm leading-snug">
+            <p className="text-[16px] w-[410px] text-textsec text-center">
               Nhập email của bạn để gửi yêu cầu lấy lại mật khẩu.
             </p>
 

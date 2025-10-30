@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-const RepoDetail = () => {
+const ElectricUtilities = () => {
   return (
     <AnimatePresence>
       <motion.div
@@ -11,15 +11,14 @@ const RepoDetail = () => {
         transition={{
           duration: 0.3, // Tốc độ mượt // Đường cong chuyển động
         }}
-        className=" flex flex-col p-[25px] w-[1100px] h-[500px] bg-bgmain"
+        className=" flex flex-col p-[25px] w-[300px] h-[500px] bg-bgmain"
       >
-        <h2 className="text-left text-[18px] mb-[10px] font-satoshi font-bold">
-          Danh sách vật tư
+        <h2 className="text-center text-[18px] font-satoshi font-bold">
+          Tiện ích
         </h2>
-        <hr />
       </motion.div>
     </AnimatePresence>
   );
 };
 
-export default RepoDetail;
+export default ElectricUtilities;

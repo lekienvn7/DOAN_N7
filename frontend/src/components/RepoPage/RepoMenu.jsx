@@ -52,7 +52,7 @@ const RepoMenu = () => {
         duration: 0.8,
         ease: [0.25, 0.8, 0.25, 1],
       }}
-      className="flex flex-row flex-wrap gap-[65px] items-center justify-center"
+      className="flex flex-row flex-wrap gap-[50px] items-center justify-center"
     >
       {repos.map((repo, index) => {
         const Icon = iconMap[repo.repoID] || PlugZap;
@@ -60,25 +60,22 @@ const RepoMenu = () => {
         const isActive = location.pathname === path;
 
         return (
-          <li
-            key={repo.repoID || index}
-            className="flex flex-col items-center justify-center gap-2"
-          >
+          <li key={repo.repoID || index} className="">
             <Link
               to={path}
-              className={`group flex flex-col items-center text-center transition-all duration-300 hover:scale-105 ${
+              className={`group flex flex-col whitespace-nowrap gap-0 items-center text-center transition-all duration-200 hover:gap-2 cursor-pointer ${
                 isActive ? "text-white" : "text-[#A1A1A6] hover:text-white"
               }`}
             >
               <Icon
-                size={40}
+                size={30}
                 className={`transition-colors duration-300 ${
                   isActive
                     ? "text-white"
                     : "text-[#A1A1A6] group-hover:text-white"
                 }`}
               />
-              <p className="mt-1 text-[15px] font-medium">{repo.repoName}</p>
+              <p className="mt-1 text-[12px] font-medium">{repo.repoName}</p>
             </Link>
           </li>
         );

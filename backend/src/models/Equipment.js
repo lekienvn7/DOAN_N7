@@ -34,8 +34,8 @@ const equipmentSchema = new mongoose.Schema(
     status: {
       // Trạng thái vât liệu
       type: String,
-      enum: ["Còn", "Hỏng"], // => Chỉ nhận 2 giá trị inRepo và repairing
-      default: "inRepo", // => Nếu ko điền gì, mặc định điền inRepo
+      enum: ["Trong kho", "Đang mượn", "Đang bảo trì"],
+      default: "Trong kho",
     },
     quantity: {
       // Số lượng

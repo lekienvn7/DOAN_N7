@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 const FashionWH = () => {
-  return (
-    <div>FashionWH</div>
-  )
-}
+  return <div>FashionWH</div>;
+};
 
-export default FashionWH
+export default FashionWH;

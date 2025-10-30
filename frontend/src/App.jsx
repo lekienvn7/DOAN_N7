@@ -34,7 +34,7 @@ function App() {
             <Route
               path="/"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <HomePage />
                 </Layout>
               }
@@ -42,7 +42,7 @@ function App() {
             <Route
               path="/repository"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgpanel">
                   <WHpage />
                 </Layout>
               }
@@ -60,7 +60,7 @@ function App() {
             <Route
               path="/material"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <MaterialPage />
                 </Layout>
               }
@@ -68,7 +68,7 @@ function App() {
             <Route
               path="/role"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <RolePage />
                 </Layout>
               }
@@ -76,7 +76,7 @@ function App() {
             <Route
               path="/user"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <UserPage />
                 </Layout>
               }
@@ -84,7 +84,7 @@ function App() {
             <Route
               path="/report"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <ReportPage />
                 </Layout>
               }
@@ -92,7 +92,7 @@ function App() {
             <Route
               path="/notice"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <NoticePage />
                 </Layout>
               }
@@ -101,7 +101,7 @@ function App() {
             <Route
               path="/login"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <LoginPage />
                 </Layout>
               }
@@ -109,7 +109,7 @@ function App() {
             <Route
               path="*"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <NotFound />
                 </Layout>
               }
@@ -118,7 +118,7 @@ function App() {
             <Route
               path="/error-repo"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <ErrorRepo />
                 </Layout>
               }
@@ -126,7 +126,7 @@ function App() {
             <Route
               path="/error-material"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <ErrorMaterial />
                 </Layout>
               }
@@ -134,7 +134,7 @@ function App() {
             <Route
               path="/error-report"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <ErrorReport />
                 </Layout>
               }
@@ -142,7 +142,7 @@ function App() {
             <Route
               path="/error-user"
               element={
-                <Layout className="bg-[#1d1d1f]">
+                <Layout className="bg-bgmain">
                   <ErrorUser />
                 </Layout>
               }

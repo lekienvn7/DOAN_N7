@@ -29,7 +29,7 @@ const SearchBox = () => {
           className="
         group flex items-center gap-0 overflow-hidden whitespace-nowrap
         rounded-md  text-[#ffffff] font-bold px-3 py-2 
-       transition-all duration-500 ease-out hover:gap-2 cursor-pointer"
+       transition-all duration-300 hover:gap-2 cursor-pointer"
         >
           <LogIn className="size-5 group-hover:color-[]" strokeWidth={3} />
           <span
