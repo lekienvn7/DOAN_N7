@@ -12,7 +12,7 @@ const Warehouse = () => {
       </motion.div>
 
       {/* Vùng hiển thị trang con */}
-      <div className="p-10">
+      <div className="">
         <Outlet />
       </div>
     </div>
