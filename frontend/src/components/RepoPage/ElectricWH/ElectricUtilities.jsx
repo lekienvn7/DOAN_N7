@@ -11,7 +11,7 @@ const ElectricUtilities = () => {
         transition={{
           duration: 0.3, // Tốc độ mượt // Đường cong chuyển động
         }}
-        className=" flex flex-col p-[15px] w-[240px] h-[calc(100vh-160px)] bg-bgmain border-t-1 border-r-1  border-gray-800"
+        className=" flex flex-col p-[15px] w-[240px] h-[calc(100vh-160px)] bg-bgmain border-t-1 border-r-1  border-gray-700"
       >
         <h2 className="text-center text-[18px] font-satoshi font-bold">
           Tổng quan

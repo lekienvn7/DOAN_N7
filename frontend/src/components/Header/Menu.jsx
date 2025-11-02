@@ -46,7 +46,7 @@ const Menu = () => {
             to={item.path}
             className={`relative pb-4
               after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full 
-              after:scale-x-0 after:bg-[#ffffff] after:transition-transform after:duration-300 
+              after:scale-x-0 after:bg-textsec after:transition-transform after:duration-300 
               hover:after:scale-x-100
               ${
                 location.pathname === item.path

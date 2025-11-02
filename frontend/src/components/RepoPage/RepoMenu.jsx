@@ -65,16 +65,16 @@ const RepoMenu = () => {
               to={path}
               className={`group flex flex-col whitespace-nowrap gap-0 items-center text-center transition-all duration-200 cursor-pointer ${
                 isActive
-                  ? "text-highlightcl"
-                  : "text-[#A1A1A6] hover:text-highlightcl"
+                  ? "text-[#FFD700]"
+                  : "text-[#A1A1A6] hover:text-[#FFD700]"
               }`}
             >
               <Icon
                 size={30}
                 className={`transition-colors duration-300 ${
                   isActive
-                    ? "text-highlightcl"
-                    : "text-[#A1A1A6] group-hover:text-highlightcl"
+                    ? "text-[#FFD700]"
+                    : "text-[#A1A1A6] group-hover:text-[#FFD700]"
                 }`}
               />
               <p className="mt-1 text-[12px] font-medium">{repo.repoName}</p>

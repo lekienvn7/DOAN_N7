@@ -7,7 +7,7 @@ const Warehouse = () => {
   return (
     <div className="text-white">
       {/* Thanh menu cố định */}
-      <motion.div className="sticky h-[100px] top-0 w-screen p-[20px] flex flex-row items-center justify-center bg-bgmain  z-50">
+      <motion.div className="sticky h-[100px] top-0 w-screen p-[20px] flex flex-row items-center justify-center bg-[#121212]  z-50">
         <RepoMenu />
       </motion.div>
 
