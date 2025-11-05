@@ -61,7 +61,7 @@ const LoginBox = () => {
         setTimeout(() => {
           window.location.reload(); // Reload sau để đảm bảo load lại AuthProvider, context, v.v.
         }, 1); // Chờ 150ms cho navigate hoạt động trước
-      }, 500);
+      },  500);
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
       const msg =

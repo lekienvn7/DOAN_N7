@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import MainDetail from "./ElectricList";
+import MainDetail from "./IotList";
 
 const RepoDetail = () => {
   return (

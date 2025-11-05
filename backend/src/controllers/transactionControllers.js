@@ -1,13 +1,12 @@
 import Repository from "../models/Repository.js";
 import Material from "../models/Material.js";
-import Equipment from "../models/Equipment.js";
 import Transaction from "../models/Transaction.js";
 import User from "../models/User.js";
 
 /* LẤY DANH SÁCH GIAO DỊCH */
 export const getTransaction = async (req, res) => {
   try {
-    const { repoID, materialID, equipmentID, type, userID } = req.query;
+    const { repoID, materialID, type, userID } = req.query;
 
     const filter = {};
 
@@ -32,14 +31,6 @@ export const getTransaction = async (req, res) => {
     }
 
     // Lọc theo thiết bị
-    if (equipmentID) {
-      const equipment = await Equipment.findOne({ equipmentID });
-      if (!equipment)
-        return res
-          .status(404)
-          .json({ message: `Thiết bị '${equipmentID}' không tồn tại!` });
-      filter.equipment = equipment._id;
-    }
 
     // Lọc theo loại giao dịch
     if (type) {
@@ -63,7 +54,6 @@ export const getTransaction = async (req, res) => {
     const transactions = await Transaction.find(filter)
       .populate("repository", "repoID repoName -_id")
       .populate("material", "materialID name type -_id")
-      .populate("equipment", "equipmentID equipmentName type status -_id")
       .populate("createdBy", "userID fullName email -_id")
       .sort({ createdAt: -1 });
 
@@ -96,7 +86,6 @@ export const addTransaction = async (req, res) => {
     const {
       repository,
       material,
-      equipment, 
       type,
       quantity,
       createdBy,
@@ -106,7 +95,7 @@ export const addTransaction = async (req, res) => {
     // Kiểm tra dữ liệu đầu vào
     if (
       !repository ||
-      (!material && !equipment) ||
+      (!material) ||
       !type ||
       !quantity ||
       !createdBy
@@ -140,9 +129,6 @@ export const addTransaction = async (req, res) => {
     if (material) {
       targetItem = await Material.findOne({ materialID: material });
       itemType = "material";
-    } else if (equipment) {
-      targetItem = await Equipment.findOne({ equipmentID: equipment });
-      itemType = "equipment";
     }
 
     if (!targetItem) {
@@ -190,36 +176,6 @@ export const addTransaction = async (req, res) => {
         }
         afterQuantity = existingRepo.materials[matIndex].quantity;
       }
-    } else {
-      // Với thiết bị
-      const eqIndex =
-        existingRepo.equipments?.findIndex(
-          (e) => e.equipment.toString() === targetItem._id.toString()
-        ) ?? -1;
-
-      if (eqIndex === -1) {
-        if (type === "export") {
-          return res
-            .status(400)
-            .json({ message: "Thiết bị chưa có trong kho để xuất!" });
-        }
-        existingRepo.equipments = existingRepo.equipments || [];
-        existingRepo.equipments.push({ equipment: targetItem._id, quantity });
-        afterQuantity = quantity;
-      } else {
-        beforeQuantity = existingRepo.equipments[eqIndex].quantity;
-        if (type === "import") {
-          existingRepo.equipments[eqIndex].quantity += quantity;
-        } else {
-          if (beforeQuantity < quantity) {
-            return res
-              .status(400)
-              .json({ message: "Không đủ số lượng thiết bị trong kho!" });
-          }
-          existingRepo.equipments[eqIndex].quantity -= quantity;
-        }
-        afterQuantity = existingRepo.equipments[eqIndex].quantity;
-      }
     }
 
     await existingRepo.save();
@@ -229,7 +185,6 @@ export const addTransaction = async (req, res) => {
       transactionID,
       repository: existingRepo._id,
       material: itemType === "material" ? targetItem._id : null,
-      equipment: itemType === "equipment" ? targetItem._id : null,
       type,
       quantity,
       createdBy: existingUser._id,

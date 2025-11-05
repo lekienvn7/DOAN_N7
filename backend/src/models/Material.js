@@ -14,24 +14,36 @@ const materialSchema = new mongoose.Schema(
       unique: true, // => Bắt buộc phải điền giá trị
       trim: true,
     },
+    maintenanceCycle: {
+      // Thời gian giữa các lần bảo trì
+      type: Number, // tính theo tháng
+      default: null, // mặc định: 1 tháng bảo trì 1 lần
+      min: 1,
+    },
     type: [
       {
         // Loại vật liệu
         type: String,
         enum: [
-          "Điện",
-          "Hóa chất",
-          "Cơ khí",
-          "Nhúng",
-          "Công nghệ thông tin",
-          "Ô tô",
-          "Điện tử",
-          "Thời trang",
+          "electric",
+          "chemical",
+          "mechanical",
+          "iot",
+          "technology",
+          "automotive",
+          "telecom",
+          "fashion",
         ],
         required: true,
         trim: true,
       },
     ],
+    status: {
+      // Trạng thái vât liệu
+      type: String,
+      enum: ["Trong kho", "Đang mượn", "Đang bảo trì"],
+      default: "Trong kho",
+    },
     quantity: {
       // Số lượng
       type: Number,
@@ -54,6 +66,103 @@ const materialSchema = new mongoose.Schema(
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+      default: null,
+    },
+    voltageRange: {
+      type: Number,
+      default: null,
+    },
+    power: {
+      type: Number,
+      default: null,
+    },
+    materialInsulation: {
+      type: String,
+      enum: ["Dẫn điện", "Cách điện"],
+      default: null,
+    },
+    chemicalFormula: {
+      type: String,
+      default: null,
+    },
+    chemicalNote: {
+      type: String,
+      default: null,
+    },
+    expiryDate: {
+      type: Date,
+      default: null,
+    },
+    metalType: {
+      type: String,
+      default: null,
+    },
+    weight: {
+      type: Number,
+      default: null,
+    },
+    coating: {
+      type: String,
+      default: null,
+    },
+    communicationProtocol: {
+      type: String,
+      default: null,
+    },
+    sensorType: {
+      type: String,
+      default: null,
+    },
+    powerSupply: {
+      type: String,
+      default: null,
+    },
+    deviceType: {
+      type: String,
+      default: null,
+    },
+    Specification: {
+      type: String,
+      default: null,
+    },
+    networkInterface: {
+      type: String,
+      default: null,
+    },
+    partType: {
+      type: String,
+      default: null,
+    },
+    vehicleModel: {
+      type: String, 
+      default: null,
+    },
+    manufacturer: {
+      type: String,
+      default: null,
+    },
+    signalType: {
+      type: String,
+      default: null,
+    },
+    bandwidth: {
+      type: String,
+      default: null,
+    },
+    connectorType: {
+      type: String,
+      default: null,
+    },
+    material: {
+      type: String,
+      default: null,
+    },
+    color: {
+      type: String,
+      default: null,
+    },
+    origin: {
+      type: String,
       default: null,
     },
   },

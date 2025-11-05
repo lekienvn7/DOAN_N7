@@ -17,7 +17,7 @@ const Menu = () => {
     { name: "Trang chủ", path: "/" },
     { name: "Kho vật tư", path: "/repository" },
     { name: "Thiết bị/Dụng cụ", path: "/material" },
-    { name: "Thông báo", path: "/notice" },
+    { name: "Giao tiếp", path: "/notice" },
     { name: "Quản lý/Phân quyền", path: "/role" },
   ];
 
@@ -39,7 +39,7 @@ const Menu = () => {
     }
   }
   return (
-    <ul className="flex flex-row gap-[20px]">
+    <ul className="flex flex-row gap-[25px]">
       {activeMenu.map((item) => (
         <li key={item.path}>
           <Link
@@ -50,7 +50,7 @@ const Menu = () => {
               hover:after:scale-x-100
               ${
                 location.pathname === item.path
-                  ? "text-[#ffffff] font-semibold after:scale-x-100"
+                  ? "text-[#ffffff] font-semibold after:scale-x-50"
                   : "text-[#A1A1A6] hover:text-[#ffffff]"
               }`}
           >

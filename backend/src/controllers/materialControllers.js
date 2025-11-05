@@ -1,4 +1,5 @@
 import Material from "../models/Material.js";
+import User from "../models/User.js";
 
 const detectRepoType = (repoName) => {
   if (repoName.toLowerCase().includes("điện")) return "Điện";
@@ -37,8 +38,40 @@ export const getAllMaterials = async (req, res) => {
 
 export const addMaterial = async (req, res) => {
   try {
-    const { name, type, repoID, quantity, unit, description, icon, createdBy } =
-      req.body;
+    const {
+      name,
+      type,
+      repoID,
+      quantity,
+      unit,
+      description,
+      icon,
+      createdBy,
+      voltageRange,
+      power,
+      materialInsulation,
+      chemicalFormula,
+      chemicalNote,
+      expiryDate,
+      metalType,
+      weight,
+      coating,
+      communicationProtocol,
+      sensorType,
+      powerSupply,
+      deviceType,
+      Specification,
+      networkInterface,
+      partType,
+      vehicleModel,
+      manufacturer,
+      signalType,
+      bandwidth,
+      connectorType,
+      material,
+      color,
+      origin,
+    } = req.body;
 
     // Kiểm tra dữ liệu bắt buộc
     if (!name || !type || !unit || quantity == null) {
@@ -53,14 +86,14 @@ export const addMaterial = async (req, res) => {
 
     // Danh sách loại vật tư hợp lệ
     const validTypes = [
-      "Điện",
-      "Hóa chất",
-      "Cơ khí",
-      "Nhúng",
-      "Công nghệ thông tin",
-      "Ô tô",
-      "Điện tử",
-      "Thời trang",
+      "electric",
+      "chemical",
+      "mechanical",
+      "iot",
+      "technology",
+      "automotive",
+      "telecom",
+      "fashion",
     ];
 
     const invalidType = typeArray.find((t) => !validTypes.includes(t));
@@ -113,6 +146,30 @@ export const addMaterial = async (req, res) => {
       description,
       icon,
       createdBy: existingUser._id,
+      voltageRange,
+      power,
+      materialInsulation,
+      chemicalFormula,
+      chemicalNote,
+      expiryDate,
+      metalType,
+      weight,
+      coating,
+      communicationProtocol,
+      sensorType,
+      powerSupply,
+      deviceType,
+      Specification,
+      networkInterface,
+      partType,
+      vehicleModel,
+      manufacturer,
+      signalType,
+      bandwidth,
+      connectorType,
+      material,
+      color,
+      origin,
     });
 
     res.status(201).json({

@@ -14,6 +14,9 @@ import TelecomWH from "./pages/MenuPage/RepoPages/TelecomWH";
 import FashionWH from "./pages/MenuPage/RepoPages/FashionWH";
 import LoginPage from "./pages/MenuPage/LoginPage";
 import MaterialPage from "./pages/MenuPage/MaterialPage";
+import BrokenMaterial from "./components/MaterialPage/BrokenMaterial";
+import MaterialRepair from "./components/MaterialPage/MaterialRepair";
+import MaterialRepairing from "./components/MaterialPage/MaterialRepairing";
 import RolePage from "./pages/MenuPage/RolePage";
 import ReportPage from "./pages/MenuPage/ReportPage";
 import NoticePage from "./pages/MenuPage/NoticePage";
@@ -64,7 +67,9 @@ function App() {
                   <MaterialPage />
                 </Layout>
               }
-            />
+            >
+              <Route path="repair" element={<MaterialRepair />} />
+            </Route>
             <Route
               path="/role"
               element={

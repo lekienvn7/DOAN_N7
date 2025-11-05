@@ -1,25 +1,23 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { PencilLine, Trash2 } from "lucide-react";
 import axiosClient from "@/api/axiosClient";
+import { PencilLine, Trash2 } from "lucide-react";
 
-const ElectricList = () => {
-  const [electrical, setElectrical] = useState([]);
-  const [loading, setLoading] = useState(false);
+const IotList = () => {
+  const [iot, setIot] = useState([]);
 
   useEffect(() => {
-    const fetchElectrical = async () => {
+    const fetchIot = async () => {
       try {
-        setLoading(true);
-        const res = await axiosClient.get("/repository/material/electric");
+        const res = await axiosClient.get("/repository/material/iot");
         if (res.data.success) {
-          setElectrical(res.data.materials);
+          setIot(res.data.materials);
         }
       } catch (error) {
-        console.error("Lỗi khi tải dữ liệu", error);
+        console.error("Lỗi khi kết nối dữ liệu!", error);
       }
     };
-    fetchElectrical();
+    fetchIot();
   }, []);
 
   return (
@@ -30,7 +28,7 @@ const ElectricList = () => {
             <th className="relative py-[5px] w-[3%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
               STT
             </th>
-            <th className="relative w-[15%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
+            <th className="relative w-[12%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
               Tên thiết bị/vật tư
             </th>
             <th className="relative w-[5%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
@@ -42,17 +40,17 @@ const ElectricList = () => {
             <th className="relative w-[8%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
               Hạn bảo trì
             </th>
-            <th className="relative w-[10%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
+            <th className="relative w-[15%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
               Ngày thêm
             </th>
-            <th className="relative w-[5%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Điện áp
+            <th className="relative w-[13%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
+              Giao thức kết nối
             </th>
-            <th className="relative w-[10%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Công suất định mức
+            <th className="relative w-[12%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
+              Cảm biến đi kèm
             </th>
-            <th className="relative w-[5%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Cách điện?
+            <th className="relative w-[8%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
+              Nguồn cấp
             </th>
             <th colSpan={2} className=" w-[5%] ">
               Lựa chọn
@@ -61,7 +59,7 @@ const ElectricList = () => {
         </thead>
 
         <tbody>
-          {electrical.map((item, index) => (
+          {iot.map((item, index) => (
             <tr className="border-b-1 border-gray-500 text-left text-[14px] text-[#e5e5e7] hover:bg-[#1c1c1e]">
               <td className="border-r-1 border-textsec p-[5px]">{index + 1}</td>
               <td className="border-r-1 border-textsec p-[5px]">{item.name}</td>
@@ -76,13 +74,13 @@ const ElectricList = () => {
                 {item.createdAt}
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.voltageRange}
+                {item.communicationProtocol}
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.power}
+                {item.sensorType}
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.materialInsulation}
+                {item.powerSupply}
               </td>
               <td className="border-r-1 border-textsec text-center p-[5px]">
                 <button className="changeTool cursor-pointer p-[5px] justify-center text-[#f9d65c] hover:text-[#ffd700]">
@@ -102,4 +100,4 @@ const ElectricList = () => {
   );
 };
 
-export default ElectricList;
+export default IotList;

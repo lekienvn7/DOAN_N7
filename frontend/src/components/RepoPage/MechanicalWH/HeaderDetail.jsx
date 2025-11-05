@@ -31,7 +31,7 @@ const HeaderDetail = () => {
           <div className="flex flex-row justify-between">
             <div className="flex flex-col gap-[5px]">
               <p className="text-left text-[16px] text-[#FFD700] font-satoshi ">
-                Kho điện
+                Kho cơ khí
               </p>
 
               <p className="text-[30px] text-textpri font-bold">
@@ -106,7 +106,6 @@ const HeaderDetail = () => {
             </div>
           </div>
         </div>
-
       </motion.div>
     </AnimatePresence>
   );

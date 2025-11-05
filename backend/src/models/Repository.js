@@ -16,16 +16,17 @@ const repoSchema = new mongoose.Schema(
     repoType: {
       type: String,
       enum: [
-        "Điện",
-        "Hóa chất",
-        "Cơ khí",
-        "Nhúng",
-        "Công nghệ thông tin",
-        "Ô tô",
-        "Điện tử",
-        "Thời trang",
+        "electric",
+        "chemical",
+        "mechanical",
+        "iot",
+        "technology",
+        "automotive",
+        "telecom",
+        "fashion",
       ],
       required: true,
+      trim: true,
     },
     location: {
       type: String, // vị trí hoặc khu vực
