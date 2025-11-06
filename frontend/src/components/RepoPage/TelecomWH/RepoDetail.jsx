@@ -6,11 +6,11 @@ const RepoDetail = () => {
   return (
     <AnimatePresence>
       <motion.div
-        initial={{ x: -20, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        exit={{ x: -20, opacity: 0 }}
+        initial={{ opacity: 0 }} // Bắt đầu lệch trái + mờ
+        animate={{ x: 0, opacity: 1 }} // Di chuyển về giữa + hiện rõ
+        exit={{ opacity: 0 }} // Khi rời trang (nếu có)
         transition={{
-          duration: 0.3,
+          duration: 0.5,
         }}
         className=" w-[1300px] max-h-[425px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-gray-700"
       >

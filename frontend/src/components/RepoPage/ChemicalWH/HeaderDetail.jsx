@@ -18,17 +18,17 @@ import {
 const HeaderDetail = () => {
   return (
     <AnimatePresence>
-      <motion.div
-        initial={{ x: -20, opacity: 0 }} // Bắt đầu lệch trái + mờ
-        animate={{ x: 0, opacity: 1 }} // Di chuyển về giữa + hiện rõ
-        exit={{ x: -20, opacity: 0 }} // Khi rời trang (nếu có)
-        transition={{
-          duration: 0.3, // Tốc độ mượt // Đường cong chuyển động
-        }}
-        className=" flex flex-col p-[20px] w-[1300px] h-[150px] bg-bgmain border-t-1 border-gray-700"
-      >
+      <div className=" flex flex-col p-[20px] w-[1300px] h-[150px] bg-bgmain border-t-1 border-gray-700">
         <div className="flex flex-col gap-[5px]">
-          <div className="flex flex-row justify-between">
+          <motion.div
+            initial={{ x: -20, opacity: 0 }} // Bắt đầu lệch trái + mờ
+            animate={{ x: 0, opacity: 1 }} // Di chuyển về giữa + hiện rõ
+            exit={{ x: -20, opacity: 0 }} // Khi rời trang (nếu có)
+            transition={{
+              duration: 0.5, // Tốc độ mượt // Đường cong chuyển động
+            }}
+            className="flex flex-row justify-between"
+          >
             <div className="flex flex-col gap-[5px]">
               <p className="text-left text-[16px] text-[#FFD700] font-satoshi ">
                 Kho hóa chất
@@ -45,7 +45,7 @@ const HeaderDetail = () => {
             >
               <ToolCase /> Bảo trì
             </Link>
-          </div>
+          </motion.div>
 
           <div className="flex flex-row mt-[20px] justify-between">
             <div class="flex text-textsec whitespace-nowrap text-sm cursor-pointer">
@@ -106,8 +106,7 @@ const HeaderDetail = () => {
             </div>
           </div>
         </div>
-
-      </motion.div>
+      </div>
     </AnimatePresence>
   );
 };

@@ -5,9 +5,9 @@ const HeaderMenu = () => {
   const location = useLocation();
 
   const menuList = [
-    { name: "Cần bảo trì", path: "/material" },
-    { name: "Đang bảo trì", path: "/" },
-    { name: "Hỏng", path: "/" },
+    { name: "Cần bảo trì", path: "repair" },
+    { name: "Đang bảo trì", path: "repairing" },
+    { name: "Hỏng", path: "broken" },
   ];
 
   return (
@@ -19,12 +19,12 @@ const HeaderMenu = () => {
               to={item.path}
               className={`relative pb-4
               after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full 
-              after:scale-x-0 after:bg-[#ffd700] after:transition-transform after:duration-300 
+              after:scale-x-0 after:bg-highlightcl after:transition-transform after:duration-300 
               hover:after:scale-x-100
               transition ${
-                location.pathname === item.path
-                  ? "text-[#ffd700] font-semibold after:scale-x-100"
-                  : "hover:text-[#ffd700]"
+                location.pathname.endsWith(item.path)
+                  ? "text-highlightcl font-semibold after:scale-x-100"
+                  : "hover:text-highlightcl"
               }`}
             >
               {item.name}

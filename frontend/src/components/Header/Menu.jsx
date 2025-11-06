@@ -6,25 +6,25 @@ const Menu = () => {
   const { user, logout } = useAuth();
 
   const menuItems = [
-    { name: "Trang chủ", path: "/" },
+    { name: "Trang chủ", path: "/home" },
     { name: "Kho vật tư", path: "/error-repo" },
-    { name: "Thiết bị/Dụng cụ", path: "/error-material" },
+    { name: "Bảo trì thiết bị", path: "/error-material" },
     { name: "Báo cáo", path: "/error-report" },
     { name: "Thông tin tài khoản", path: "/error-user" },
   ];
 
   const adMenuItems = [
-    { name: "Trang chủ", path: "/" },
-    { name: "Kho vật tư", path: "/repository" },
-    { name: "Thiết bị/Dụng cụ", path: "/material" },
+    { name: "Trang chủ", path: "/home" },
+    { name: "Kho vật tư", path: "/repository/chemical" },
+    { name: "Bảo trì thiết bị", path: "/material/chemical/repair" },
     { name: "Giao tiếp", path: "/notice" },
     { name: "Quản lý/Phân quyền", path: "/role" },
   ];
 
   const managerMenuItems = [
-    { name: "Trang chủ", path: "/" },
+    { name: "Trang chủ", path: "/home" },
     { name: "Kho vật tư", path: "/repository" },
-    { name: "Thiết bị/Dụng cụ", path: "/material" },
+    { name: "Bảo trì thiết bị", path: "/material" },
     { name: "Báo cáo", path: "/report" },
     { name: "Thông tin tài khoản", path: "/user" },
   ];
@@ -49,7 +49,7 @@ const Menu = () => {
               after:scale-x-0 after:bg-textsec after:transition-transform after:duration-300 
               hover:after:scale-x-100
               ${
-                location.pathname === item.path
+                location.pathname.startsWith("/" + item.path.split("/")[1])
                   ? "text-[#ffffff] font-semibold after:scale-x-50"
                   : "text-[#A1A1A6] hover:text-[#ffffff]"
               }`}

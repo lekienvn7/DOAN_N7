@@ -50,7 +50,7 @@ const HeaderLogo = () => {
   return (
     <header className="flex items-center justify-between mt-[10px]">
       <Link
-        to="/"
+        to="/home"
         className="header__logo font-qurova no-underline
         text-[#FFFFFF] text-[25px] font-bold hover:text-[#E5E5E7]"
       >

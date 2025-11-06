@@ -28,7 +28,9 @@ const NotFound = () => {
               className="w-[70%] brightness-0 invert"
             />
             <button
-              onClick={() => navigate("/") || (window.location.href = "/")}
+              onClick={() =>
+                navigate("/home") || (window.location.href = "/home")
+              }
               className="flex items-center justify-center cursor-pointer text-white text-2xl w-[250px]
                bg-none p-[10px] border-[5px] border-[#5E5E60] rounded-[24px]
                hover:bg-[#5E5E60] hover:scale-[1.03]

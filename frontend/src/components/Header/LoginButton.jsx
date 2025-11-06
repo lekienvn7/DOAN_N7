@@ -17,7 +17,7 @@ const SearchBox = () => {
     logout();
     toast.success("Đăng xuất thành công!");
     setTimeout(() => {
-      window.location.href = "/";
+      window.location.href = "/home";
     }, 500);
   };
 

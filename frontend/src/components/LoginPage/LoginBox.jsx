@@ -57,7 +57,7 @@ const LoginBox = () => {
 
       // Dùng navigate để chuyển ngay UI, sau đó reload nhẹ để reset context
       setTimeout(() => {
-        navigate("/"); // Chuyển route trước
+        navigate("/home"); // Chuyển route trước
         setTimeout(() => {
           window.location.reload(); // Reload sau để đảm bảo load lại AuthProvider, context, v.v.
         }, 1); // Chờ 150ms cho navigate hoạt động trước

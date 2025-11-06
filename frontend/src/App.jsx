@@ -14,9 +14,17 @@ import TelecomWH from "./pages/MenuPage/RepoPages/TelecomWH";
 import FashionWH from "./pages/MenuPage/RepoPages/FashionWH";
 import LoginPage from "./pages/MenuPage/LoginPage";
 import MaterialPage from "./pages/MenuPage/MaterialPage";
-import BrokenMaterial from "./components/MaterialPage/BrokenMaterial";
-import MaterialRepair from "./components/MaterialPage/MaterialRepair";
-import MaterialRepairing from "./components/MaterialPage/MaterialRepairing";
+import Chemical from "./pages/MenuPage/RepoMaterialPage/Chemical";
+import Electric from "./pages/MenuPage/RepoMaterialPage/Electric";
+import Automotive from "./pages/MenuPage/RepoMaterialPage/Automotive";
+import Fashion from "./pages/MenuPage/RepoMaterialPage/Fashion";
+import Iot from "./pages/MenuPage/RepoMaterialPage/Iot";
+import Mechanical from "./pages/MenuPage/RepoMaterialPage/Mechanical";
+import Technology from "./pages/MenuPage/RepoMaterialPage/Technology";
+import Telecom from "./pages/MenuPage/RepoMaterialPage/Telecom";
+import BrokenMaterial from "./components/MaterialPage/TelecomMaterial/BrokenMaterial";
+import MaterialRepair from "./components/MaterialPage/TelecomMaterial/MaterialRepair";
+import MaterialRepairing from "./components/MaterialPage/TelecomMaterial/MaterialRepairing";
 import RolePage from "./pages/MenuPage/RolePage";
 import ReportPage from "./pages/MenuPage/ReportPage";
 import NoticePage from "./pages/MenuPage/NoticePage";
@@ -35,7 +43,7 @@ function App() {
         <AuthProvider>
           <Routes>
             <Route
-              path="/"
+              path="/home"
               element={
                 <Layout className="bg-bgmain">
                   <HomePage />
@@ -68,8 +76,55 @@ function App() {
                 </Layout>
               }
             >
-              <Route path="repair" element={<MaterialRepair />} />
+              <Route path="automotive" element={<Automotive />}>
+                <Route path="repair" element={<MaterialRepair />} />
+                <Route path="repairing" element={<MaterialRepairing />} />
+                <Route path="broken" element={<BrokenMaterial />} />
+              </Route>
+
+              <Route path="chemical" element={<Chemical />}>
+                <Route path="repair" element={<MaterialRepair />} />
+                <Route path="repairing" element={<MaterialRepairing />} />
+                <Route path="broken" element={<BrokenMaterial />} />
+              </Route>
+
+              <Route path="electric" element={<Electric />}>
+                <Route path="repair" element={<MaterialRepair />} />
+                <Route path="repairing" element={<MaterialRepairing />} />
+                <Route path="broken" element={<BrokenMaterial />} />
+              </Route>
+
+              <Route path="fashion" element={<Fashion />}>
+                <Route path="repair" element={<MaterialRepair />} />
+                <Route path="repairing" element={<MaterialRepairing />} />
+                <Route path="broken" element={<BrokenMaterial />} />
+              </Route>
+
+              <Route path="iot" element={<Iot />}>
+                <Route path="repair" element={<MaterialRepair />} />
+                <Route path="repairing" element={<MaterialRepairing />} />
+                <Route path="broken" element={<BrokenMaterial />} />
+              </Route>
+
+              <Route path="mechanical" element={<Mechanical />}>
+                <Route path="repair" element={<MaterialRepair />} />
+                <Route path="repairing" element={<MaterialRepairing />} />
+                <Route path="broken" element={<BrokenMaterial />} />
+              </Route>
+
+              <Route path="technology" element={<Technology />}>
+                <Route path="repair" element={<MaterialRepair />} />
+                <Route path="repairing" element={<MaterialRepairing />} />
+                <Route path="broken" element={<BrokenMaterial />} />
+              </Route>
+
+              <Route path="telecom" element={<Telecom />}>
+                <Route path="repair" element={<MaterialRepair />} />
+                <Route path="repairing" element={<MaterialRepairing />} />
+                <Route path="broken" element={<BrokenMaterial />} />
+              </Route>
             </Route>
+
             <Route
               path="/role"
               element={

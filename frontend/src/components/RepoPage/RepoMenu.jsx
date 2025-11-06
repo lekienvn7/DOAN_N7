@@ -66,7 +66,7 @@ const RepoMenu = () => {
               className={`group flex flex-col whitespace-nowrap gap-0 items-center text-center transition-all duration-200 cursor-pointer ${
                 isActive
                   ? "text-[#FFD700]"
-                  : "text-[#A1A1A6] hover:text-[#FFD700]"
+                  : "text-[#A1A1A6] hover:text-textpri"
               }`}
             >
               <Icon
@@ -74,7 +74,7 @@ const RepoMenu = () => {
                 className={`transition-colors duration-300 ${
                   isActive
                     ? "text-[#FFD700]"
-                    : "text-[#A1A1A6] group-hover:text-[#FFD700]"
+                    : "text-[#A1A1A6] group-hover:text-textpri"
                 }`}
               />
               <p className="mt-1 text-[12px] font-medium">{repo.repoName}</p>

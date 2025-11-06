@@ -1,14 +1,14 @@
 import React from "react";
 import MaterialHeader from "@/components/MaterialPage/MaterialHeader";
 import RepoMenu from "@/components/MaterialPage/RepoMenu";
+import { Outlet } from "react-router-dom";
 
 const MaterialPage = () => {
   return (
     <div className="flex flex-row">
       <RepoMenu />
-      <div>
-        <MaterialHeader />
-        <hr className="m-[0px_35px] text-gray-400" />
+      <div className="">
+        <Outlet />
       </div>
     </div>
   );
