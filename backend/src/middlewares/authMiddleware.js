@@ -1,24 +1,40 @@
 import jwt from "jsonwebtoken";
+import Session from "../models/Session.js";
+import Repository from "../models/Repository.js";
+import User from "../models/User.js";
 
 // Middleware xác thực token
-export const verifyToken = (req, res, next) => {
+export const verifyToken = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    // Lấy token từ header Authorization
+    const authHeader = req.headers["authorization"];
+    const token = authHeader && authHeader.split(" ")[1];
+
+    if (!token) {
       return res
-        .status(403)
-        .json({ success: false, message: "Không có quyền truy cập!" });
+        .status(401)
+        .json({ message: "Không có token, từ chối truy cập!" });
     }
 
-    const token = authHeader.split(" ")[1];
+    // Giải mã access token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded; // gán user info vào request để route sau dùng
 
-    req.user = decoded; // chứa userID, role
-    next();
+    // Kiểm tra refresh token trong Session (đoạn bạn hỏi nè)
+    const refreshToken = req.cookies?.refreshToken;
+    if (refreshToken) {
+      const session = await Session.findOne({ refreshToken });
+      if (!session || session.expiresAt < new Date()) {
+        return res.status(401).json({ message: "Phiên đăng nhập đã hết hạn!" });
+      }
+    }
+
+    next(); // hợp lệ thì cho qua
   } catch (error) {
-    res
+    console.error("Lỗi verifyToken:", error);
+    return res
       .status(403)
-      .json({ success: false, message: "Token không hợp lệ hoặc đã hết hạn!" });
+      .json({ message: "Token không hợp lệ hoặc đã hết hạn!" });
   }
 };
 
@@ -49,7 +65,7 @@ export const checkRepositoryAccess = async (req, res, next) => {
       return next();
     }
 
-    // 🔒 Quản lý kho => chỉ được thao tác kho mình phụ trách
+    // Quản lý kho => chỉ được thao tác kho mình phụ trách
     if (repo.manager?._id.toString() !== req.user.id) {
       return res
         .status(403)
@@ -61,5 +77,38 @@ export const checkRepositoryAccess = async (req, res, next) => {
   } catch (error) {
     console.error("Lỗi checkRepositoryAccess:", error);
     res.status(500).json({ message: "Lỗi hệ thống!" });
+  }
+};
+
+export const checkRepositoryPermission = async (req, res, next) => {
+  try {
+    const repo = await Repository.findOne({ repoID: req.params.repoID });
+    if (!repo) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy kho!" });
+    }
+
+    const user = req.params.userID
+      ? await User.findOne({ userID: req.params.userID })
+      : await User.findById(req.user.id); // fallback nếu không có userID
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Không tìm thấy tài khoản!" });
+    }
+    if (!user.yourRepo.includes(repo.repoType)) {
+      return res.status(403).json({
+        success: false,
+        message: `Không có quyền trong kho ${repo.repoType}`,
+      });
+    }
+
+    req.repo = repo;
+    next();
+  } catch (error) {
+    console.error("Lỗi khi gọi checkRepositoryPermission", error);
+    res.status(500).json({ success: false, message: "Lỗi hệ thống!" });
   }
 };

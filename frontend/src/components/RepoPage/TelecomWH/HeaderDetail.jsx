@@ -14,8 +14,23 @@ import {
   SlidersVertical,
   Download,
 } from "lucide-react";
+import { useAuth } from "@/context/authContext";
+import { toast } from "sonner";
 
 const HeaderDetail = () => {
+  const { user } = useAuth();
+  const checkPermission = (callback) => {
+    const hasAccess =
+      user?.yourRepo?.includes("all") || user?.yourRepo?.includes("telecom");
+
+    if (!hasAccess) {
+      toast.error("Không có quyền sử dụng chức năng!");
+      return;
+    }
+
+    callback();
+  };
+
   return (
     <AnimatePresence>
       <div className=" flex flex-col p-[20px] w-[1300px] h-[150px] bg-bgmain border-t-1 border-gray-700">
@@ -49,12 +64,18 @@ const HeaderDetail = () => {
 
           <div className="flex flex-row mt-[20px] justify-between">
             <div class="flex text-textsec whitespace-nowrap text-sm cursor-pointer">
-              <button class="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300">
+              <button
+                onClick={() => checkPermission()}
+                class="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
+              >
                 Thêm vật tư <Plus size={20} className="text-textpri" />
               </button>
 
               <div class="border-r h-4 mx-2"></div>
-              <button class="pl-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300">
+              <button
+                onClick={() => checkPermission()}
+                class="pl-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
+              >
                 Xuất vật tư <Minus size={20} className="text-textpri" />
               </button>
             </div>
@@ -79,7 +100,10 @@ const HeaderDetail = () => {
                 <Tooltip anchorSelect=".sortTool" place="top">
                   Sắp xếp
                 </Tooltip>
-                <button className="exportTool">
+                <button
+                  onClick={() => checkPermission()}
+                  className="exportTool"
+                >
                   <Download
                     className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
                     size={18}
@@ -99,7 +123,10 @@ const HeaderDetail = () => {
                 </Tooltip>
               </div>
               <div class="border-r h-5 mx-2 text-textsec "></div>
-              <button className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300 cursor-pointer ml-[15px]">
+              <button
+                onClick={() => checkPermission()}
+                className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300 cursor-pointer ml-[15px]"
+              >
                 Báo cáo
                 <TrendingUp size={18} />
               </button>

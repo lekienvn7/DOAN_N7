@@ -23,7 +23,7 @@ router.put(
 );
 
 router.put("/change-pass/:id", changePassword); // Đổi mật khẩu lần đầu
-router.put("/update-pass", verifyToken, updateUser);
+router.put("/:id",  updateUser);
 
 router.delete("/:id", deleteUser);
 

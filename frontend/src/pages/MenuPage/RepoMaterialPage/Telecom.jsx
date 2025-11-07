@@ -7,17 +7,17 @@ const Telecom = () => {
   return (
     <div className="flex flex-col">
       <AnimatePresence>
-        <div
-          initial={{ x: 20, opacity: 0 }}
+        <motion.div
+          initial={{ x: -10, opacity: 0 }}
           animate={{ x: 0, opacity: 1 }}
-          exit={{ x: -20, opacity: 0 }}
+          exit={{ x: -10, opacity: 0 }}
           transition={{
-            duration: 0.9,
+            duration: 0.3,
             ease: [0.25, 0.8, 0.25, 1],
           }}
         >
           <MaterialHeader />
-        </div>
+        </motion.div>
       </AnimatePresence>
       <hr className="m-[0px_35px] text-gray-400" />
       <div className="">

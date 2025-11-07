@@ -1,43 +1,72 @@
-import { Link, useLocation } from "react-router-dom";
+import React, { useEffect, useMemo } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 
 const Menu = () => {
-  const location = useLocation(); // Lấy đường dẫn hiện tại
-  const { user, logout } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const menuItems = [
-    { name: "Trang chủ", path: "/home" },
-    { name: "Kho vật tư", path: "/error-repo" },
-    { name: "Bảo trì thiết bị", path: "/error-material" },
-    { name: "Báo cáo", path: "/error-report" },
-    { name: "Thông tin tài khoản", path: "/error-user" },
+    { name: "Trang chủ", path: "/home", key: "1" },
+    { name: "Kho vật tư", path: "/error-repo", key: "2" },
+    { name: "Bảo trì thiết bị", path: "/error-material", key: "3" },
+    { name: "Báo cáo", path: "/error-report", key: "4" },
+    { name: "Thông tin tài khoản", path: "/error-user", key: "5" },
   ];
 
+  // Admin
   const adMenuItems = [
-    { name: "Trang chủ", path: "/home" },
-    { name: "Kho vật tư", path: "/repository/chemical" },
-    { name: "Bảo trì thiết bị", path: "/material/chemical/repair" },
-    { name: "Giao tiếp", path: "/notice" },
-    { name: "Quản lý/Phân quyền", path: "/role" },
+    { name: "Trang chủ", path: "/home", key: "1" },
+    { name: "Kho vật tư", path: "/repository/chemical", key: "2" },
+    { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
+    { name: "Giao tiếp", path: "/notice", key: "4" },
+    { name: "Quản lý/Phân quyền", path: "/role", key: "5" },
   ];
 
+  // Quản lý
   const managerMenuItems = [
-    { name: "Trang chủ", path: "/home" },
-    { name: "Kho vật tư", path: "/repository" },
-    { name: "Bảo trì thiết bị", path: "/material" },
-    { name: "Báo cáo", path: "/report" },
-    { name: "Thông tin tài khoản", path: "/user" },
+    { name: "Trang chủ", path: "/home", key: "1" },
+    { name: "Kho vật tư", path: "/repository/chemical", key: "2" },
+    { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
+    { name: "Báo cáo", path: "/report", key: "4" },
+    { name: "Thông tin tài khoản", path: "/user", key: "5" },
   ];
 
-  let activeMenu = menuItems;
+  // Chọn menu theo role
+  const activeMenu = useMemo(() => {
+    if (!user) return menuItems;
+    if (user.roleID === "ADMINISTRATOR") return adMenuItems;
+    if (["WH MANAGER", "MT MANAGER"].includes(user.roleID))
+      return managerMenuItems;
+    return menuItems;
+  }, [user]);
 
-  if (user) {
-    if (user.roleID === "ADMINISTRATOR") {
-      activeMenu = adMenuItems;
-    } else if (["WH MANAGER", "MT MANAGER"].includes(user.roleID)) {
-      activeMenu = managerMenuItems;
-    }
-  }
+  // Hotkeys
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      const tag = (e.target.tagName || "").toLowerCase();
+      if (["input", "textarea"].includes(tag) || e.target.isContentEditable)
+        return;
+
+      const key = e.key.toLowerCase();
+      const target = activeMenu.find((item) => item.key === key);
+      if (target) {
+        e.preventDefault();
+        navigate(target.path);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [activeMenu, navigate]);
+
+  // Helper: xác định tab active theo segment đầu
+  const isActive = (path) => {
+    const seg = "/" + (path.split("/")[1] || "");
+    return location.pathname.startsWith(seg);
+  };
+
   return (
     <ul className="flex flex-row gap-[25px]">
       {activeMenu.map((item) => (
@@ -49,9 +78,9 @@ const Menu = () => {
               after:scale-x-0 after:bg-textsec after:transition-transform after:duration-300 
               hover:after:scale-x-100
               ${
-                location.pathname.startsWith("/" + item.path.split("/")[1])
-                  ? "text-[#ffffff] font-semibold after:scale-x-50"
-                  : "text-[#A1A1A6] hover:text-[#ffffff]"
+                isActive(item.path)
+                  ? "text-white font-semibold after:scale-x-50"
+                  : "text-[#A1A1A6] hover:text-white"
               }`}
           >
             {item.name}

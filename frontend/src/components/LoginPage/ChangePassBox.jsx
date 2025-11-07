@@ -65,7 +65,7 @@ const ChangePasswordBox = ({ user, navigate }) => {
         console.log("User:", localStorage.getItem("user"));
 
         toast.success("Đăng nhập lại thành công!");
-        navigate("/"); // Điều hướng về trang chính
+        navigate("/home"); // Điều hướng về trang chính
       } else {
         toast.error("Đăng nhập thất bại!");
       }
@@ -87,9 +87,13 @@ const ChangePasswordBox = ({ user, navigate }) => {
         animate={{ opacity: 1, x: 0 }}
         exit={{ opacity: 0, x: 50 }}
         transition={{ duration: 0.3 }}
-        className="w-[560px] h-[560px] p-[30px] flex flex-col gap-[20px] items-center bg-[#1d1d1f] shadow-[0_30px_60px_rgba(0,0,0,0.85),_0_-10px_30px_rgba(0,0,0,0.4),_0_0_50px_rgba(255,255,255,0.05)] p-6 rounded-[12px]"
+        className="w-[560px] h-[560px] p-[30px] flex flex-col gap-[20px] items-center bg-bgmain shadow-[0_30px_60px_rgba(0,0,0,0.85),_0_-10px_30px_rgba(0,0,0,0.4),_0_0_50px_rgba(255,255,255,0.05)] p-6 rounded-[12px]"
       >
-        <img src={logoUneti} alt="logo_uneti" className="w-[100px]" />
+        <img
+          src={logoUneti}
+          alt="logo_uneti"
+          className="w-[100px] brightness-[0%] invert-[100%]"
+        />
         <h2 className="text-2xl text-[#ffffff] font-bold">
           Cập nhật mật khẩu mới
         </h2>

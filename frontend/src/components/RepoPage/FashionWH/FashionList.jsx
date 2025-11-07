@@ -2,8 +2,22 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axiosClient from "@/api/axiosClient";
 import { PencilLine, Trash2 } from "lucide-react";
+import { useAuth } from "@/context/authContext";
+import { toast } from "sonner";
 
 const FashionList = () => {
+  const { user } = useAuth();
+  const checkPermission = (callback) => {
+    const hasAccess =
+      user?.yourRepo?.includes("all") || user?.yourRepo?.includes("fashion");
+
+    if (!hasAccess) {
+      toast.error("Không có quyền sử dụng chức năng!");
+      return;
+    }
+
+    callback();
+  };
   const [fashion, setFashion] = useState([]);
   useEffect(() => {
     const fetchFashion = async () => {
@@ -82,12 +96,18 @@ const FashionList = () => {
                 {item.origin}
               </td>
               <td className="border-r-1 border-textsec text-center p-[5px]">
-                <button className="changeTool cursor-pointer p-[5px] justify-center text-[#f9d65c] hover:text-[#ffd700]">
+                <button
+                  onClick={() => checkPermission()}
+                  className="changeTool cursor-pointer p-[5px] justify-center text-[#f9d65c] hover:text-[#ffd700]"
+                >
                   <PencilLine size={15} />
                 </button>
               </td>
               <td className="text-center p-[5px]">
-                <button className="cursor-pointer p-[5px] justify-center text-[#ff5555] hover:text-[#ff7676]">
+                <button
+                  onClick={() => checkPermission()}
+                  className="cursor-pointer p-[5px] justify-center text-[#ff5555] hover:text-[#ff7676]"
+                >
                   <Trash2 size={15} />
                 </button>
               </td>

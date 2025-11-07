@@ -11,6 +11,7 @@ import loginRoutes from "./routes/loginRoutes.js";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/home", homeRoutes);
 

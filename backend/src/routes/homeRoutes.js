@@ -2,7 +2,7 @@ import express from "express";
 
 const router = express.Router();
 
-router.get("/", (request, respond) => {
+router.get("/home", (request, respond) => {
   respond.status(200).send("Đây là trang chủ");
 });
 

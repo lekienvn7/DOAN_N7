@@ -276,7 +276,7 @@ export const updateRepository = async (req, res) => {
   try {
     const { location, managerUserID, materials } = req.body;
 
-    // 🔍 Tìm kho theo repoID
+    // Tìm kho theo repoID
     const repo = await Repository.findOne({ repoID: req.params.id });
     if (!repo) {
       return res.status(404).json({
@@ -311,10 +311,10 @@ export const updateRepository = async (req, res) => {
       newManagerId = managerUser._id;
     }
 
-    // 🧩 Cập nhật danh sách vật tư
+    // Cập nhật danh sách vật tư
     if (Array.isArray(materials) && materials.length > 0) {
       for (const item of materials) {
-        // 🔍 Tìm vật tư theo id hoặc mã
+        // Tìm vật tư theo id hoặc mã
         const mat =
           (await Material.findById(item.material).catch(() => null)) ||
           (await Material.findOne({ materialID: item.material })) ||
@@ -327,7 +327,7 @@ export const updateRepository = async (req, res) => {
           });
         }
 
-        // ✅ Kiểm tra vật tư có phù hợp loại kho không
+        // Kiểm tra vật tư có phù hợp loại kho không
         const materialTypes = Array.isArray(mat.type) ? mat.type : [mat.type];
         const isValidType = materialTypes.some(
           (t) => t.trim().toLowerCase() === repoType.trim().toLowerCase()
@@ -342,7 +342,7 @@ export const updateRepository = async (req, res) => {
           });
         }
 
-        // ⚖️ Kiểm tra tồn kho có đủ không
+        // Kiểm tra tồn kho có đủ không
         const requestedQty = item.quantity || 0;
         if (mat.quantity < requestedQty) {
           return res.status(400).json({
@@ -351,11 +351,11 @@ export const updateRepository = async (req, res) => {
           });
         }
 
-        // ✅ Nếu đủ, trừ số lượng vật tư trong bảng Material
+        // Nếu đủ, trừ số lượng vật tư trong bảng Material
         mat.quantity -= requestedQty;
         await mat.save();
 
-        // 🔁 Kiểm tra xem vật tư đã có trong kho chưa
+        // Kiểm tra xem vật tư đã có trong kho chưa
         const existingIndex = repo.materials.findIndex(
           (m) => m.material.toString() === mat._id.toString()
         );
@@ -373,13 +373,13 @@ export const updateRepository = async (req, res) => {
       }
     }
 
-    // 🏠 Cập nhật thông tin khác của kho
+    // Cập nhật thông tin khác của kho
     if (location) repo.location = location;
     repo.manager = newManagerId;
 
     await repo.save();
 
-    // ✅ Trả về kho đã cập nhật, populate đầy đủ
+    // Trả về kho đã cập nhật, populate đầy đủ
     const updatedRepo = await Repository.findOne({ repoID: req.params.id })
       .populate("manager", "fullName email role")
       .populate("materials.material", "name type unit quantity");

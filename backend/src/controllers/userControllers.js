@@ -10,7 +10,7 @@ export const getAllUsers = async (req, res) => {
     const users = await User.find()
       .populate({
         path: "role",
-        select: "roleID roleName roleType permission -_id", // Lấy tên role + danh sách quyền
+        select: "roleID roleName yourRepo roleType permission -_id", // Lấy tên role + danh sách quyền
         populate: {
           path: "permission",
           select: "permissionDescription -_id",
@@ -34,9 +34,9 @@ export const getAllUsers = async (req, res) => {
 
 export const addUser = async (req, res) => {
   try {
-    const { username, fullName, email, role } = req.body;
+    const { username, fullName, email, role, yourRepo } = req.body;
 
-    if (!username || !fullName || !email) {
+    if (!username || !fullName || !yourRepo) {
       return res
         .status(400)
         .json({ success: false, message: "Thiếu thông tin tài khoản!" });
@@ -78,6 +78,7 @@ export const addUser = async (req, res) => {
       email,
       role: existingRole._id,
       mustChangePassword: true,
+      yourRepo,
     });
 
     res.status(201).json({
@@ -113,14 +114,6 @@ export const changePassword = async (req, res) => {
         .json({ success: false, message: "Không tìm thấy tài khoản" });
     }
 
-    // Chỉ cho phép khi mustChangePassword = true
-    if (!user.mustChangePassword) {
-      return res.status(403).json({
-        success: false,
-        message: "Tài khoản này không cần đổi mật khẩu bắt buộc.",
-      });
-    }
-
     // So sánh mật khẩu cũ
     const isMatch = await bcrypt.compare(oldPass, user.password);
     if (!isMatch) {
@@ -145,36 +138,62 @@ export const changePassword = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const { userID, oldPass, newPass } = req.body;
+    const { fullName, yourRepo, role, email } = req.body;
 
-    const user = await User.findOne({ userID }).select("+password");
-    if (!user)
-      return res
-        .status(404)
-        .json({ success: false, message: "Không tìm thấy tài khoản!" });
+    // Tạo đối tượng update trống để chỉ thêm field nào được gửi lên
+    const updateData = {};
 
-    const isMatch = await bcrypt.compare(oldPass, user.password);
-    if (!isMatch)
-      return res
-        .status(400)
-        .json({ success: false, message: "Mật khẩu cũ không đúng!" });
+    if (fullName) updateData.fullName = fullName;
+    if (email) updateData.email = email;
 
-    const isSame = await bcrypt.compare(newPass, user.password);
-    if (isSame)
-      return res.status(400).json({
+    // Xử lý yourRepo có thể là 1 string hoặc 1 mảng
+    if (yourRepo) {
+      if (Array.isArray(yourRepo)) {
+        // loại trùng và loại giá trị rỗng
+        updateData.yourRepo = [...new Set(yourRepo.filter(Boolean))];
+      } else if (typeof yourRepo === "string") {
+        updateData.yourRepo = [yourRepo];
+      }
+    }
+
+    // Nếu có role mới thì mới update, còn không thì bỏ qua
+    if (role) {
+      const existingRole = await Role.findOne({ roleID: role });
+      if (!existingRole) {
+        return res.status(404).json({
+          success: false,
+          message: `Vai trò '${role}' không tồn tại!`,
+        });
+      }
+      updateData.role = existingRole._id;
+    }
+
+    // Cập nhật người dùng
+    const updatedUser = await User.findOneAndUpdate(
+      { userID: req.params.id },
+      updateData,
+      { new: true, runValidators: true }
+    ).populate("role", "roleID roleName roleType");
+
+    if (!updatedUser) {
+      return res.status(404).json({
         success: false,
-        message: "Mật khẩu mới phải khác mật khẩu cũ!",
+        message: "Không tìm thấy tài khoản!",
       });
+    }
 
-    user.password = await bcrypt.hash(newPass, 10);
-    await user.save();
-
-    res
-      .status(200)
-      .json({ success: true, message: "Đổi mật khẩu thành công!" });
+    res.status(200).json({
+      success: true,
+      message: "Cập nhật tài khoản thành công!",
+      data: updatedUser,
+    });
   } catch (error) {
     console.error("Lỗi updateUser:", error);
-    res.status(500).json({ success: false, message: "Lỗi hệ thống!" });
+    res.status(500).json({
+      success: false,
+      message: "Lỗi hệ thống!",
+      error: error.message,
+    });
   }
 };
 

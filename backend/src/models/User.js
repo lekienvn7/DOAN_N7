@@ -13,11 +13,12 @@ const userSchema = new mongoose.Schema(
       required: true,
       unique: true,
       trim: true,
+      lowercase: true,
     },
     password: {
       type: String,
       required: true,
-      select: false, // không bao giờ trả password ra API
+      select: false,
     },
     mustChangePassword: {
       type: Boolean,
@@ -31,7 +32,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       trim: true,
-      unique: true,
+      sparse: true,
       default: null,
     },
     role: {
@@ -39,6 +40,25 @@ const userSchema = new mongoose.Schema(
       ref: "Role",
       required: true,
     },
+    yourRepo: [
+      {
+        type: String,
+        enum: [
+          "all",
+          "chemical",
+          "automotive",
+          "electric",
+          "fashion",
+          "iot",
+          "mechanical",
+          "technology",
+          "telecom",
+        ],
+        sparse: true,
+        trim: true,
+        unique: true,
+      },
+    ],
   },
   {
     timestamps: true,

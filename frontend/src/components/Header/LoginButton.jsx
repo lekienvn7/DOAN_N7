@@ -3,6 +3,7 @@ import { LogIn } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
+import axiosClient from "@/api/axiosClient";
 
 const SearchBox = () => {
   const { user, logout } = useAuth();
@@ -13,12 +14,22 @@ const SearchBox = () => {
     navigate("/login");
   };
 
-  const handleLogout = () => {
-    logout();
-    toast.success("Đăng xuất thành công!");
-    setTimeout(() => {
-      window.location.href = "/home";
-    }, 500);
+  const handleLogout = async () => {
+    try {
+      // Gọi API backend xoá session + cookie
+      await axiosClient.post("/login/logout", {}, { withCredentials: true });
+
+      // Xoá token trong context/frontend
+      logout();
+
+      toast.success("Đăng xuất thành công!");
+      setTimeout(() => {
+        window.location.href = "/home";
+      }, 500);
+    } catch (error) {
+      console.error("Lỗi khi logout:", error);
+      toast.error("Không thể đăng xuất. Vui lòng thử lại!");
+    }
   };
 
   return (
