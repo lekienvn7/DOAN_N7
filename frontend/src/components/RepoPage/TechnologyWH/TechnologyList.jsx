@@ -6,6 +6,8 @@ import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 
 const TechnologyList = () => {
+  const [loading, setLoading] = useState(true);
+
   const { user } = useAuth();
   const [technology, setTechnology] = useState([]);
 
@@ -24,6 +26,7 @@ const TechnologyList = () => {
   useEffect(() => {
     const fetchTechnology = async () => {
       try {
+        setLoading(true);
         const res = await axiosClient("/repository/material/technology");
 
         if (res.data.success) {
@@ -31,10 +34,21 @@ const TechnologyList = () => {
         }
       } catch (error) {
         console.error("Lỗi truy cập dữ liệu!", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchTechnology();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[400px] gap-4 text-textpri">
+        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

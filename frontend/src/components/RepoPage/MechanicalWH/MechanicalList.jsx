@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 const MechanicalList = () => {
   const [mechanical, setMechanical] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const { user } = useAuth();
   const checkPermission = (callback) => {
@@ -24,6 +25,7 @@ const MechanicalList = () => {
   useEffect(() => {
     const fetchMechanical = async () => {
       try {
+        setLoading(true);
         const res = await axiosClient.get("/repository/material/mechanical");
 
         if (res.data.success) {
@@ -31,10 +33,21 @@ const MechanicalList = () => {
         }
       } catch (error) {
         console.error("Lỗi kết nối dữ liệu!", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchMechanical();
-  });
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[400px] gap-4 text-textpri">
+        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

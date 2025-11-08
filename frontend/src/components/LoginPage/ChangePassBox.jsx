@@ -19,6 +19,12 @@ const ChangePasswordBox = ({ user, navigate }) => {
       toast.error("Mật khẩu mới phải khác mật khẩu cũ!");
       return;
     }
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    if (newPass.length < 8 || !passwordRegex.test(newPass)) {
+      toast.error("Mật khẩu tối thiểu 8 ký tự, bao gồm chữ hoa, số và ký tự!");
+      return;
+    }
 
     if (newPass !== confirmPass) {
       toast.error("Mật khẩu xác nhận không khớp!");
@@ -65,7 +71,12 @@ const ChangePasswordBox = ({ user, navigate }) => {
         console.log("User:", localStorage.getItem("user"));
 
         toast.success("Đăng nhập lại thành công!");
-        navigate("/home"); // Điều hướng về trang chính
+        setTimeout(() => {
+          navigate("/login");
+          setTimeout(() => {
+            window.location.reload();
+          }, 1);
+        }, 800);
       } else {
         toast.error("Đăng nhập thất bại!");
       }

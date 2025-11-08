@@ -22,24 +22,24 @@ const userSchema = new mongoose.Schema(
     },
     mustChangePassword: {
       type: Boolean,
-      default: true, // true nếu user chưa đổi mật khẩu mặc định
+      default: true,
     },
     fullName: {
       type: String,
       required: true,
       trim: true,
     },
+
     email: {
       type: String,
-      trim: true,
       sparse: true,
-      default: null,
     },
     role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Role",
       required: true,
     },
+
     yourRepo: [
       {
         type: String,
@@ -54,15 +54,11 @@ const userSchema = new mongoose.Schema(
           "technology",
           "telecom",
         ],
-        sparse: true,
         trim: true,
-        unique: true,
       },
     ],
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 // Hash password trước khi lưu
@@ -73,5 +69,4 @@ userSchema.pre("save", async function (next) {
 });
 
 const User = mongoose.model("User", userSchema);
-
 export default User;

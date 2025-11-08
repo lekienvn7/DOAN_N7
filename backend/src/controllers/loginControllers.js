@@ -31,7 +31,7 @@ export const loginUser = async (req, res) => {
         success: false,
         message: "Tài khoản hoặc mật khẩu không chính xác!",
       });
-    }
+    } 
 
     // Nếu user phải đổi mật khẩu lần đầu
     if (user.mustChangePassword) {

@@ -20,10 +20,12 @@ const AutomotiveList = () => {
   };
 
   const [automotive, setAutomotive] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchAutomotive = async () => {
       try {
+        setLoading(true);
         const res = await axiosClient.get("/repository/material/automotive");
 
         if (res.data.success) {
@@ -31,10 +33,21 @@ const AutomotiveList = () => {
         }
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchAutomotive();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[400px] gap-4 text-textpri">
+        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

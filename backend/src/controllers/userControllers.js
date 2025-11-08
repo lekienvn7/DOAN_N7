@@ -34,30 +34,29 @@ export const getAllUsers = async (req, res) => {
 
 export const addUser = async (req, res) => {
   try {
-    const { username, fullName, email, role, yourRepo } = req.body;
+    const { userID, username, fullName, role, yourRepo } = req.body;
 
-    if (!username || !fullName || !yourRepo) {
+    if (!userID || !username || !fullName || !role) {
       return res
         .status(400)
         .json({ success: false, message: "Thiếu thông tin tài khoản!" });
     }
 
-    // Kiểm tra trùng username/email
-    if (await User.findOne({ username }))
+    // Kiểm tra trùng username
+    if (await User.findOne({ username })) {
       return res
         .status(409)
-        .json({ success: false, message: "Username đã tồn tại!" });
-
-    if (await User.findOne({ email }))
-      return res
-        .status(409)
-        .json({ success: false, message: "Email đã tồn tại!" });
+        .json({ success: false, message: "Tên đăng nhập đã tồn tại!" });
+    }
 
     // Tạo userID
-    const count = await User.countDocuments();
-    const userID = `TK${count + 1}`;
+    if (await User.findOne({ userID })) {
+      return res
+        .status(409)
+        .json({ success: false, message: "UserID đã tồn tại!" });
+    }
 
-    // Lấy role
+    // Lấy vai trò
     const existingRole = await Role.findOne({ roleID: role });
     if (!existingRole) {
       return res.status(404).json({
@@ -66,19 +65,23 @@ export const addUser = async (req, res) => {
       });
     }
 
-    // Hash mật khẩu mặc định
-    const defaultPassword = process.env.DEFAULT_USER_PASSWORD?.trim();
+    // Mật khẩu mặc định
+    const defaultPassword =
+      process.env.DEFAULT_USER_PASSWORD?.trim() || "123456";
 
-    // Tạo user mới
+    // Tạo user mới (không có email)
     const newUser = await User.create({
       userID,
       username,
       password: defaultPassword,
       fullName,
-      email,
       role: existingRole._id,
       mustChangePassword: true,
-      yourRepo,
+      yourRepo: Array.isArray(yourRepo)
+        ? yourRepo.filter((r) => r && r !== "null" && r !== "")
+        : yourRepo
+        ? [yourRepo]
+        : [],
     });
 
     res.status(201).json({

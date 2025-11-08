@@ -6,6 +6,8 @@ import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 
 const IotList = () => {
+  const [loading, setLoading] = useState(true);
+
   const { user } = useAuth();
   const checkPermission = (callback) => {
     const hasAccess =
@@ -23,16 +25,28 @@ const IotList = () => {
   useEffect(() => {
     const fetchIot = async () => {
       try {
+        setLoading(true);
         const res = await axiosClient.get("/repository/material/iot");
         if (res.data.success) {
           setIot(res.data.materials);
         }
       } catch (error) {
         console.error("Lỗi khi kết nối dữ liệu!", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchIot();
   }, []);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[400px] gap-4 text-textpri">
+        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+        <p>Đang tải dữ liệu...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full">

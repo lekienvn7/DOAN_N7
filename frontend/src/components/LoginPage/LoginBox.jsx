@@ -25,24 +25,8 @@ const LoginBox = () => {
 
     try {
       setLoading(true);
-
-      // Gọi API bằng axiosClient
       const { data } = await axiosClient.post("/login", { username, password });
 
-      // Nếu yêu cầu đổi mật khẩu lần đầu
-      if (data.mustChangePassword) {
-        toast.info("Bạn cần đổi mật khẩu lần đầu!");
-
-        // Lưu token tạm thời
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
-        setUserToChange(data.user);
-        setShowChangePassword(true);
-        return;
-      }
-
-      // Nếu đăng nhập thất bại
       if (!data.success) {
         toast.error(data.message || "Sai tài khoản hoặc mật khẩu");
         return; // Không load trang
@@ -55,13 +39,25 @@ const LoginBox = () => {
       toast.success("Đăng nhập thành công");
       toast.success(`Xin chào ${data.user.fullName}!`, { duration: 2000 });
 
+      if (data.mustChangePassword) {
+        toast.info("Bạn cần đổi mật khẩu lần đầu!");
+
+        // Lưu token tạm thời
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        setUserToChange(data.user);
+        setShowChangePassword(true);
+        return;
+      }
+
       // Dùng navigate để chuyển ngay UI, sau đó reload nhẹ để reset context
       setTimeout(() => {
         navigate("/home"); // Chuyển route trước
         setTimeout(() => {
           window.location.reload(); // Reload sau để đảm bảo load lại AuthProvider, context, v.v.
         }, 1); // Chờ 150ms cho navigate hoạt động trước
-      },  500);
+      }, 500);
     } catch (error) {
       console.error("Lỗi đăng nhập:", error);
       const msg =
@@ -131,44 +127,52 @@ const LoginBox = () => {
               mật khẩu ngay sau đó!
             </p>
 
-            <input
-              type="text"
-              placeholder="Tên đăng nhập"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff]
-                         border-[2px] border-[#5E5E60] rounded-[12px]
-                         focus:outline-none focus:ring-2 focus:ring-blue-500
-                         placeholder:text-gray-400 transition-all duration-200"
-            />
-
-            <input
-              type="password"
-              placeholder="Mật khẩu"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff]
-                         border-[2px] border-[#5E5E60] rounded-[12px]
-                         focus:outline-none focus:ring-2 focus:ring-blue-500
-                         placeholder:text-gray-400 transition-all duration-200"
-            />
-
-            <button
-              onClick={handleLogin}
-              className="w-[410px] h-[55px] rounded-[24px] bg-[#0a84ff]
-                         text-white font-bold hover:bg-[#0066cc]
-                         transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.2)]
-                         flex items-center justify-center cursor-pointer"
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleLogin();
+              }}
+              className="flex flex-col gap-[25px]"
             >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  <span>Đang xử lý...</span>
-                </div>
-              ) : (
-                "Đăng nhập"
-              )}
-            </button>
+              <input
+                type="text"
+                placeholder="Tên đăng nhập"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff]
+                           border-[2px] border-[#5E5E60] rounded-[12px]
+                           focus:outline-none focus:ring-2 focus:ring-blue-500
+                           placeholder:text-gray-400 transition-all duration-200"
+              />
+
+              <input
+                type="password"
+                placeholder="Mật khẩu"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff]
+                           border-[2px] border-[#5E5E60] rounded-[12px]
+                           focus:outline-none focus:ring-2 focus:ring-blue-500
+                           placeholder:text-gray-400 transition-all duration-200"
+              />
+
+              <button
+                onClick={handleLogin}
+                className="w-[410px] h-[55px] rounded-[24px] bg-[#0a84ff]
+                           text-white font-bold hover:bg-[#0066cc]
+                           transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.2)]
+                           flex items-center justify-center cursor-pointer"
+              >
+                {loading ? (
+                  <div className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                    <span>Đang xử lý...</span>
+                  </div>
+                ) : (
+                  "Đăng nhập"
+                )}
+              </button>
+            </form>
 
             <p
               onClick={() => setShowForgot(true)}

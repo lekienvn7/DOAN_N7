@@ -128,7 +128,7 @@ function App() {
             <Route
               path="/role"
               element={
-                <Layout className="bg-bgmain">
+                <Layout className="bg-[#121212]">
                   <RolePage />
                 </Layout>
               }
