@@ -12,7 +12,7 @@ const RepoDetail = () => {
         transition={{
           duration: 0.5,
         }}
-        className=" w-[1300px] max-h-[425px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-gray-700"
+        className=" w-[1300px] max-h-[425px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-[#fdd700]"
       >
         <MainDetail />
       </motion.div>

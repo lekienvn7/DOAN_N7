@@ -53,7 +53,7 @@ const TechnologyList = () => {
   return (
     <div className="w-full">
       <table className="w-full text-textpri border-collapse">
-        <thead className="sticky top-0 z-10 border-b border-[#caa93e]/60 bg-bgmain">
+        <thead className="sticky top-0 z-10 border-b border-[#fdd700]/60 bg-bgmain">
           <tr className="text-center text-[14px] font-semibold">
             <th className="relative py-[5px] w-[3%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
               STT

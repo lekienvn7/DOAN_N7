@@ -8,7 +8,7 @@ const UserListHeader = () => {
         <p className="text-[25px] font-bold">Danh sách tài khoản</p>
         <hr className="text-[#fdd700]" />
       </div>
-      <div>
+      <div className="max-h-[490px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 ">
         <UserList />
       </div>
     </div>

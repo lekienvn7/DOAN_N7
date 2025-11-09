@@ -3,6 +3,16 @@ import { useState, useEffect } from "react";
 import { PencilLine, Trash2 } from "lucide-react";
 import axiosClient from "@/api/axiosClient";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "../ui/dialog";
 
 const UserList = () => {
   const [users, setUser] = useState([]);
@@ -42,10 +52,6 @@ const UserList = () => {
   }, []);
 
   const handleDeleteUser = async (userID) => {
-    // Hỏi xác nhận người dùng
-    const confirm = window.confirm(
-      `Bạn có chắc muốn xóa tài khoản ${users.userID} không?`
-    );
     if (!confirm) return;
 
     try {
@@ -63,6 +69,51 @@ const UserList = () => {
     }
   };
 
+  const ConfirmDelete = ({ username, onConfirm }) => {
+    const [input, setInput] = useState("");
+
+    const isMatch = input.trim() === username;
+
+    return (
+      <div className="mt-4 flex flex-col gap-3">
+        <label className="text-sm text-gray-300">
+          Gõ lại tên tài khoản{" "}
+          <span className="font-semibold text-yellow-400">{username}</span> để
+          xác nhận:
+        </label>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Nhập lại tên tài khoản..."
+          className="px-3 py-2 rounded-md bg-[#2a2a2a] border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-highlightcl transition"
+        />
+
+        <DialogFooter className="mt-3 flex justify-end gap-3">
+          <DialogClose asChild>
+            <button className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition">
+              Hủy
+            </button>
+          </DialogClose>
+
+          <DialogClose asChild>
+            <button
+              onClick={onConfirm}
+              disabled={!isMatch}
+              className={`px-4 py-2 rounded transition ${
+                isMatch
+                  ? "bg-[#ff5555] hover:bg-[#ff7676] text-white cursor-pointer"
+                  : "bg-gray-600 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              {isMatch ? "Xóa" : "Nhập đúng để xóa"}
+            </button>
+          </DialogClose>
+        </DialogFooter>
+      </div>
+    );
+  };
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-[300px] gap-4 text-textpri">
@@ -74,8 +125,8 @@ const UserList = () => {
 
   return (
     <div className="w-full">
-      <table className="w-full text-textpri border-collapse">
-        <thead className="sticky top-0 z-10 border-b border-[#fdd700] bg-bgmain">
+      <table className=" border-collapse w-full text-textpri  ">
+        <thead className="sticky top-0 z-20 border-b border-[#fdd700] bg-bgmain">
           <tr className="text-center text-[14px] font-semibold">
             <th className="relative py-[5px] w-[3%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
               UserID
@@ -105,7 +156,7 @@ const UserList = () => {
           </tr>
         </thead>
 
-        <tbody>
+        <tbody className="">
           {users.map((item, index) => {
             let roleColor = "";
 
@@ -156,12 +207,31 @@ const UserList = () => {
                   </button>
                 </td>
                 <td className="text-center p-[5px]">
-                  <button
-                    onClick={() => handleDeleteUser(item.userID)}
-                    className="cursor-pointer p-[5px] justify-center text-[#ff5555] hover:text-[#ff7676]"
-                  >
-                    <Trash2 size={15} />
-                  </button>
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="cursor-pointer p-[5px] text-[#ff5555] hover:text-[#ff7676]">
+                        <Trash2 size={15} />
+                      </button>
+                    </DialogTrigger>
+
+                    <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
+                      <DialogHeader>
+                        <DialogTitle>Xác nhận xoá tài khoản</DialogTitle>
+                        <DialogDescription className="text-gray-400">
+                          Bạn có chắc chắn muốn xoá tài khoản{" "}
+                          <span className="text-yellow-400 font-semibold">
+                            {item.username}
+                          </span>{" "}
+                          không? Hành động này không thể hoàn tác.
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <ConfirmDelete
+                        username={item.username}
+                        onConfirm={() => handleDeleteUser(item.userID)}
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </td>
               </tr>
             );

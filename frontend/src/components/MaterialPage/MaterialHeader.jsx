@@ -32,7 +32,7 @@ const MaterialHeader = () => {
 
           <HeaderMenu />
         </div>
-        <button className="h-[30px] w-[100px] p-[5px] font-bold text-[14px] text-center  bg-highlightcl rounded-[12px] cursor-pointer hover:bg-[#2997FF] transition-all duration-300">
+        <button className="h-[30px] w-[100px] p-[5px] font-bold text-[14px] text-center  bg-highlightcl rounded-[12px] cursor-pointer hover:bg-[#2563eb] transition-all duration-300">
           Xuất file
         </button>
       </div>
