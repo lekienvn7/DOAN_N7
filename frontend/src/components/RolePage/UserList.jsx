@@ -25,8 +25,8 @@ const UserList = () => {
     mechanical: "Kho cơ khí",
     fashion: "Kho thời trang",
     iot: "Kho nhúng và iot",
-    technology: "Kho công nghệ thông tin",
-    automotive: "Kho công nghệ oto",
+    technology: "Kho CNTT",
+    automotive: "Kho CN oto",
   };
 
   const TrueFalse = {
@@ -51,9 +51,24 @@ const UserList = () => {
     fetchUser();
   }, []);
 
-  const handleDeleteUser = async (userID) => {
-    if (!confirm) return;
+  const handleResetPassword = async (userID) => {
+    try {
+      const res = await axiosClient.put(`user/reset/${userID}`);
+      if (res.data.success) {
+        toast.success("Reset mật khẩu thành công!");
+        setTimeout(() => {
+          window.location.reload();
+        }, 800);
+      } else {
+        toast.error(res.data.message || "Không thể reset tài khoản!");
+      }
+    } catch (error) {
+      console.error("Lỗi khi reset mật khẩu!", error);
+      toast.error("Reset thất bại! Vui lòng thử lại sau.");
+    }
+  };
 
+  const handleDeleteUser = async (userID) => {
     try {
       const res = await axiosClient.delete(`/user/${userID}`);
       if (res.data.success) {
@@ -67,6 +82,51 @@ const UserList = () => {
       console.error("Lỗi khi xóa tài khoản:", error);
       toast.error("Xóa thất bại! Vui lòng thử lại sau.");
     }
+  };
+
+  const ConfirmReset = ({ username, onConfirm }) => {
+    const [input, setInput] = useState("");
+
+    const isMatch = input.trim() === username;
+
+    return (
+      <div className="mt-4 flex flex-col gap-3">
+        <label className="text-sm text-gray-300">
+          Gõ lại tên tài khoản{" "}
+          <span className="font-semibold text-yellow-400">{username}</span> để
+          xác nhận:
+        </label>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          placeholder="Nhập lại tên tài khoản..."
+          className="px-3 py-2 rounded-md bg-[#2a2a2a] border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-highlightcl transition"
+        />
+
+        <DialogFooter className="mt-3 flex justify-end gap-3">
+          <DialogClose asChild>
+            <button className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition">
+              Hủy
+            </button>
+          </DialogClose>
+
+          <DialogClose asChild>
+            <button
+              onClick={onConfirm}
+              disabled={!isMatch}
+              className={`px-4 py-2 rounded transition ${
+                isMatch
+                  ? "bg-[#ff5555] hover:bg-[#ff7676] text-white cursor-pointer"
+                  : "bg-gray-600 text-gray-400 cursor-not-allowed"
+              }`}
+            >
+              {isMatch ? "Reset" : "Nhập đúng để reset"}
+            </button>
+          </DialogClose>
+        </DialogFooter>
+      </div>
+    );
   };
 
   const ConfirmDelete = ({ username, onConfirm }) => {
@@ -163,9 +223,9 @@ const UserList = () => {
             if (item.role.roleID === "ADMINISTRATOR") {
               roleColor = "text-yellow-400";
             } else if (item.role.roleID === "WH MANAGER") {
-              roleColor = "text-pink-400";
+              roleColor = "text-textpri";
             } else if (item.role.roleID === "MT MANAGER") {
-              roleColor = "text-orange-400";
+              roleColor = "text-textpri";
             }
 
             return (
@@ -201,11 +261,35 @@ const UserList = () => {
                         .join(", ")
                     : "Không có"}
                 </td>
-                <td className="p-[5px] border-r border-l border-gray-700">
-                  <button className="changeTool cursor-pointer p-[5px] justify-center text-[#f9d65c] hover:text-[#ffd700]">
-                    <PencilLine size={15} />
-                  </button>
+                <td className="p-[5px] border-r border-l text-center border-gray-700">
+                  <Dialog>
+                    <DialogTrigger asChild>
+                      <button className="changeTool cursor-pointer p-[5px] justify-center text-[#f9d65c] hover:text-[#ffd700]">
+                        <PencilLine size={15} />
+                      </button>
+                    </DialogTrigger>
+
+                    <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
+                      <DialogHeader>
+                        <DialogTitle>Xác nhận reset mật khẩu</DialogTitle>
+
+                        <DialogDescription className="text-gray-400">
+                          Bạn có chắc chắn muốn reset mật khẩu tài khoản{" "}
+                          <span className="text-yellow-400 font-semibold">
+                            {item.username}
+                          </span>{" "}
+                          không? Hành động này không thể hoàn tác.
+                        </DialogDescription>
+                      </DialogHeader>
+
+                      <ConfirmReset
+                        username={item.username}
+                        onConfirm={() => handleResetPassword(item.userID)}
+                      />
+                    </DialogContent>
+                  </Dialog>
                 </td>
+
                 <td className="text-center p-[5px]">
                   <Dialog>
                     <DialogTrigger asChild>
@@ -217,6 +301,7 @@ const UserList = () => {
                     <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
                       <DialogHeader>
                         <DialogTitle>Xác nhận xoá tài khoản</DialogTitle>
+
                         <DialogDescription className="text-gray-400">
                           Bạn có chắc chắn muốn xoá tài khoản{" "}
                           <span className="text-yellow-400 font-semibold">
