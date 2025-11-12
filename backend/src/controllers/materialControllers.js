@@ -1,5 +1,6 @@
 import Material from "../models/Material.js";
 import User from "../models/User.js";
+import Repository from "../models/Repository.js";
 
 const detectRepoType = (repoName) => {
   if (repoName.toLowerCase().includes("điện")) return "Điện";
@@ -47,6 +48,7 @@ export const addMaterial = async (req, res) => {
       description,
       icon,
       createdBy,
+      maintenanceCycle,
       voltageRange,
       power,
       materialInsulation,
@@ -137,11 +139,13 @@ export const addMaterial = async (req, res) => {
     const materialID = `VT${String(count + 1).padStart(3, "0")}`;
 
     // Tạo vật tư mới
+    // Tạo vật tư mới
     const newMaterial = await Material.create({
       materialID,
       name,
-      type: typeArray[0], // gán category chính
+      type: typeArray[0],
       quantity,
+      maintenanceCycle,
       unit,
       description,
       icon,
@@ -172,9 +176,10 @@ export const addMaterial = async (req, res) => {
       origin,
     });
 
-    res.status(201).json({
+    // Sau khi hoàn tất mới trả về
+    return res.status(201).json({
       success: true,
-      message: "Thêm vật tư thành công!",
+      message: "Thêm vật tư và nhập kho thành công!",
       data: newMaterial,
     });
   } catch (error) {

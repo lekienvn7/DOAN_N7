@@ -134,7 +134,7 @@ const materialSchema = new mongoose.Schema(
       default: null,
     },
     vehicleModel: {
-      type: String, 
+      type: String,
       default: null,
     },
     manufacturer: {

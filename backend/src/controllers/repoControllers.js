@@ -287,7 +287,7 @@ export const updateRepository = async (req, res) => {
 
     const repoType = repo.repoType; // Ví dụ: "chemical"
 
-    // 👤 Xử lý cập nhật người quản lý (nếu có)
+    // Xử lý cập nhật người quản lý (nếu có)
     let newManagerId = repo.manager;
     if (managerUserID) {
       const managerUser = await User.findOne({
