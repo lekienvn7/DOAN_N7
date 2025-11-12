@@ -58,7 +58,7 @@ const CreateForm = () => {
         </p>
       </div>
 
-      <div className="flex flex-col p-[20px] gap-[20px] justify-center text-pri">
+      <div className="flex flex-col p-[20px] gap-[20px] justify-center text-textpri">
         <input
           type="text"
           placeholder="Mã tài khoản"

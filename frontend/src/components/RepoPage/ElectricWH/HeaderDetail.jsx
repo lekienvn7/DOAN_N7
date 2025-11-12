@@ -1,7 +1,9 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
+import { useState } from "react";
 import { Tooltip } from "react-tooltip";
+import AddElectric from "./AddElectric";
 import {
   Plus,
   Minus,
@@ -16,19 +18,30 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "../../ui/dialog";
 
 const HeaderDetail = () => {
+  const [open, setOpen] = useState(false);
   const { user } = useAuth();
-  const checkPermission = (callback) => {
+  const checkPermission = () => {
     const hasAccess =
       user?.yourRepo?.includes("all") || user?.yourRepo?.includes("electric");
 
     if (!hasAccess) {
       toast.error("Không có quyền sử dụng chức năng!");
-      return;
+      return false;
     }
 
-    callback();
+    return true;
   };
 
   return (
@@ -64,13 +77,29 @@ const HeaderDetail = () => {
 
           <div className="flex flex-row mt-[20px] justify-between">
             <div class="flex text-textsec whitespace-nowrap text-sm cursor-pointer">
-              <button
-                onClick={() => checkPermission()}
-                class="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
-              >
-                Thêm vật tư <Plus size={20} className="text-textpri" />
-              </button>
+              <Dialog open={open} onOpenChange={setOpen}>
+                <DialogTrigger asChild>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault(); // Ngăn Radix mở tự động
+                      if (checkPermission()) {
+                        setOpen(true); // Chỉ mở nếu có quyền
+                      }
+                    }}
+                    className="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
+                  >
+                    Thêm vật tư <Plus size={20} className="text-textpri" />
+                  </button>
+                </DialogTrigger>
 
+                <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
+                  <DialogHeader>
+                    <DialogTitle>Phiếu nhập vật tư <span className="text-[#fdd700]">kho Điện</span></DialogTitle>
+                    <DialogDescription className="text-gray-400">Nhập vật tư vào kho</DialogDescription>
+                  </DialogHeader>
+                  <AddElectric />
+                </DialogContent>
+              </Dialog>
               <div class="border-r h-4 mx-2"></div>
               <button
                 onClick={() => checkPermission()}
