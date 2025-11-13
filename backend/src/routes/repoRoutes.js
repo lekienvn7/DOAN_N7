@@ -20,7 +20,7 @@ router.get("/", getAllRepository);
 router.get("/:id", getRepository);
 
 router.get("/material/:repoID", getRepoMaterials);
-router.post("/", verifyToken, checkRepositoryPermission, addRepository);
+router.post("/",  addRepository);
 
 router.put("/:id", updateRepository);
 

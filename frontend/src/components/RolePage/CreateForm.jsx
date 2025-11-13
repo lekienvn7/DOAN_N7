@@ -9,6 +9,7 @@ const CreateForm = () => {
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState("");
+  const [repoType, setRepoType] = useState("");
   const [yourRepo, setYourRepo] = useState("");
 
   const handleSubmit = async () => {
@@ -27,6 +28,7 @@ const CreateForm = () => {
         username: username,
         fullName: fullName,
         role: role,
+        repoType: repoType,
         email: email || null,
         yourRepo: yourRepo,
       });
@@ -37,6 +39,7 @@ const CreateForm = () => {
         setUsername("");
         setFullName("");
         setEmail("");
+        setRepoType("");
         setRole("");
         setYourRepo("");
 

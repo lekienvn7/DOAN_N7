@@ -141,13 +141,20 @@ const UserList = () => {
           <span className="font-semibold text-yellow-400">{username}</span> để
           xác nhận:
         </label>
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Nhập lại tên tài khoản..."
-          className="px-3 py-2 rounded-md bg-[#2a2a2a] border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-highlightcl transition"
-        />
+        <form
+          onSubmit={(e) => {
+            onConfirm();
+          }
+        }
+        >
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Nhập lại tên tài khoản..."
+            className="px-3 py-2 w-[465px] rounded-md bg-[#2a2a2a] border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-highlightcl transition"
+          />
+        </form>
 
         <DialogFooter className="mt-3 flex justify-end gap-3">
           <DialogClose asChild>

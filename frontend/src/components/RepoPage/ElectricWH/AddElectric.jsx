@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axiosClient from "@/api/axiosClient";
 import { DialogFooter, DialogClose } from "../../ui/dialog";
 import {
@@ -12,7 +12,7 @@ import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 
 const AddElectric = () => {
-  const [materialName, setMaterialName] = useState("");
+  const [name, setName] = useState("");
   const [maintenanceCycle, setMaintenanceCycle] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
@@ -27,7 +27,7 @@ const AddElectric = () => {
 
   // Kiểm tra hợp lệ
   const isValid =
-    materialName.trim() !== "" &&
+    name.trim() !== "" &&
     maintenanceCycle !== "" &&
     !isNaN(maintenanceCycle) &&
     Number(maintenanceCycle) >= 0 &&
@@ -35,6 +35,12 @@ const AddElectric = () => {
     !isNaN(quantity) &&
     Number(quantity) >= 0 &&
     unit.trim() !== "";
+
+  // Focus vào ô tên vật tư khi dialog vừa mở
+  useEffect(() => {
+    const firstInput = document.querySelector('input[name="materialName"]');
+    if (firstInput) firstInput.focus();
+  }, []);
 
   const handleSubmit = async () => {
     if (!isValid) {
@@ -45,7 +51,7 @@ const AddElectric = () => {
     try {
       setLoading(true);
       const res = await axiosClient.post("/material", {
-        name: materialName,
+        name: name,
         maintenanceCycle,
         quantity,
         unit,
@@ -55,13 +61,13 @@ const AddElectric = () => {
         materialInsulation,
         type: "electric", // cố định là “electric”
         createdBy, // lấy id người nhập từ context
-        statusMaterial: "Trong kho", // mặc định “Trong kho”
+        status: "Trong kho", // mặc định “Trong kho”
       });
 
       if (res.data.success) {
         toast.success("Thêm vật tư thành công!");
         // Reset form
-        setMaterialName("");
+        setName("");
         setMaintenanceCycle("");
         setQuantity("");
         setUnit("");
@@ -111,8 +117,8 @@ const AddElectric = () => {
           <InputField
             label="Tên vật tư"
             placeholder="Tên vật tư"
-            value={materialName}
-            onChange={setMaterialName}
+            value={name}
+            onChange={setName}
           />
           <InputField
             label="Hạn bảo trì"
@@ -137,13 +143,18 @@ const AddElectric = () => {
             value={unit}
             onChange={setUnit}
           />
-          <InputField
-            label="Mô tả (tuỳ chọn)"
-            placeholder="Ghi chú thêm"
-            value={description}
-            onChange={setDescription}
-            width="310px"
-          />
+
+          <div className="flex flex-col gap-[5px] items-left">
+            <p className="ml-[10px]">Ghi chú:</p>
+            <input
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Ghi chú thêm"
+              className="w-[310px] p-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#5E5E60] rounded-[12px]
+                     focus:outline-none focus:ring-2 focus:ring-blue-500
+                     placeholder:text-gray-400 transition-all duration-200"
+            />
+          </div>
         </div>
 
         <div className="flex flex-row gap-[10px] items-center">

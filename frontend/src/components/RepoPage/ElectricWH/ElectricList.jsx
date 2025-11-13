@@ -1,6 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { PencilLine, Trash2 } from "lucide-react";
+import { ReceiptText } from "lucide-react";
 import axiosClient from "@/api/axiosClient";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
@@ -80,7 +80,7 @@ const ElectricList = () => {
               Cách điện?
             </th>
             <th colSpan={2} className=" w-[5%] ">
-              Lựa chọn
+              Chi tiết
             </th>
           </tr>
         </thead>
@@ -114,15 +114,7 @@ const ElectricList = () => {
                   onClick={() => checkPermission()}
                   className="changeTool cursor-pointer p-[5px] justify-center text-[#f9d65c] hover:text-[#ffd700]"
                 >
-                  <PencilLine size={15} />
-                </button>
-              </td>
-              <td className="text-center p-[5px]">
-                <button
-                  onClick={() => checkPermission()}
-                  className="cursor-pointer p-[5px] justify-center text-[#ff5555] hover:text-[#ff7676]"
-                >
-                  <Trash2 size={15} />
+                  <ReceiptText size={15} />
                 </button>
               </td>
             </tr>

@@ -1,7 +1,7 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
 import AddElectric from "./AddElectric";
 import {
@@ -32,6 +32,7 @@ import {
 const HeaderDetail = () => {
   const [open, setOpen] = useState(false);
   const { user } = useAuth();
+
   const checkPermission = () => {
     const hasAccess =
       user?.yourRepo?.includes("all") || user?.yourRepo?.includes("electric");
@@ -94,8 +95,13 @@ const HeaderDetail = () => {
 
                 <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
                   <DialogHeader>
-                    <DialogTitle>Phiếu nhập vật tư <span className="text-[#fdd700]">kho Điện</span></DialogTitle>
-                    <DialogDescription className="text-gray-400">Nhập vật tư vào kho</DialogDescription>
+                    <DialogTitle>
+                      Phiếu nhập vật tư{" "}
+                      <span className="text-[#fdd700]">kho Điện</span>
+                    </DialogTitle>
+                    <DialogDescription className="text-gray-400">
+                      Nhập vật tư vào kho
+                    </DialogDescription>
                   </DialogHeader>
                   <AddElectric />
                 </DialogContent>

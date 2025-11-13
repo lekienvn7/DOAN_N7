@@ -93,7 +93,7 @@ export const getRepository = async (req, res) => {
   try {
     const repo = await Repository.findOne({ repoID: req.params.id })
       .populate("manager", "userID fullName email -_id")
-      .populate("materials.material", "materialID name type status -_id");
+      .populate("materials.material", "materialID name type status ");
 
     if (!repo) {
       return res.status(404).json({ message: "Không tìm thấy kho!" });
@@ -438,7 +438,7 @@ export const removeMaterialFromRepo = async (req, res) => {
     const currentQty = repo.materials[index].quantity;
     const removeQty = Number(quantity);
 
-    // ⚖️ Kiểm tra số lượng hợp lệ
+    // Kiểm tra số lượng hợp lệ
     if (removeQty <= 0) {
       return res.status(400).json({
         success: false,
@@ -489,7 +489,6 @@ export const removeMaterialFromRepo = async (req, res) => {
     });
   }
 };
-
 
 export const deleteRepository = async (req, res) => {
   try {
