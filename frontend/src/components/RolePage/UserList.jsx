@@ -39,8 +39,12 @@ const UserList = () => {
       try {
         setLoading(true);
         const res = await axiosClient.get("/user");
+
         if (res.data.success) {
-          setUser(res.data.data);
+          const sorted = [...res.data.data].sort((a, b) =>
+            a.userID.localeCompare(b.userID)
+          );
+          setUser(sorted);
         }
       } catch (error) {
         console.error("Lỗi khi kết nối dữ liệu!");
@@ -71,6 +75,12 @@ const UserList = () => {
   const handleDeleteUser = async (userID) => {
     try {
       const res = await axiosClient.delete(`/user/${userID}`);
+
+      if (res.data.userID === "ADMIN") {
+        toast.error("Không thể xóa tài khoản ADMIN");
+        return;
+      }
+
       if (res.data.success) {
         toast.success("Xóa tài khoản thành công!");
 
@@ -144,8 +154,7 @@ const UserList = () => {
         <form
           onSubmit={(e) => {
             onConfirm();
-          }
-        }
+          }}
         >
           <input
             type="text"
@@ -194,37 +203,23 @@ const UserList = () => {
     <div className="w-full">
       <table className=" border-collapse w-full text-textpri  ">
         <thead className="sticky top-0 z-20 border-b border-[#fdd700] bg-bgmain">
-          <tr className="text-center text-[14px] font-semibold">
-            <th className="relative py-[5px] w-[3%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              UserID
-            </th>
-            <th className="relative w-[10%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Tên đầy đủ
-            </th>
-            <th className="relative w-[8%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Username
-            </th>
-            <th className="relative w-[10%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Email
-            </th>
-            <th className="relative w-[8%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Đổi mật khẩu?
-            </th>
-            <th className="relative w-[8%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Quyền hạn
-            </th>
-            <th className="relative w-[10%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Phân kho (nếu có)
-            </th>
+          <tr className="text-left  text-[14px] font-semibold">
+            <th className="relative p-[5px] w-[3%] ">UserID</th>
+            <th className="relative p-[5px] w-[10%]">Tên đầy đủ</th>
+            <th className="relative p-[5px] w-[8%]">Username</th>
+            <th className="relative p-[5px] w-[10%] ">Email</th>
+            <th className="relative p-[5px] w-[8%] ">Đổi mật khẩu?</th>
+            <th className="relative p-[5px] w-[8%]">Quyền hạn</th>
+            <th className="relative p-[5px] w-[10%] ">Phân kho (nếu có)</th>
 
-            <th colSpan={2} className=" w-[5%] ">
+            <th colSpan={2} className=" p-[5px] w-[5%] ">
               Lựa chọn
             </th>
           </tr>
         </thead>
 
         <tbody className="">
-          {users.map((item, index) => {
+          {users.map((item) => {
             let roleColor = "";
 
             if (item.role.roleID === "ADMINISTRATOR") {

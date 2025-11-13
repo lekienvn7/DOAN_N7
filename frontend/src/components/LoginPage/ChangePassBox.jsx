@@ -111,35 +111,43 @@ const ChangePasswordBox = ({ user, navigate }) => {
         <p className="text-[#A1A1A6]">
           Đổi mật khẩu bắt buộc khi lần đầu đăng nhập
         </p>
-        <input
-          type="password"
-          placeholder="Mật khẩu cũ"
-          value={oldPass}
-          onChange={(e) => setOldPass(e.target.value)}
-          className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
-        />
-        <input
-          type="password"
-          placeholder="Mật khẩu mới"
-          value={newPass}
-          onChange={(e) => setNewPass(e.target.value)}
-          className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
-        />
-        <input
-          type="password"
-          placeholder="Nhập lại mật khẩu mới"
-          value={confirmPass}
-          onChange={(e) => setConfirmPass(e.target.value)}
-          className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
-        />
-
-        <button
-          onClick={handleChangePassword}
-          disabled={loading}
-          className="w-[410px] h-[50px] bg-[#0A84FF] cursor-pointer text-white font-bold rounded-[24px] hover:scale-105 hover:bg-[#2997FF] transition-all duration-300"
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleChangePassword();
+          }}
+          className="flex flex-col gap-[25px]"
         >
-          {loading ? "Đang cập nhật..." : "Xác nhận"}
-        </button>
+          <input
+            type="password"
+            placeholder="Mật khẩu cũ"
+            value={oldPass}
+            onChange={(e) => setOldPass(e.target.value)}
+            className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
+          />
+          <input
+            type="password"
+            placeholder="Mật khẩu mới"
+            value={newPass}
+            onChange={(e) => setNewPass(e.target.value)}
+            className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
+          />
+          <input
+            type="password"
+            placeholder="Nhập lại mật khẩu mới"
+            value={confirmPass}
+            onChange={(e) => setConfirmPass(e.target.value)}
+            className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
+          />
+
+          <button
+            onClick={handleChangePassword}
+            disabled={loading}
+            className="w-[410px] h-[50px] bg-[#0A84FF] cursor-pointer text-white font-bold rounded-[24px]  hover:bg-[#2997FF] transition-all duration-300"
+          >
+            {loading ? "Đang cập nhật..." : "Xác nhận"}
+          </button>
+        </form>
       </motion.div>
     </AnimatePresence>
   );
