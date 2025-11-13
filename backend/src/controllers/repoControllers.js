@@ -46,7 +46,7 @@ export const getRepoMaterials = async (req, res) => {
     }
 
     const materialsList = repo.materials.map((item) => ({
-      _id: item.material._id,
+      _id: item.material.materialID,
       name: item.material.name,
       unit: item.material.unit,
       type: item.material.type,
@@ -85,7 +85,7 @@ export const getRepoMaterials = async (req, res) => {
     });
   } catch (error) {
     console.error("Lỗi khi chạy getRepoMaterial", error);
-    res.status(500).json({ sucess: false, message: "Lỗi hệ thống!" });
+    res.status(500).json({ success: false, message: "Lỗi hệ thống!" });
   }
 };
 
@@ -274,7 +274,7 @@ export const addRepository = async (req, res) => {
 
 export const updateRepository = async (req, res) => {
   try {
-    const { location, managerUserID, materials } = req.body;
+    const { location, manager, materials } = req.body;
 
     // Tìm kho theo repoID
     const repo = await Repository.findOne({ repoID: req.params.id });
@@ -289,15 +289,15 @@ export const updateRepository = async (req, res) => {
 
     // Xử lý cập nhật người quản lý (nếu có)
     let newManagerId = repo.manager;
-    if (managerUserID) {
+    if (manager) {
       const managerUser = await User.findOne({
-        userID: managerUserID,
+        userID: manager,
       }).populate("role", "roleName roleID");
 
       if (!managerUser) {
         return res.status(404).json({
           success: false,
-          message: `Không tìm thấy người dùng có userID = ${managerUserID}!`,
+          message: `Không tìm thấy người dùng có userID = ${manager}!`,
         });
       }
 

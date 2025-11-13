@@ -44,12 +44,6 @@ const repoSchema = new mongoose.Schema(
         quantity: { type: Number, default: 0 }, // số lượng riêng cho kho này
       },
     ],
-    equipments: [
-      {
-        equipment: { type: mongoose.Schema.Types.ObjectId, ref: "Equipment" },
-        quantity: { type: Number, default: 0 }, // số lượng riêng cho kho này
-      },
-    ],
   },
   { timestamps: true }
 );

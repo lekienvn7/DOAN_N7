@@ -20,13 +20,14 @@ router.get("/", getAllRepository);
 router.get("/:id", getRepository);
 
 router.get("/material/:repoID", getRepoMaterials);
-router.post("/",  addRepository);
+router.post("/", addRepository);
 
 router.put("/:id", updateRepository);
 
 router.delete(
   "/:id/removeMaterial",
-  
+  verifyToken,
+  checkRepositoryPermission,
   removeMaterialFromRepo
 );
 

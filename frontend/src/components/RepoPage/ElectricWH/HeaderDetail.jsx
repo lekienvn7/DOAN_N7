@@ -28,9 +28,11 @@ import {
   DialogDescription,
   DialogClose,
 } from "../../ui/dialog";
+import axiosClient from "@/api/axiosClient";
 
 const HeaderDetail = () => {
   const [open, setOpen] = useState(false);
+  const [repository, setRepository] = useState("");
   const { user } = useAuth();
 
   const checkPermission = () => {
@@ -43,6 +45,32 @@ const HeaderDetail = () => {
     }
 
     return true;
+  };
+
+  useEffect(() => {
+    const fetchRepository = async () => {
+      try {
+        const res = await axiosClient.get("/repository/electric");
+        if (res.data.success) {
+          setRepository(res.data.data);
+        }
+      } catch (error) {
+        console.error("Lỗi kết nối dữ liệu kho điện!", error);
+        toast.error("Lỗi khi kết nối dữ liệu kho điện!");
+      }
+    };
+
+    fetchRepository();
+  }, []);
+
+  const formatDate = (dataString) => {
+    const date = new Date(dataString);
+
+    const day = date.getDate().toString().padStart(2, 0);
+    const month = (date.getMonth() + 1).toString().padStart(2, 0);
+    const year = date.getFullYear().toString().slice(-2); // Lấy 2 số cuối của năm
+
+    return `${day}/${month}/${year}`;
   };
 
   return (
@@ -68,12 +96,45 @@ const HeaderDetail = () => {
               </p>
             </div>
 
-            <Link
-              to={"/material"}
-              className="h-[40px] p-[15px] bg-highlightcl rounded-[12px] items-center font-bold flex flex-row gap-[10px] cursor-pointer hover:bg-[#2563eb]"
-            >
-              <ToolCase /> Bảo trì
-            </Link>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="h-[40px] p-[15px] bg-highlightcl rounded-[12px] items-center font-bold flex flex-row gap-[10px] cursor-pointer hover:bg-[#2563eb]">
+                  <ToolCase /> Chi tiết
+                </button>
+              </DialogTrigger>
+
+              <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white ">
+                <DialogHeader>
+                  <DialogTitle>
+                    Thông tin chi tiết{" "}
+                    <span className="text-[#fdd700]">kho điện</span>
+                  </DialogTitle>
+                </DialogHeader>
+                <ul className="mt-[20px] flex flex-col gap-[5px]">
+                  <li>
+                    <span className="text-[#60A5FA] font-semibold">
+                      Vị trí:
+                    </span>{" "}
+                    {repository.location}
+                  </li>
+                  <li>
+                    <span className="text-[#60A5FA] font-semibold">
+                      {" "}
+                      Quản lý phụ trách:
+                    </span>{" "}
+                    {repository?.manager?.fullName || "Chưa có quản lý"}
+                    {" - "}
+                    {repository?.manager?.email || "—"}
+                  </li>
+                  <li>
+                    <span className="text-[#60A5FA] font-semibold">
+                      Tạo vào:
+                    </span>{" "}
+                    {formatDate(repository.createdAt)}
+                  </li>
+                </ul>
+              </DialogContent>
+            </Dialog>
           </div>
 
           <div className="flex flex-row mt-[20px] justify-between">
