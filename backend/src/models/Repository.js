@@ -33,6 +33,7 @@ const repoSchema = new mongoose.Schema(
       default: null,
       trim: true,
     },
+
     manager: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User", // người quản lý kho

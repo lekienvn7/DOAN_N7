@@ -46,15 +46,28 @@ export const getRepoMaterials = async (req, res) => {
     }
 
     const materialsList = repo.materials.map((item) => ({
-      _id: item.material.materialID,
+      materialID: item.material.materialID,
       name: item.material.name,
       unit: item.material.unit,
       type: item.material.type,
       quantity: item.quantity,
+      maintenanceCycle: item.material.maintenanceCycle,
       createdAt: item.material.createdAt,
+
       voltageRange: item.material.voltageRange,
       power: item.material.power,
       materialInsulation: item.material.materialInsulation,
+      current: item.material.current,
+      frequency: item.material.frequency,
+      resistance: item.material.resistance,
+      phaseType: item.material.phaseType,
+      conductorMaterial: item.material.conductorMaterial,
+      insulationMaterial: item.material.insulationMaterial,
+      fireResistance: item.material.fireResistance,
+      cableDiameter: item.material.cableDiameter,
+      waterproofLevel: item.material.waterproofLevel,
+      operatingTemp: item.material.operatingTemp,
+
       chemicalFormula: item.material.chemicalFormula,
       chemicalNote: item.material.chemicalNote,
       expiryDate: item.material.expiryDate,
@@ -204,35 +217,6 @@ export const addRepository = async (req, res) => {
           return res.status(404).json({
             success: false,
             message: `Không tìm thấy vật tư '${item.material}'!`,
-          });
-        }
-
-        const normalize = (str) =>
-          str
-            ?.toLowerCase()
-            .replace(/\s+/g, "")
-            .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "");
-
-        const repoTypeClean = normalize(repoType);
-        const materialTypeClean = Array.isArray(material.type)
-          ? material.type.map(normalize)
-          : [normalize(material.type)];
-
-        const isValidType = materialTypeClean.includes(repoTypeClean);
-
-        if (!isValidType) {
-          return res.status(400).json({
-            success: false,
-            message: `Vật tư '${material.name}' (loại ${material.type}) không hợp với kho '${repoType}'!`,
-          });
-        }
-
-        // Check số lượng
-        if (material.quantity < item.quantity) {
-          return res.status(400).json({
-            success: false,
-            message: `Vật tư '${material.name}' không đủ số lượng (còn ${material.quantity}, yêu cầu ${item.quantity})`,
           });
         }
 

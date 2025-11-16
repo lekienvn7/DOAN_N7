@@ -34,10 +34,23 @@ const userSchema = new mongoose.Schema(
       type: String,
       sparse: true,
     },
+
+    phone: {
+      type: String,
+      sparse: true,
+    },
+    
     role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Role",
       required: true,
+    },
+
+    avatarUrl: {
+      type: String, // Link CDN hiển thị hình
+    },
+    avatarID: {
+      type: String, // Cloudinary public_ID để xóa hình
     },
 
     yourRepo: [

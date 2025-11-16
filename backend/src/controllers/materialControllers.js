@@ -41,18 +41,30 @@ export const addMaterial = async (req, res) => {
   try {
     const {
       name,
+      materialID,
       type,
       repoID,
       status,
       quantity,
       unit,
       description,
-      icon,
       createdBy,
       maintenanceCycle,
+
       voltageRange,
       power,
       materialInsulation,
+      current,
+      frequency,
+      resistance,
+      phaseType,
+      conductorMaterial,
+      insulationMaterial,
+      fireResistance,
+      cableDiameter,
+      waterproofLevel,
+      operatingTemp,
+
       chemicalFormula,
       chemicalNote,
       expiryDate,
@@ -135,12 +147,6 @@ export const addMaterial = async (req, res) => {
       });
     }
 
-    // Sinh mã vật tư tự động
-    const count = await Material.countDocuments();
-    const materialID = `VT${String(count + 1).padStart(3, "0")}`;
-
-    // Tạo vật tư mới
-    // Tạo vật tư mới
     const newMaterial = await Material.create({
       materialID,
       name,
@@ -150,11 +156,22 @@ export const addMaterial = async (req, res) => {
       maintenanceCycle,
       unit,
       description,
-      icon,
       createdBy: existingUser._id,
+
       voltageRange,
       power,
       materialInsulation,
+      current,
+      frequency,
+      resistance,
+      phaseType,
+      conductorMaterial,
+      insulationMaterial,
+      fireResistance,
+      cableDiameter,
+      waterproofLevel,
+      operatingTemp,
+
       chemicalFormula,
       chemicalNote,
       expiryDate,
@@ -196,11 +213,51 @@ export const addMaterial = async (req, res) => {
 
 export const updateMaterial = async (req, res) => {
   try {
-    const { status, quantity, description, addType, removeType } = req.body;
+    const {
+      status,
+      quantity,
+      description,
+
+      voltageRange,
+      power,
+      materialInsulation,
+      current,
+      frequency,
+      resistance,
+      phaseType,
+      conductorMaterial,
+      insulationMaterial,
+      fireResistance,
+      cableDiameter,
+      waterproofLevel,
+      operatingTemp,
+
+      addType,
+      removeType,
+    } = req.body;
 
     // Chuẩn bị đối tượng cập nhật
     const updateOps = {
-      $set: { status, quantity, description },
+      $set: {
+        status,
+        quantity,
+
+        voltageRange,
+        power,
+        materialInsulation,
+        current,
+        frequency,
+        resistance,
+        phaseType,
+        conductorMaterial,
+        insulationMaterial,
+        fireResistance,
+        cableDiameter,
+        waterproofLevel,
+        operatingTemp,
+
+        description,
+      },
     };
 
     if (addType)

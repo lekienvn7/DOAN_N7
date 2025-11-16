@@ -154,7 +154,7 @@ const HeaderDetail = () => {
                   </button>
                 </DialogTrigger>
 
-                <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
+                <DialogContent className="bg-[#1a1a1a] !max-w-none rounded-[12px] p-[25px] w-[880px] border-none text-white">
                   <DialogHeader>
                     <DialogTitle>
                       Phiếu nhập vật tư{" "}
@@ -167,6 +167,7 @@ const HeaderDetail = () => {
                   <AddElectric />
                 </DialogContent>
               </Dialog>
+
               <div class="border-r h-4 mx-2"></div>
               <button
                 onClick={() => checkPermission()}

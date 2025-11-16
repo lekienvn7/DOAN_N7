@@ -141,13 +141,14 @@ export const changePassword = async (req, res) => {
 
 export const updateUser = async (req, res) => {
   try {
-    const { fullName, yourRepo, role, email } = req.body;
+    const { fullName, yourRepo, role, email, phone } = req.body;
 
     // Tạo đối tượng update trống để chỉ thêm field nào được gửi lên
     const updateData = {};
 
     if (fullName) updateData.fullName = fullName;
     if (email) updateData.email = email;
+    if (phone) updateData.phone = phone;
 
     // Xử lý yourRepo có thể là 1 string hoặc 1 mảng
     if (yourRepo) {

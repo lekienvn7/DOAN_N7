@@ -4,6 +4,7 @@ import { ReceiptText } from "lucide-react";
 import axiosClient from "@/api/axiosClient";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   Dialog,
   DialogTrigger,
@@ -14,6 +15,7 @@ import {
   DialogDescription,
   DialogClose,
 } from "../../ui/dialog";
+import cadivi from "@/assets/images/cadivi225.png";
 
 const ElectricList = () => {
   const [open, setOpen] = useState(false);
@@ -99,8 +101,8 @@ const ElectricList = () => {
             <th className="relative w-[10%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
               Công suất định mức
             </th>
-            <th className="relative w-[5%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Cách điện?
+            <th className="relative w-[10%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
+              Dòng điện định mức
             </th>
             <th colSpan={2} className=" w-[5%] ">
               Chi tiết
@@ -110,7 +112,7 @@ const ElectricList = () => {
 
         <tbody>
           {electrical.map((item, index) => (
-            <tr className="border-b-1 border-gray-500 text-left text-[14px] text-[#e5e5e7] hover:bg-[#1c1c1e]">
+            <tr className="border-b-1 border-gray-500 text-center text-[14px] text-[#e5e5e7] hover:bg-[#1c1c1e]">
               <td className="border-r-1 border-textsec p-[5px]">{index + 1}</td>
               <td className="border-r-1 border-textsec p-[5px]">{item.name}</td>
               <td className="border-r-1 border-textsec p-[5px]">
@@ -124,13 +126,13 @@ const ElectricList = () => {
                 {formatDate(item.createdAt)}
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.voltageRange}
+                {item.voltageRange == null ? "—" : item.voltageRange} {""} V
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.power}
+                {item.power == null ? "—" : item.power} {""} W
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.materialInsulation}
+                {item.current == null ? "—" : item.current} {""} A
               </td>
               <td className=" text-center p-[5px]">
                 <Dialog open={open} onOpenChange={setOpen}>
@@ -149,35 +151,74 @@ const ElectricList = () => {
                     </button>
                   </DialogTrigger>
 
-                  {selectMaterial && (
-                    <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
-                      <DialogHeader>
-                        <DialogTitle>
-                          Chi tiết vật tư
-                          <span className="text-[#ffd700]">
-                            {" "}
-                            {selectMaterial.name}
-                          </span>
-                        </DialogTitle>
-                        <DialogDescription className="text-gray-400">
-                          {selectMaterial.description?.length > 0
-                            ? selectMaterial.description
-                            : "hello"}
-                        </DialogDescription>
-                      </DialogHeader>
-
-                      <ul>
-                        <li>
-                          <span className="text-[#60A5FA] font-semibold">
-                            Số lượng:{" "}
-                          </span>{" "}
-                          {selectMaterial.quantity} {selectMaterial.unit}
-                        </li>
-                        <li></li>
-                        <li></li>
-                      </ul>
-                    </DialogContent>
-                  )}
+                  <DialogContent className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit h-auto max-h-fit rounded-[12px] border-none text-white p-[25px] ">
+                    {selectMaterial ? (
+                      <>
+                        <DialogHeader>
+                          <DialogTitle>
+                            Chi tiết vật tư
+                            <span className="text-[#ffd700]">
+                              {" "}
+                              {selectMaterial.name}
+                            </span>
+                          </DialogTitle>
+                          <DialogDescription className="text-gray-400">
+                            {selectMaterial.description?.length > 0
+                              ? selectMaterial.description
+                              : "hello"}
+                          </DialogDescription>
+                        </DialogHeader>
+                        <div className="flex flex-row gap-[25px]">
+                          <img
+                            src={cadivi}
+                            alt="day-dien-2x2.5-cadivi"
+                            className="w-[250px] h-[250px] rounded-[12px] border-[3px] border-[#fdd700]"
+                          />
+                          <AnimatePresence>
+                            <motion.div
+                              initial={{ opacity: 0, x: -50 }}
+                              animate={{ opacity: 1, x: 0 }}
+                              exit={{ opacity: 0, x: 50 }}
+                              transition={{ duration: 0.3 }}
+                              className=""
+                            >
+                              <ul className="flex flex-col gap-[10px] ">
+                                <li>
+                                  <span className="text-[#60A5FA] font-semibold">
+                                    Mã vật tư:
+                                  </span>{" "}
+                                  {selectMaterial.materialID}
+                                </li>
+                                <li>
+                                  <span className="text-[#60A5FA] font-semibold">
+                                    Số lượng:
+                                  </span>{" "}
+                                  {selectMaterial.quantity}{" "}
+                                  {selectMaterial.unit}
+                                </li>
+                                <li>
+                                  <span className="text-[#60A5FA] font-semibold">
+                                    Thời gian giữa các lần bảo trì:
+                                  </span>{" "}
+                                  {selectMaterial.maintenanceCycle == null
+                                    ? "—"
+                                    : selectMaterial.maintenanceCycle}{" "}
+                                  tháng
+                                </li>
+                                <li></li>
+                                <li></li>
+                              </ul>
+                            </motion.div>
+                          </AnimatePresence>
+                        </div>
+                      </>
+                    ) : (
+                      <div>
+                        <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                        <span>Đang tải dữ liệu...</span>
+                      </div>
+                    )}
+                  </DialogContent>
                 </Dialog>
               </td>
             </tr>
