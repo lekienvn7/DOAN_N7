@@ -18,7 +18,7 @@ const materialSchema = new mongoose.Schema(
       // Thời gian giữa các lần bảo trì
       type: Number, // tính theo tháng
       default: null, // mặc định: 1 tháng bảo trì 1 lần
-      min: 1,
+      min: 0,
     },
     type: [
       {
@@ -41,14 +41,14 @@ const materialSchema = new mongoose.Schema(
     status: {
       // Trạng thái vât liệu
       type: String,
-      enum: ["Trong kho", "Đang mượn", "Đang bảo trì"],
+      enum: ["Trong kho", "Đang bảo trì"],
       default: "Trong kho",
     },
     quantity: {
       // Số lượng
       type: Number,
       default: 0,
-      min: 1,
+      min: 0,
     },
 
     avatarMaterialUrl: {
@@ -82,7 +82,6 @@ const materialSchema = new mongoose.Schema(
     },
     materialInsulation: {
       type: String,
-      enum: ["Dẫn điện", "Cách điện"],
       default: null,
     },
     current: {
@@ -125,8 +124,7 @@ const materialSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
-    
-    
+
     // ====== ĐẶC ĐIỂM VẬT TƯ HÓA CHẤT ====== //
     chemicalFormula: {
       type: String,

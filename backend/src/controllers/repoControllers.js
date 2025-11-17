@@ -36,7 +36,13 @@ export const getRepoMaterials = async (req, res) => {
     const { repoID } = req.params;
 
     const repo = await Repository.findOne({ repoID })
-      .populate("materials.material")
+      .populate({
+        path: "materials.material",
+        populate: {
+          path: "createdBy",
+          select: "fullName email userID",
+        },
+      })
       .lean();
 
     if (!repo) {
@@ -53,6 +59,8 @@ export const getRepoMaterials = async (req, res) => {
       quantity: item.quantity,
       maintenanceCycle: item.material.maintenanceCycle,
       createdAt: item.material.createdAt,
+      description: item.material.description,
+      createdBy: item.material.createdBy,
 
       voltageRange: item.material.voltageRange,
       power: item.material.power,

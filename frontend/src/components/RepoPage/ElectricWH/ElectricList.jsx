@@ -14,7 +14,7 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "../../ui/dialog";
+} from "@/components/ui/dialog";
 import cadivi from "@/assets/images/cadivi225.png";
 
 const ElectricList = () => {
@@ -22,6 +22,7 @@ const ElectricList = () => {
   const [selectMaterial, setSelectMaterial] = useState(null);
 
   const { user } = useAuth();
+
   const checkPermission = () => {
     const hasAccess =
       user?.yourRepo?.includes("all") || user?.yourRepo?.includes("electric");
@@ -33,6 +34,7 @@ const ElectricList = () => {
 
     return true;
   };
+
   const [electrical, setElectrical] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -114,7 +116,9 @@ const ElectricList = () => {
           {electrical.map((item, index) => (
             <tr className="border-b-1 border-gray-500 text-center text-[14px] text-[#e5e5e7] hover:bg-[#1c1c1e]">
               <td className="border-r-1 border-textsec p-[5px]">{index + 1}</td>
-              <td className="border-r-1 border-textsec p-[5px]">{item.name}</td>
+              <td className="text-left border-r-1 border-textsec p-[5px]">
+                {item.name}
+              </td>
               <td className="border-r-1 border-textsec p-[5px]">
                 {item.quantity}
               </td>
@@ -126,23 +130,19 @@ const ElectricList = () => {
                 {formatDate(item.createdAt)}
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.voltageRange == null ? "—" : item.voltageRange} {""} V
+                {item.voltageRange ? `${item.voltageRange}V` : "—"}
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.power == null ? "—" : item.power} {""} W
+                {item.power ? `${item.power}W` : "—"}
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.current == null ? "—" : item.current} {""} A
+                {item.current ? `${item.current}A` : "—"}
               </td>
               <td className=" text-center p-[5px]">
-                <Dialog open={open} onOpenChange={setOpen}>
+                <Dialog>
                   <DialogTrigger asChild>
                     <button
                       onClick={(e) => {
-                        e.preventDefault();
-                        if (checkPermission()) {
-                          setOpen(true);
-                        }
                         setSelectMaterial(item);
                       }}
                       className="cursor-pointer p-[5px] justify-center text-[#ffd700] hover:text-[#ffb700]"
@@ -150,8 +150,7 @@ const ElectricList = () => {
                       <ReceiptText size={15} />
                     </button>
                   </DialogTrigger>
-
-                  <DialogContent className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit h-auto max-h-fit rounded-[12px] border-none text-white p-[25px] ">
+                  <DialogContent className="bg-[#1a1a1a] !max-w-none w-auto w-[1000px]  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] ">
                     {selectMaterial ? (
                       <>
                         <DialogHeader>
@@ -165,15 +164,17 @@ const ElectricList = () => {
                           <DialogDescription className="text-gray-400">
                             {selectMaterial.description?.length > 0
                               ? selectMaterial.description
-                              : "hello"}
+                              : "—"}
                           </DialogDescription>
                         </DialogHeader>
                         <div className="flex flex-row gap-[25px]">
-                          <img
-                            src={cadivi}
-                            alt="day-dien-2x2.5-cadivi"
-                            className="w-[250px] h-[250px] rounded-[12px] border-[3px] border-[#fdd700]"
-                          />
+                          <div className="border-[3px] border-[#fdd700] rounded-[12px]">
+                            <img
+                              src={cadivi}
+                              alt="day-dien-2x2.5-cadivi"
+                              className="w-[250px] h-[250px] rounded-[12px] "
+                            />
+                          </div>
                           <AnimatePresence>
                             <motion.div
                               initial={{ opacity: 0, x: -50 }}
@@ -183,30 +184,126 @@ const ElectricList = () => {
                               className=""
                             >
                               <ul className="flex flex-col gap-[10px] ">
-                                <li>
-                                  <span className="text-[#60A5FA] font-semibold">
-                                    Mã vật tư:
-                                  </span>{" "}
-                                  {selectMaterial.materialID}
-                                </li>
-                                <li>
-                                  <span className="text-[#60A5FA] font-semibold">
-                                    Số lượng:
-                                  </span>{" "}
-                                  {selectMaterial.quantity}{" "}
-                                  {selectMaterial.unit}
-                                </li>
-                                <li>
-                                  <span className="text-[#60A5FA] font-semibold">
-                                    Thời gian giữa các lần bảo trì:
-                                  </span>{" "}
-                                  {selectMaterial.maintenanceCycle == null
-                                    ? "—"
-                                    : selectMaterial.maintenanceCycle}{" "}
-                                  tháng
-                                </li>
-                                <li></li>
-                                <li></li>
+                                <div className="flex flex-row gap-[25px]">
+                                  <div className="flex flex-col gap-[10px]">
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Mã vật tư:
+                                      </span>{" "}
+                                      {selectMaterial.materialID}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Số lượng:
+                                      </span>{" "}
+                                      {selectMaterial.quantity}{" "}
+                                      {selectMaterial.unit}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Bảo trì định kỳ:
+                                      </span>{" "}
+                                      {selectMaterial.maintenanceCycle == 0
+                                        ? "—"
+                                        : `${selectMaterial.maintenanceCycle} tháng`}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Thêm bởi:
+                                      </span>{" "}
+                                      {selectMaterial.createdBy.fullName} {"-"}{" "}
+                                      {selectMaterial.createdBy.email}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Cách điện:
+                                      </span>{" "}
+                                      <span>
+                                        {selectMaterial.materialInsulation
+                                          ? selectMaterial.materialInsulation ===
+                                            "Cách điện"
+                                            ? "Có"
+                                            : "Không"
+                                          : "—"}
+                                      </span>
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Tần số:
+                                      </span>{" "}
+                                      {selectMaterial.frequency
+                                        ? `${selectMaterial.frequency}Hz`
+                                        : "—"}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Điện trở:
+                                      </span>{" "}
+                                      {selectMaterial.resistance
+                                        ? `${selectMaterial.resistance}Ω`
+                                        : "—"}
+                                    </li>
+                                  </div>
+
+                                  <div className="flex flex-col gap-[10px]">
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Loại pha điện:
+                                      </span>{" "}
+                                      {selectMaterial.phaseType
+                                        ? selectMaterial.phaseType
+                                        : "—"}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Vật liệu lõi:
+                                      </span>{" "}
+                                      {selectMaterial.conductorMaterial
+                                        ? selectMaterial.conductorMaterial
+                                        : "—"}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Lớp bọc ngoài:
+                                      </span>{" "}
+                                      {selectMaterial.insulationMaterial
+                                        ? selectMaterial.insulationMaterial
+                                        : "—"}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Khả năng chịu lửa:
+                                      </span>{" "}
+                                      {selectMaterial.fireResistance
+                                        ? selectMaterial.fireResistance
+                                        : "—"}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Đường kính dây:
+                                      </span>{" "}
+                                      {selectMaterial.cableDiameter
+                                        ? `${selectMaterial.cableDiameter} mm²`
+                                        : "—"}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Mức độ bảo vệ:
+                                      </span>{" "}
+                                      {selectMaterial.waterproofLevel
+                                        ? selectMaterial.waterproofLevel
+                                        : "—"}
+                                    </li>
+                                    <li>
+                                      <span className="text-[#60A5FA] font-semibold">
+                                        Nhiệt độ hoạt động:
+                                      </span>{" "}
+                                      {selectMaterial.operatingTemp
+                                        ? selectMaterial.operatingTemp
+                                        : "—"}
+                                    </li>
+                                  </div>
+                                </div>
                               </ul>
                             </motion.div>
                           </AnimatePresence>

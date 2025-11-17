@@ -152,35 +152,43 @@ const AddElectric = () => {
       <div className="flex flex-row gap-[10px]">
         <div className="flex flex-col gap-[20px] justify-center text-textpri">
           <div className="flex flex-row gap-[10px] items-center">
-            <InputField
-              label="Tên vật tư"
-              placeholder="Tên vật tư"
-              value={name}
-              onChange={setName}
-            />
-            <InputField
-              label="Mã vật tư"
-              placeholder="VD: VT001"
-              type="text"
-              value={materialID}
-              onChange={setMaterialID}
-            />
-            <InputField
-              label="Số lượng"
-              placeholder="Số lượng"
-              type="number"
-              value={quantity}
-              onChange={setQuantity}
-            />
+            <div className="text-[#fdd700]">
+              <InputField
+                label="Tên vật tư"
+                placeholder="Tên vật tư"
+                value={name}
+                onChange={setName}
+              />
+            </div>
+            <div className="text-[#fdd700]">
+              <InputField
+                label="Mã vật tư"
+                placeholder="VD: VT001"
+                type="text"
+                value={materialID}
+                onChange={setMaterialID}
+              />
+            </div>
+            <div className="text-[#fdd700]">
+              <InputField
+                label="Số lượng"
+                placeholder="Số lượng"
+                type="number"
+                value={quantity}
+                onChange={setQuantity}
+              />
+            </div>
           </div>
 
           <div className="flex flex-row gap-[10px] items-center">
-            <InputField
-              label="Đơn vị"
-              placeholder="VD: cái, mét..."
-              value={unit}
-              onChange={setUnit}
-            />
+            <div className="text-[#fdd700]">
+              <InputField
+                label="Đơn vị"
+                placeholder="VD: cái, mét..."
+                value={unit}
+                onChange={setUnit}
+              />
+            </div>
 
             <div className="flex flex-col gap-[5px] items-left">
               <p className="ml-[10px]">Ghi chú:</p>
@@ -369,13 +377,15 @@ const AddElectric = () => {
             onChange={setCableDiameter}
           />
 
-          <InputField
-            label="Hạn bảo trì"
-            placeholder="VD: 6 tháng"
-            type="number"
-            value={maintenanceCycle}
-            onChange={setMaintenanceCycle}
-          />
+          <div className="text-[#fdd700]">
+            <InputField
+              label="Hạn bảo trì"
+              placeholder="VD: 6 tháng"
+              type="number"
+              value={maintenanceCycle}
+              onChange={setMaintenanceCycle}
+            />
+          </div>
 
           <div className="flex flex-col gap-[5px] items-left">
             <p className="ml-[10px]">Mức độ bảo vệ</p>
@@ -389,25 +399,25 @@ const AddElectric = () => {
 
               <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
                 <SelectItem
-                  value="IP20: không chống nước"
+                  value="IP20"
                   className="cursor-pointer hover:bg-highlightcl"
                 >
                   IP20: không chống nước
                 </SelectItem>
                 <SelectItem
-                  value="IP44: chống mưa nhẹ"
+                  value="IP44"
                   className="cursor-pointer hover:bg-highlightcl"
                 >
                   IP44: chống mưa nhẹ
                 </SelectItem>
                 <SelectItem
-                  value="IP65: chống bụi hoàn toàn và chống nước mức phun mạnh"
+                  value="IP65"
                   className="cursor-pointer hover:bg-highlightcl"
                 >
                   IP65: chống bụi hoàn toàn và chống nước mức phun mạnh
                 </SelectItem>
                 <SelectItem
-                  value="IP67: có thể ngâm nước tạm thời"
+                  value="IP67"
                   className="cursor-pointer hover:bg-highlightcl"
                 >
                   IP67: có thể ngâm nước tạm thời

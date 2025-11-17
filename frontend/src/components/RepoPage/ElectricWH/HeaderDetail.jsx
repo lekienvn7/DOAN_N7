@@ -9,7 +9,9 @@ import {
   Minus,
   Search,
   RefreshCcw,
+  TrendingUpDown,
   ArrowUp,
+  Barcode,
   ArrowDown,
   TrendingUp,
   ToolCase,
@@ -27,10 +29,10 @@ import {
   DialogTitle,
   DialogDescription,
   DialogClose,
-} from "../../ui/dialog";
+} from "../../ui/dialog.jsx";
 import axiosClient from "@/api/axiosClient";
 
-const HeaderDetail = () => {
+const HeaderDetail = ({ mode, setMode }) => {
   const [open, setOpen] = useState(false);
   const [repository, setRepository] = useState("");
   const { user } = useAuth();
@@ -99,7 +101,7 @@ const HeaderDetail = () => {
             <Dialog>
               <DialogTrigger asChild>
                 <button className="h-[40px] p-[15px] bg-highlightcl rounded-[12px] items-center font-bold flex flex-row gap-[10px] cursor-pointer hover:bg-[#2563eb]">
-                  <ToolCase /> Chi tiết
+                  <ToolCase /> Thông tin
                 </button>
               </DialogTrigger>
 
@@ -221,11 +223,20 @@ const HeaderDetail = () => {
               </div>
               <div class="border-r h-5 mx-2 text-textsec "></div>
               <button
-                onClick={() => checkPermission()}
+                onClick={(e) => {
+                  e.preventDefault(); // Ngăn Radix mở tự động
+                  if (checkPermission()) {
+                    setMode((prev) => (prev === "view" ? "edit" : "view"));
+                  }
+                }}
                 className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300 cursor-pointer ml-[15px]"
               >
-                Báo cáo
-                <TrendingUp size={18} />
+                {mode === "view" ? `Chỉnh sửa` : `Chi tiết`}
+                {mode === "view" ? (
+                  <TrendingUp size={18} />
+                ) : (
+                  <TrendingUpDown size={18} />
+                )}
               </button>
             </div>
           </div>

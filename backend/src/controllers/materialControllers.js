@@ -21,7 +21,10 @@ const detectRepoType = (repoName) => {
 
 export const getAllMaterials = async (req, res) => {
   try {
-    const materials = await Material.find();
+    const materials = await Material.find().populate(
+      "createdBy",
+      "fullName userID"
+    );
     res.status(200).json({
       success: true,
       message: "Lấy danh sách vật tư thành công!",
