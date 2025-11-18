@@ -45,6 +45,22 @@ const ElectricList = ({ mode, reload }) => {
     fetchElectrical();
   }, [reload]);
 
+  const getNextMaintenanceDate = (startDate, months) => {
+    if (!startDate || !months) return null;
+
+    const date = new Date(startDate);
+    date.setMonth(date.getMonth() + months);
+    return date;
+  };
+
+  const getDaysLeft = (targetDate) => {
+    if (!targetDate) return null;
+
+    const today = new Date();
+    const diff = targetDate - today;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
 
@@ -114,7 +130,27 @@ const ElectricList = ({ mode, reload }) => {
               </td>
               <td className="border-r-1 border-textsec p-[5px]">{item.unit}</td>
               <td className="border-r-1 border-textsec p-[5px]">
-                {item.maintenanceCycle}
+                {item.maintenanceCycle
+                  ? (() => {
+                      const nextDate = getNextMaintenanceDate(
+                        item.createdAt,
+                        item.maintenanceCycle
+                      );
+                      const daysLeft = getDaysLeft(nextDate);
+
+                      return (
+                        <span
+                          className={`${
+                            daysLeft <= 7 ? "text-red-500" : "text-textpri"
+                          } `}
+                        >
+                          {daysLeft <= 7
+                            ? `Còn ${daysLeft} ngày`
+                            : formatDate(nextDate)}
+                        </span>
+                      );
+                    })()
+                  : "—"}
               </td>
               <td className="border-r-1 border-textsec p-[5px]">
                 {formatDate(item.createdAt)}

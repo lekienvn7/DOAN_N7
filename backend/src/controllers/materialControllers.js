@@ -1,14 +1,14 @@
 import Material from "../models/Material.js";
 import User from "../models/User.js";
 import { allowedMap, filterFields } from "../utils/allowField.js";
-import ElectricMaterial from "../models/ElectricMaterial.js";
-import ChemicalMaterial from "../models/ChemicalMaterial.js";
-import MechanicalMaterial from "../models/MechanicalMaterial.js";
-import IotMaterial from "../models/IotMaterial.js";
-import TechnologyMaterial from "../models/TechnologyMaterial.js";
-import AutomotiveMaterial from "../models/AutomotiveMaterial.js";
-import TelecomMaterial from "../models/TelecomMaterial.js";
-import FashionMaterial from "../models/FashionMaterial.js";
+import ElectricMaterial from "../models/MaterialModel/ElectricMaterial.js";
+import ChemicalMaterial from "../models/MaterialModel/ChemicalMaterial.js";
+import MechanicalMaterial from "../models/MaterialModel/MechanicalMaterial.js";
+import IotMaterial from "../models/MaterialModel/IotMaterial.js";
+import TechnologyMaterial from "../models/MaterialModel/TechnologyMaterial.js";
+import AutomotiveMaterial from "../models/MaterialModel/AutomotiveMaterial.js";
+import TelecomMaterial from "../models/MaterialModel/TelecomMaterial.js";
+import FashionMaterial from "../models/MaterialModel/FashionMaterial.js";
 
 function removeNullFields(obj) {
   return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== null));

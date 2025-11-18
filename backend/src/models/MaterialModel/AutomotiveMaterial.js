@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Material from "./Material.js";
+import Material from "../Material.js";
 
 const automotiveMaterialSchema = new mongoose.Schema(
   {
