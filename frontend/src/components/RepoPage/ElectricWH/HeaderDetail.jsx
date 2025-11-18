@@ -31,8 +31,9 @@ import {
   DialogClose,
 } from "../../ui/dialog.jsx";
 import axiosClient from "@/api/axiosClient";
+import ElectricList from "./ElectricList";
 
-const HeaderDetail = ({ mode, setMode }) => {
+const HeaderDetail = ({ mode, setMode, onReload }) => {
   const [open, setOpen] = useState(false);
   const [repository, setRepository] = useState("");
   const { user } = useAuth();
@@ -140,7 +141,7 @@ const HeaderDetail = ({ mode, setMode }) => {
           </div>
 
           <div className="flex flex-row mt-[20px] justify-between">
-            <div class="flex text-textsec whitespace-nowrap text-sm cursor-pointer">
+            <div className="flex text-textsec whitespace-nowrap text-sm cursor-pointer">
               <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
                   <button
@@ -170,10 +171,10 @@ const HeaderDetail = ({ mode, setMode }) => {
                 </DialogContent>
               </Dialog>
 
-              <div class="border-r h-4 mx-2"></div>
+              <div className="border-r h-4 mx-2"></div>
               <button
                 onClick={() => checkPermission()}
-                class="pl-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
+                className="pl-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
               >
                 Xuất vật tư <Minus size={20} className="text-textpri" />
               </button>
@@ -188,7 +189,7 @@ const HeaderDetail = ({ mode, setMode }) => {
               <Tooltip anchorSelect=".searchTool" place="top">
                 Tìm kiếm
               </Tooltip>
-              <div class="border-r h-5 mx-2 text-textsec"></div>
+              <div className="border-r h-5 mx-2 text-textsec"></div>
               <div className="flex flex-row gap-[10px] p-[0px_15px]">
                 <button className="sortTool">
                   <SlidersVertical
@@ -211,7 +212,15 @@ const HeaderDetail = ({ mode, setMode }) => {
                 <Tooltip anchorSelect=".exportTool" place="top">
                   Xuất Excel
                 </Tooltip>
-                <button className="refreshTool">
+                <button
+                  onClick={() => {
+                    setTimeout(() => {
+                      toast.success("Làm mới dữ liệu thành công!");
+                    }, 1000);
+                    onReload();
+                  }}
+                  className="refreshTool"
+                >
                   <RefreshCcw
                     className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
                     size={18}
@@ -221,7 +230,7 @@ const HeaderDetail = ({ mode, setMode }) => {
                   Làm mới
                 </Tooltip>
               </div>
-              <div class="border-r h-5 mx-2 text-textsec "></div>
+              <div className="border-r h-5 mx-2 text-textsec "></div>
               <button
                 onClick={(e) => {
                   e.preventDefault(); // Ngăn Radix mở tự động

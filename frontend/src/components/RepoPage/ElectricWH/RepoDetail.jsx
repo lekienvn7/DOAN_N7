@@ -1,8 +1,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import MainDetail from "./ElectricList";
+import ElectricList from "./ElectricList";
 
-const RepoDetail = () => {
+const RepoDetail = ({ mode, reload }) => {
   return (
     <AnimatePresence>
       <motion.div
@@ -14,7 +14,7 @@ const RepoDetail = () => {
         }}
         className=" w-[1300px] max-h-[425px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-[#fdd700]"
       >
-        <MainDetail />
+        <ElectricList key={reload} mode={mode} reload={reload} />
       </motion.div>
     </AnimatePresence>
   );

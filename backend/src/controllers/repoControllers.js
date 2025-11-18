@@ -1,7 +1,6 @@
 import Repository from "../models/Repository.js";
 import Material from "../models/Material.js";
 import User from "../models/User.js";
-import { detectRepoType } from "../utils/repoUtils.js";
 
 export const getAllRepository = async (req, res) => {
   try {
@@ -31,6 +30,10 @@ export const getAllRepository = async (req, res) => {
   }
 };
 
+function removeNullFields(obj) {
+  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== null));
+}
+
 export const getRepoMaterials = async (req, res) => {
   try {
     const { repoID } = req.params;
@@ -38,66 +41,30 @@ export const getRepoMaterials = async (req, res) => {
     const repo = await Repository.findOne({ repoID })
       .populate({
         path: "materials.material",
-        populate: {
-          path: "createdBy",
-          select: "fullName email userID",
-        },
+        populate: [
+          { path: "createdBy", select: "fullName email userID" },
+          { path: "updatedBy", select: "fullName email" },
+        ],
       })
       .lean();
 
     if (!repo) {
-      return res
-        .status(404)
-        .json({ success: false, message: "Không tìm thấy kho!" });
+      return res.status(404).json({
+        success: false,
+        message: "Không tìm thấy kho!",
+      });
     }
 
-    const materialsList = repo.materials.map((item) => ({
-      materialID: item.material.materialID,
-      name: item.material.name,
-      unit: item.material.unit,
-      type: item.material.type,
-      quantity: item.quantity,
-      maintenanceCycle: item.material.maintenanceCycle,
-      createdAt: item.material.createdAt,
-      description: item.material.description,
-      createdBy: item.material.createdBy,
+    const materialsList = repo.materials.map((item) => {
+      const mat = item.material;
 
-      voltageRange: item.material.voltageRange,
-      power: item.material.power,
-      materialInsulation: item.material.materialInsulation,
-      current: item.material.current,
-      frequency: item.material.frequency,
-      resistance: item.material.resistance,
-      phaseType: item.material.phaseType,
-      conductorMaterial: item.material.conductorMaterial,
-      insulationMaterial: item.material.insulationMaterial,
-      fireResistance: item.material.fireResistance,
-      cableDiameter: item.material.cableDiameter,
-      waterproofLevel: item.material.waterproofLevel,
-      operatingTemp: item.material.operatingTemp,
-
-      chemicalFormula: item.material.chemicalFormula,
-      chemicalNote: item.material.chemicalNote,
-      expiryDate: item.material.expiryDate,
-      metalType: item.material.metalType,
-      weight: item.material.weight,
-      coating: item.material.coating,
-      communicationProtocol: item.material.communicationProtocol,
-      sensorType: item.material.sensorType,
-      powerSupply: item.material.powerSupply,
-      deviceType: item.material.deviceType,
-      Specification: item.material.Specification,
-      networkInterface: item.material.networkInterface,
-      partType: item.material.partType,
-      vehicleModel: item.material.vehicleModel,
-      manufacturer: item.material.manufacturer,
-      signalType: item.material.signalType,
-      bandwidth: item.material.bandwidth,
-      connectorType: item.material.connectorType,
-      material: item.material.material,
-      color: item.color,
-      origin: item.origin,
-    }));
+      return {
+        ...removeNullFields(mat), // vật tư sạch
+        materialID: mat.materialID,
+        modelType: mat.category, // ElectricMaterial / ChemicalMaterial...
+        quantity: item.quantity, // số lượng trong kho
+      };
+    });
 
     res.status(200).json({
       success: true,
@@ -105,8 +72,11 @@ export const getRepoMaterials = async (req, res) => {
       materials: materialsList,
     });
   } catch (error) {
-    console.error("Lỗi khi chạy getRepoMaterial", error);
-    res.status(500).json({ success: false, message: "Lỗi hệ thống!" });
+    console.error("Lỗi khi chạy getRepoMaterials", error);
+    res.status(500).json({
+      success: false,
+      message: "Lỗi hệ thống!",
+    });
   }
 };
 
@@ -120,10 +90,16 @@ export const getRepository = async (req, res) => {
       return res.status(404).json({ message: "Không tìm thấy kho!" });
     }
 
+    const totalMaterials = repo.materials.reduce(
+      (sum, item) => sum + item.quantity,
+      0
+    );
+
     res.status(200).json({
       success: true,
       message: "Lấy thông tin kho thành công!",
       data: repo,
+      totalMaterials,
     });
   } catch (error) {
     console.error("Lỗi khi gọi getRepositories: ", error);
@@ -268,7 +244,6 @@ export const updateRepository = async (req, res) => {
   try {
     const { location, manager, materials } = req.body;
 
-    // Tìm kho theo repoID
     const repo = await Repository.findOne({ repoID: req.params.id });
     if (!repo) {
       return res.status(404).json({
@@ -277,36 +252,41 @@ export const updateRepository = async (req, res) => {
       });
     }
 
-    const repoType = repo.repoType; // Ví dụ: "chemical"
-
-    // Xử lý cập nhật người quản lý (nếu có)
     let newManagerId = repo.manager;
     if (manager) {
-      const managerUser = await User.findOne({
-        userID: manager,
-      }).populate("role", "roleName roleID");
+      const managerUser = await User.findOne({ userID: manager }).populate(
+        "role",
+        "roleName roleID"
+      );
 
-      if (!managerUser) {
+      if (!managerUser)
         return res.status(404).json({
           success: false,
-          message: `Không tìm thấy người dùng có userID = ${manager}!`,
+          message: `Không tìm thấy người dùng ${manager}!`,
         });
-      }
 
-      if (managerUser.role.roleName !== "Quản lý kho") {
+      if (managerUser.role.roleName !== "Quản lý kho")
         return res.status(403).json({
           success: false,
           message: "Người này không có quyền quản lý kho!",
         });
-      }
 
       newManagerId = managerUser._id;
     }
 
-    // Cập nhật danh sách vật tư
+    // Update danh sách vật tư trong kho
     if (Array.isArray(materials) && materials.length > 0) {
       for (const item of materials) {
-        // Tìm vật tư theo id hoặc mã
+        const requestedQty = Number(item.quantity);
+
+        if (isNaN(requestedQty) || requestedQty <= 0) {
+          return res.status(400).json({
+            success: false,
+            message: `Số lượng vật tư không hợp lệ: ${item.quantity}`,
+          });
+        }
+
+        // Tìm vật tư
         const mat =
           (await Material.findById(item.material).catch(() => null)) ||
           (await Material.findOne({ materialID: item.material })) ||
@@ -319,44 +299,26 @@ export const updateRepository = async (req, res) => {
           });
         }
 
-        // Kiểm tra vật tư có phù hợp loại kho không
-        const materialTypes = Array.isArray(mat.type) ? mat.type : [mat.type];
-        const isValidType = materialTypes.some(
-          (t) => t.trim().toLowerCase() === repoType.trim().toLowerCase()
-        );
-
-        if (!isValidType) {
-          return res.status(400).json({
-            success: false,
-            message: `Vật tư '${mat.name}' (${materialTypes.join(
-              ", "
-            )}) không phù hợp với kho '${repo.repoName}' (${repoType})!`,
-          });
-        }
-
-        // Kiểm tra tồn kho có đủ không
-        const requestedQty = item.quantity || 0;
+        // Check tồn kho tổng (Material.quantity)
         if (mat.quantity < requestedQty) {
           return res.status(400).json({
             success: false,
-            message: `Vật tư '${mat.name}' không đủ số lượng để thêm (hiện có ${mat.quantity}, yêu cầu ${requestedQty}).`,
+            message: `Vật tư '${mat.name}' không đủ tồn kho (còn ${mat.quantity}, yêu cầu ${requestedQty}).`,
           });
         }
 
-        // Nếu đủ, trừ số lượng vật tư trong bảng Material
+        // Trừ tồn kho nguồn
         mat.quantity -= requestedQty;
         await mat.save();
 
-        // Kiểm tra xem vật tư đã có trong kho chưa
-        const existingIndex = repo.materials.findIndex(
+        // Thêm hoặc cộng số lượng vật tư trong repo
+        const index = repo.materials.findIndex(
           (m) => m.material.toString() === mat._id.toString()
         );
 
-        if (existingIndex >= 0) {
-          // Nếu có rồi → cộng thêm
-          repo.materials[existingIndex].quantity += requestedQty;
+        if (index >= 0) {
+          repo.materials[index].quantity += requestedQty;
         } else {
-          // Nếu chưa có → thêm mới
           repo.materials.push({
             material: mat._id,
             quantity: requestedQty,
@@ -365,16 +327,17 @@ export const updateRepository = async (req, res) => {
       }
     }
 
-    // Cập nhật thông tin khác của kho
+    // Update location + manager
     if (location) repo.location = location;
     repo.manager = newManagerId;
 
+    // Lưu thay đổi
     await repo.save();
 
-    // Trả về kho đã cập nhật, populate đầy đủ
+    // Trả về repo đầy đủ
     const updatedRepo = await Repository.findOne({ repoID: req.params.id })
       .populate("manager", "fullName email role")
-      .populate("materials.material", "name type unit quantity");
+      .populate("materials.material", "materialID name type unit quantity");
 
     res.status(200).json({
       success: true,
@@ -393,7 +356,24 @@ export const updateRepository = async (req, res) => {
 
 export const removeMaterialFromRepo = async (req, res) => {
   try {
-    const { materialID, quantity } = req.body; // ví dụ: { "materialID": "VT003", "quantity": 5 }
+    const { materialID, quantity } = req.body;
+
+    if (!materialID || quantity == null) {
+      return res.status(400).json({
+        success: false,
+        message: "Thiếu mã vật tư hoặc số lượng!",
+      });
+    }
+
+    const removeQty = Number(quantity);
+    if (isNaN(removeQty) || removeQty <= 0) {
+      return res.status(400).json({
+        success: false,
+        message: "Số lượng cần xóa phải lớn hơn 0!",
+      });
+    }
+
+    // Tìm kho
     const repo = await Repository.findOne({ repoID: req.params.id });
 
     if (!repo) {
@@ -402,6 +382,8 @@ export const removeMaterialFromRepo = async (req, res) => {
         message: "Kho không tồn tại!",
       });
     }
+
+    const repoType = repo.repoType.trim().toLowerCase();
 
     // Tìm vật tư trong database
     const mat =
@@ -415,7 +397,16 @@ export const removeMaterialFromRepo = async (req, res) => {
       });
     }
 
-    // Tìm vật tư đó trong kho
+    // Check loại vật tư có khớp loại kho không
+    // Không cho remove vật tư không thuộc kho (dạng mismatch)
+    if (mat.type.trim().toLowerCase() !== repoType) {
+      return res.status(400).json({
+        success: false,
+        message: `Vật tư '${mat.name}' thuộc loại '${mat.type}', không thể xử lý trong kho '${repo.repoName}' (${repoType})!`,
+      });
+    }
+
+    // Tìm vật tư trong kho
     const index = repo.materials.findIndex(
       (m) => m.material.toString() === mat._id.toString()
     );
@@ -428,16 +419,8 @@ export const removeMaterialFromRepo = async (req, res) => {
     }
 
     const currentQty = repo.materials[index].quantity;
-    const removeQty = Number(quantity);
 
-    // Kiểm tra số lượng hợp lệ
-    if (removeQty <= 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Số lượng cần xóa phải lớn hơn 0!",
-      });
-    }
-
+    // Validate tồn kho trong repo
     if (removeQty > currentQty) {
       return res.status(400).json({
         success: false,
@@ -445,38 +428,40 @@ export const removeMaterialFromRepo = async (req, res) => {
       });
     }
 
-    // Cập nhật lại số lượng hoặc xóa khỏi kho nếu = 0
+    // Cập nhật số lượng
     if (removeQty === currentQty) {
-      // Xóa hoàn toàn khỏi kho
+      // Xóa hoàn toàn khỏi repo
       repo.materials.splice(index, 1);
     } else {
-      // Giảm số lượng còn lại
+      // Giảm số lượng
       repo.materials[index].quantity -= removeQty;
     }
 
-    // Cộng lại vào tồn kho chung trong bảng Material
+    // Trả lại số lượng vào bảng Material (tồn kho tổng)
     mat.quantity += removeQty;
     await mat.save();
 
+    // Lưu repo
     await repo.save();
 
+    // Trả về bản repo mới
     const updatedRepo = await Repository.findOne({ repoID: req.params.id })
       .populate("manager", "fullName email role")
-      .populate("materials.material", "name type unit");
+      .populate("materials.material", "materialID name type unit quantity");
 
     res.status(200).json({
       success: true,
       message:
         removeQty === currentQty
-          ? `Đã xóa vật tư '${mat.name}' khỏi kho '${repo.repoName}'!`
-          : `Đã giảm ${removeQty} vật tư '${mat.name}' trong kho '${repo.repoName}'!`,
+          ? `Đã loại bỏ vật tư '${mat.name}' khỏi kho '${repo.repoName}'.`
+          : `Đã giảm ${removeQty} vật tư '${mat.name}' trong kho '${repo.repoName}'.`,
       data: updatedRepo,
     });
   } catch (error) {
     console.error("Lỗi khi xóa vật tư khỏi kho:", error);
     res.status(500).json({
       success: false,
-      message: "Lỗi hệ thống khi xóa vật tư khỏi kho!",
+      message: "Lỗi hệ thống!",
       error: error.message,
     });
   }

@@ -1,37 +1,38 @@
 import Material from "../models/Material.js";
 import User from "../models/User.js";
-import Repository from "../models/Repository.js";
+import { allowedMap, filterFields } from "../utils/allowField.js";
+import ElectricMaterial from "../models/ElectricMaterial.js";
+import ChemicalMaterial from "../models/ChemicalMaterial.js";
+import MechanicalMaterial from "../models/MechanicalMaterial.js";
+import IotMaterial from "../models/IotMaterial.js";
+import TechnologyMaterial from "../models/TechnologyMaterial.js";
+import AutomotiveMaterial from "../models/AutomotiveMaterial.js";
+import TelecomMaterial from "../models/TelecomMaterial.js";
+import FashionMaterial from "../models/FashionMaterial.js";
 
-const detectRepoType = (repoName) => {
-  if (repoName.toLowerCase().includes("điện")) return "Điện";
-  if (repoName.toLowerCase().includes("hóa")) return "Hóa chất";
-  if (repoName.toLowerCase().includes("cơ khí")) return "Cơ khí";
-  if (repoName.toLowerCase().includes("nhúng")) return "Nhúng";
-  if (repoName.toLowerCase().includes("công nghệ thông tin"))
-    return "Công nghệ thông tin";
-  if (
-    repoName.toLowerCase().includes("oto") ||
-    repoName.toLowerCase().includes("ô tô")
-  )
-    return "Ô tô";
-  if (repoName.toLowerCase().includes("điện tử")) return "Điện tử";
-  if (repoName.toLowerCase().includes("thời trang")) return "Thời trang";
-  return null;
-};
+function removeNullFields(obj) {
+  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== null));
+}
 
 export const getAllMaterials = async (req, res) => {
   try {
-    const materials = await Material.find().populate(
-      "createdBy",
-      "fullName userID"
-    );
+    const materials = await Material.find()
+      .populate("createdBy", "fullName userID")
+      .populate("updatedBy", "fullName")
+      .lean(); // trả về object thuần, dễ xử lý field
+
+    const clean = materials.map((m) => ({
+      ...removeNullFields(m),
+      modelType: m.category || m.modelType || "Material",
+    }));
+
     res.status(200).json({
       success: true,
       message: "Lấy danh sách vật tư thành công!",
-      data: materials,
+      data: clean,
     });
   } catch (error) {
-    console.error("Lỗi khi gọi getAllMaterial: ", error);
+    console.error("Lỗi khi gọi getAllMaterials:", error);
     res.status(500).json({
       success: false,
       message: "Lỗi hệ thống!",
@@ -46,50 +47,32 @@ export const addMaterial = async (req, res) => {
       name,
       materialID,
       type,
-      repoID,
       status,
       quantity,
       unit,
       description,
       createdBy,
       maintenanceCycle,
-
-      voltageRange,
-      power,
-      materialInsulation,
-      current,
-      frequency,
-      resistance,
-      phaseType,
-      conductorMaterial,
-      insulationMaterial,
-      fireResistance,
-      cableDiameter,
-      waterproofLevel,
-      operatingTemp,
-
-      chemicalFormula,
-      chemicalNote,
-      expiryDate,
-      metalType,
-      weight,
-      coating,
-      communicationProtocol,
-      sensorType,
-      powerSupply,
-      deviceType,
-      Specification,
-      networkInterface,
-      partType,
-      vehicleModel,
-      manufacturer,
-      signalType,
-      bandwidth,
-      connectorType,
-      material,
-      color,
-      origin,
     } = req.body;
+
+    const modelMap = {
+      electric: ElectricMaterial,
+      chemical: ChemicalMaterial,
+      mechanical: MechanicalMaterial,
+      iot: IotMaterial,
+      technology: TechnologyMaterial,
+      automotive: AutomotiveMaterial,
+      telecom: TelecomMaterial,
+      fashion: FashionMaterial,
+    };
+
+    const SelectedModel = modelMap[type];
+
+    if (!SelectedModel) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Loại vật tư không hợp lệ!" });
+    }
 
     // Kiểm tra dữ liệu bắt buộc
     if (!name || !type || !unit || quantity == null) {
@@ -99,46 +82,10 @@ export const addMaterial = async (req, res) => {
       });
     }
 
-    // Chuyển type về mảng nếu chưa phải
-    const typeArray = Array.isArray(type) ? type : [type];
-
-    // Danh sách loại vật tư hợp lệ
-    const validTypes = [
-      "electric",
-      "chemical",
-      "mechanical",
-      "iot",
-      "technology",
-      "automotive",
-      "telecom",
-      "fashion",
-    ];
-
-    const invalidType = typeArray.find((t) => !validTypes.includes(t));
-    if (invalidType) {
-      return res.status(400).json({
-        success: false,
-        message: `Loại vật tư '${invalidType}' không hợp lệ!`,
-      });
-    }
-
-    // Nếu có repoID → kiểm tra loại kho có trùng với loại vật tư không
-    if (repoID) {
-      const repo = await Repository.findOne({ repoID });
-      if (!repo) {
-        return res.status(404).json({
-          success: false,
-          message: `Kho '${repoID}' không tồn tại!`,
-        });
-      }
-
-      const repoType = detectRepoType(repo.repoName);
-      if (repoType && !typeArray.includes(repoType)) {
-        return res.status(400).json({
-          success: false,
-          message: `Kho '${repo.repoName}' chỉ nhận vật tư loại '${repoType}'!`,
-        });
-      }
+    if (await Material.findOne({ materialID })) {
+      return res
+        .status(409)
+        .json({ success: false, message: "Mã vật tư đã tồn tại!" });
     }
 
     // Kiểm tra người tạo
@@ -150,52 +97,23 @@ export const addMaterial = async (req, res) => {
       });
     }
 
-    const newMaterial = await Material.create({
+    const allowedFields = allowedMap[type];
+    const cleanData = filterFields(req.body, allowedFields);
+
+    delete cleanData.type;
+
+    const newMaterial = await SelectedModel.create({
+      ...cleanData,
+
       materialID,
       name,
-      type: typeArray[0],
+      type,
       quantity,
-      status,
-      maintenanceCycle,
       unit,
       description,
+      status,
+      maintenanceCycle,
       createdBy: existingUser._id,
-
-      voltageRange,
-      power,
-      materialInsulation,
-      current,
-      frequency,
-      resistance,
-      phaseType,
-      conductorMaterial,
-      insulationMaterial,
-      fireResistance,
-      cableDiameter,
-      waterproofLevel,
-      operatingTemp,
-
-      chemicalFormula,
-      chemicalNote,
-      expiryDate,
-      metalType,
-      weight,
-      coating,
-      communicationProtocol,
-      sensorType,
-      powerSupply,
-      deviceType,
-      Specification,
-      networkInterface,
-      partType,
-      vehicleModel,
-      manufacturer,
-      signalType,
-      bandwidth,
-      connectorType,
-      material,
-      color,
-      origin,
     });
 
     // Sau khi hoàn tất mới trả về
@@ -216,78 +134,60 @@ export const addMaterial = async (req, res) => {
 
 export const updateMaterial = async (req, res) => {
   try {
-    const {
-      status,
-      quantity,
-      description,
+    const materialID = req.params.id;
 
-      voltageRange,
-      power,
-      materialInsulation,
-      current,
-      frequency,
-      resistance,
-      phaseType,
-      conductorMaterial,
-      insulationMaterial,
-      fireResistance,
-      cableDiameter,
-      waterproofLevel,
-      operatingTemp,
+    const existingMaterial = await Material.findOne({ materialID });
 
-      addType,
-      removeType,
-    } = req.body;
-
-    // Chuẩn bị đối tượng cập nhật
-    const updateOps = {
-      $set: {
-        status,
-        quantity,
-
-        voltageRange,
-        power,
-        materialInsulation,
-        current,
-        frequency,
-        resistance,
-        phaseType,
-        conductorMaterial,
-        insulationMaterial,
-        fireResistance,
-        cableDiameter,
-        waterproofLevel,
-        operatingTemp,
-
-        description,
-      },
-    };
-
-    if (addType)
-      updateOps.$addToSet = {
-        type: { $each: Array.isArray(addType) ? addType : [addType] },
-      };
-
-    if (removeType)
-      updateOps.$pull = {
-        type: { $in: Array.isArray(removeType) ? removeType : [removeType] },
-      };
-
-    // Thực hiện cập nhật
-    const updatedMaterial = await Material.findOneAndUpdate(
-      { materialID: req.params.id },
-      updateOps,
-      { new: true }
-    );
-
-    if (!updatedMaterial) {
+    if (!existingMaterial) {
       return res.status(404).json({
         success: false,
-        message: "Vật tư không tồn tại",
+        message: "Vật tư không tồn tại!",
       });
     }
 
-    res.status(200).json({
+    const type = existingMaterial.type;
+
+    const modelMap = {
+      electric: ElectricMaterial,
+      chemical: ChemicalMaterial,
+      mechanical: MechanicalMaterial,
+      iot: IotMaterial,
+      technology: TechnologyMaterial,
+      automotive: AutomotiveMaterial,
+      telecom: TelecomMaterial,
+      fashion: FashionMaterial,
+    };
+
+    const SelectedModel = modelMap[type];
+
+    if (!SelectedModel) {
+      return res.status(500).json({
+        success: false,
+        message: `Không thể xác định model con cho loại vật tư '${type}'`,
+      });
+    }
+
+    // 3. Lọc các field cho phép
+    const allowedFields = allowedMap[type];
+    const cleanData = filterFields(req.body, allowedFields);
+
+    // Không cho phép đổi type hoặc materialID hoặc createdBy
+    delete cleanData.type;
+    delete cleanData.materialID;
+    delete cleanData.createdBy;
+
+    // 4. Ghi thông tin người sửa
+    cleanData.updatedBy = req.user?.userID; // hoặc token userId
+    cleanData.updatedAt = Date.now();
+
+    // 5. Update bằng model con
+    const updatedMaterial = await SelectedModel.findOneAndUpdate(
+      { materialID },
+      cleanData,
+      { new: true }
+    );
+
+    return res.status(200).json({
       success: true,
       message: "Cập nhật vật tư thành công!",
       data: updatedMaterial,
