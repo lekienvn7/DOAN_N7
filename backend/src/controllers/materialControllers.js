@@ -88,6 +88,12 @@ export const addMaterial = async (req, res) => {
         .json({ success: false, message: "Mã vật tư đã tồn tại!" });
     }
 
+    if (await Material.findOne({ name })) {
+      return res
+        .status(409)
+        .json({ success: false, message: "Vật tư đã tồn tại!" });
+    }
+
     // Kiểm tra người tạo
     const existingUser = await User.findOne({ userID: createdBy });
     if (!existingUser) {

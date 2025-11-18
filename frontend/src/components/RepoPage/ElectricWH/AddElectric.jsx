@@ -137,11 +137,11 @@ const AddElectric = () => {
           }
         }, 1000);
       } else {
-        toast.error(res.data.message || "Thêm vật tư thất bại!");
+        toast.error("Thêm vật tư thất bại!");
       }
     } catch (error) {
       console.error("Lỗi thêm vật tư:", error);
-      toast.error("Lỗi kết nối hoặc máy chủ không phản hồi!");
+      toast.error(error.response?.data?.message || "Lỗi kết nối!");
     } finally {
       setLoading(false);
     }

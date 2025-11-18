@@ -216,7 +216,7 @@ const HeaderDetail = ({ mode, setMode, onReload }) => {
                   onClick={() => {
                     setTimeout(() => {
                       toast.success("Làm mới dữ liệu thành công!");
-                    }, 1000);
+                    }, 500);
                     onReload();
                   }}
                   className="refreshTool"
