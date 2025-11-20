@@ -18,7 +18,7 @@ const Menu = () => {
   // Admin
   const adMenuItems = [
     { name: "Trang chủ", path: "/home", key: "1" },
-    { name: "Kho vật tư", path: "/repository/mechanical", key: "2" },
+    { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
     { name: "Giao tiếp", path: "/notice", key: "4" },
     { name: "Quản lý/Phân quyền", path: "/role", key: "5" },
@@ -27,7 +27,7 @@ const Menu = () => {
   // Quản lý
   const managerMenuItems = [
     { name: "Trang chủ", path: "/home", key: "1" },
-    { name: "Kho vật tư", path: "/repository/mechanical", key: "2" },
+    { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
     { name: "Báo cáo", path: "/report", key: "4" },
     { name: "Thông tin tài khoản", path: "/user", key: "5" },

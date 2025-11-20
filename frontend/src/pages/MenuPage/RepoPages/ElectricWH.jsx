@@ -7,6 +7,7 @@ import HeaderDetail from "@/components/RepoPage/ElectricWH/HeaderDetail";
 const ElectricWH = () => {
   const [mode, setMode] = useState("view");
   const [reload, setReload] = useState(0);
+  const [searchData, setSearchData] = useState("");
 
   const reloadList = () => {
     setReload((prev) => prev + 1);
@@ -16,8 +17,14 @@ const ElectricWH = () => {
     <div className="flex flex-row">
       <ElectricUtilities />
       <div className="flex flex-col">
-        <HeaderDetail mode={mode} setMode={setMode} onReload={reloadList} />
-        <RepoDetail mode={mode} reload={reload} />
+        <HeaderDetail
+          mode={mode}
+          setMode={setMode}
+          onReload={reloadList}
+          searchData={searchData}
+          setSearchData={setSearchData}
+        />
+        <RepoDetail mode={mode} reload={reload} searchData={searchData} />
       </div>
     </div>
   );

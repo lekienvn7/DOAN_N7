@@ -7,26 +7,16 @@ import { toast } from "sonner";
 import { AnimatePresence, motion } from "framer-motion";
 import ElectricDetail from "./ElectricDetail";
 import ElectricEdit from "./ElectricEdit";
-const ElectricList = ({ mode, reload }) => {
+
+const ElectricList = ({ mode, reload, searchData }) => {
   const [open, setOpen] = useState(false);
   const [selectMaterial, setSelectMaterial] = useState(null);
 
   const { user } = useAuth();
 
-  const checkPermission = () => {
-    const hasAccess =
-      user?.yourRepo?.includes("all") || user?.yourRepo?.includes("electric");
-
-    if (!hasAccess) {
-      toast.error("Không có quyền sử dụng chức năng!");
-      return false;
-    }
-
-    return true;
-  };
-
   const [electrical, setElectrical] = useState([]);
   const [loading, setLoading] = useState(false);
+  const keywords = searchData.toLowerCase().trim().split(/\s+/);
 
   useEffect(() => {
     const fetchElectrical = async () => {
@@ -44,6 +34,32 @@ const ElectricList = ({ mode, reload }) => {
     };
     fetchElectrical();
   }, [reload]);
+
+  const filterData = electrical.filter((item) => {
+    return keywords.every((k) => item.name.toLowerCase().includes(k));
+  });
+
+  const highlightText = (text, searchData) => {
+    if (!searchData.trim()) return text;
+
+    // Tách nhiều từ khóa: dây điện cadivi → ["dây","điện","cadivi"]
+    const keywords = searchData.toLowerCase().trim().split(/\s+/);
+
+    // Tạo regex highlight nhiều từ cùng lúc (không phân biệt hoa thường)
+    const regex = new RegExp(`(${keywords.join("|")})`, "gi");
+
+    // Tách text, mỗi match sẽ nằm trong array
+    return text.split(regex).map((part, index) => {
+      if (keywords.includes(part.toLowerCase())) {
+        return (
+          <span key={index} className="text-highlightcl font-semibold">
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
 
   const getNextMaintenanceDate = (startDate, months) => {
     if (!startDate || !months) return null;
@@ -101,10 +117,12 @@ const ElectricList = ({ mode, reload }) => {
         </thead>
 
         <tbody>
-          {electrical.map((item, index) => (
+          {filterData.map((item, index) => (
             <tr className=" text-center text-[14px] odd:bg-[#111111] even:bg-[#0d0d0d] hover:bg-[#1a1a1a] text-[#e5e5e7] ">
               <td className=" p-[5px]">{index + 1}</td>
-              <td className="text-left  p-[5px]">{item.name}</td>
+              <td className="text-left  p-[5px]">
+                {highlightText(item.name, searchData)}
+              </td>
               <td className=" p-[5px]">{item.quantity}</td>
               <td className=" p-[5px]">{item.unit}</td>
               <td className=" p-[5px]">

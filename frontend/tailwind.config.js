@@ -17,6 +17,12 @@ module.exports = {
       },
     },
     extend: {
+      utilities: {
+        ".gpu": {
+          transform: "translateZ(0)",
+          "will-change": "transform, opacity",
+        },
+      },
       fontFamily: {
         qurova: ["Qurova", "sans-serif"],
         sporting: ["Sporting", "sans-serif"],

@@ -149,9 +149,9 @@ const AddElectric = () => {
 
   return (
     <div>
-      <div className="flex flex-row gap-[10px]">
+      <div className="flex flex-row gap-[20px]">
         <div className="flex flex-col gap-[20px] justify-center text-textpri">
-          <div className="flex flex-row gap-[10px] items-center">
+          <div className="flex flex-row gap-[20px] items-center">
             <div className="text-[#fdd700]">
               <InputField
                 label="Tên vật tư"
@@ -180,7 +180,7 @@ const AddElectric = () => {
             </div>
           </div>
 
-          <div className="flex flex-row gap-[10px] items-center">
+          <div className="flex flex-row gap-[20px] items-center">
             <div className="text-[#fdd700]">
               <InputField
                 label="Đơn vị"
@@ -196,14 +196,14 @@ const AddElectric = () => {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Ghi chú thêm"
-                className="w-[410px] p-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#5E5E60] rounded-[12px]
+                className="w-[420px] py-[5px] px-[10px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
                        focus:outline-none focus:ring-2 focus:ring-blue-500
                        placeholder:text-gray-400 transition-all duration-200"
               />
             </div>
           </div>
 
-          <div className="flex flex-row gap-[10px] items-center">
+          <div className="flex flex-row gap-[20px] items-center">
             <InputField
               label="Điện áp (V)"
               placeholder="VD: 220V"
@@ -247,7 +247,7 @@ const AddElectric = () => {
             </div>
           </div>
 
-          <div className="flex flex-row gap-[10px] items-center">
+          <div className="flex flex-row gap-[20px] items-center">
             <InputField
               label="Dòng điện định mức"
               placeholder="VD: 16A"
@@ -272,7 +272,7 @@ const AddElectric = () => {
             />
           </div>
 
-          <div className="flex flex-row gap-[10px] items-center">
+          <div className="flex flex-row gap-[20px] items-center">
             <InputField
               label="Vật liệu lõi"
               placeholder="VD: lõi đồng, nhôm,..."
@@ -512,7 +512,7 @@ const InputField = ({
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-[${width}] p-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#5E5E60] rounded-[12px]
+      className={`w-[${width}] px-[10px] py-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
                    focus:outline-none focus:ring-2 focus:ring-blue-500
                    placeholder:text-gray-400 transition-all duration-200`}
     />

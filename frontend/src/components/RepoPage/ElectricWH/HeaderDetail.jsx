@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
 import { useState, useEffect } from "react";
@@ -10,13 +10,13 @@ import {
   Search,
   RefreshCcw,
   TrendingUpDown,
-  ArrowUp,
-  Barcode,
-  ArrowDown,
+  ChevronsRight,
   TrendingUp,
   ToolCase,
   SlidersVertical,
   Download,
+  History,
+  X,
 } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
@@ -31,12 +31,20 @@ import {
   DialogClose,
 } from "../../ui/dialog.jsx";
 import axiosClient from "@/api/axiosClient";
-import ElectricList from "./ElectricList";
 
-const HeaderDetail = ({ mode, setMode, onReload }) => {
+const HeaderDetail = ({
+  mode,
+  setMode,
+  onReload,
+  searchData,
+  setSearchData,
+}) => {
   const [open, setOpen] = useState(false);
   const [repository, setRepository] = useState("");
   const { user } = useAuth();
+  const [showSearch, setShowSearch] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
 
   const checkPermission = () => {
     const hasAccess =
@@ -66,6 +74,26 @@ const HeaderDetail = ({ mode, setMode, onReload }) => {
     fetchRepository();
   }, []);
 
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("search_history")) || [];
+    setHistory(saved);
+  }, []);
+
+  const saveHistory = (value) => {
+    if (!value.trim()) return;
+
+    const updated = [value, ...history.filter((h) => h !== value)].slice(0, 10);
+
+    setHistory(updated);
+    localStorage.setItem("search_history", JSON.stringify(updated));
+  };
+
+  const deleteHistoryItem = (item) => {
+    const updated = history.filter((h) => h !== item);
+    setHistory(updated);
+    localStorage.setItem("search_history", JSON.stringify(updated));
+  };
+
   const formatDate = (dataString) => {
     const date = new Date(dataString);
 
@@ -77,17 +105,17 @@ const HeaderDetail = ({ mode, setMode, onReload }) => {
   };
 
   return (
-    <AnimatePresence>
-      <div className=" flex flex-col p-[20px] w-[1300px] h-[150px] bg-bgmain border-t-1 border-gray-700">
-        <div className="flex flex-col gap-[5px]">
+    <div className=" flex flex-col p-[20px] w-[1300px] h-[150px] bg-bgmain border-t-1 border-gray-700">
+      <div className="flex flex-col gap-[5px]">
+        <AnimatePresence>
           <motion.div
-            initial={{ x: -20, opacity: 0 }} // Bắt đầu lệch trái + mờ
+            initial={{ x: 0, opacity: 0 }} // Bắt đầu lệch trái + mờ
             animate={{ x: 0, opacity: 1 }} // Di chuyển về giữa + hiện rõ
-            exit={{ x: -20, opacity: 0 }} // Khi rời trang (nếu có)
+            exit={{ x: 0, opacity: 0 }} // Khi rời trang (nếu có)
             transition={{
               duration: 0.5,
             }}
-            className="flex flex-row justify-between"
+            className="flex flex-row justify-between gpu"
           >
             <div className="flex flex-col gap-[5px]">
               <p className="text-left text-[16px] text-[#FFD700] font-satoshi ">
@@ -139,119 +167,182 @@ const HeaderDetail = ({ mode, setMode, onReload }) => {
               </DialogContent>
             </Dialog>
           </motion.div>
+        </AnimatePresence>
 
-          <div className="flex flex-row mt-[20px] justify-between">
-            <div className="flex text-textsec whitespace-nowrap text-sm cursor-pointer">
-              <Dialog open={open} onOpenChange={setOpen}>
-                <DialogTrigger asChild>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault(); // Ngăn Radix mở tự động
-                      if (checkPermission()) {
-                        setOpen(true); // Chỉ mở nếu có quyền
-                      }
-                    }}
-                    className="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
-                  >
-                    Thêm vật tư <Plus size={20} className="text-textpri" />
-                  </button>
-                </DialogTrigger>
+        <div className="flex flex-row mt-[20px] justify-between">
+          <div className="flex text-textsec whitespace-nowrap text-sm cursor-pointer">
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault(); // Ngăn Radix mở tự động
+                    if (checkPermission()) {
+                      setOpen(true); // Chỉ mở nếu có quyền
+                    }
+                  }}
+                  className="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
+                >
+                  Thêm vật tư <Plus size={20} className="text-textpri" />
+                </button>
+              </DialogTrigger>
 
-                <DialogContent className="bg-[#1a1a1a] !max-w-none rounded-[12px] p-[25px] w-[880px] border-none text-white">
-                  <DialogHeader>
-                    <DialogTitle>
-                      Phiếu nhập vật tư{" "}
-                      <span className="text-[#fdd700]">kho Điện</span>
-                    </DialogTitle>
-                    <DialogDescription className="text-gray-400">
-                      Nhập vật tư vào kho
-                    </DialogDescription>
-                  </DialogHeader>
-                  <AddElectric />
-                </DialogContent>
-              </Dialog>
+              <DialogContent className="bg-[#1a1a1a] !max-w-none rounded-[12px] p-[25px] w-[920px] border-none text-white">
+                <DialogHeader>
+                  <DialogTitle>
+                    Phiếu nhập vật tư{" "}
+                    <span className="text-[#fdd700]">kho Điện</span>
+                  </DialogTitle>
+                  <DialogDescription className="text-gray-400">
+                    Nhập vật tư vào kho - Những mục được{" "}
+                    <span className="text-[#fdd700]">tô màu</span> không thể để
+                    trống!
+                  </DialogDescription>
+                </DialogHeader>
+                <AddElectric />
+              </DialogContent>
+            </Dialog>
 
-              <div className="border-r h-4 mx-2"></div>
+            <div className="border-r h-4 mx-2"></div>
+            <button
+              onClick={() => checkPermission()}
+              className="pl-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
+            >
+              Xuất vật tư <Minus size={20} className="text-textpri" />
+            </button>
+          </div>
+          <div className="flex flex-row relative">
+            <div className=" flex flex-row">
               <button
-                onClick={() => checkPermission()}
-                className="pl-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
+                onClick={() => {
+                  setShowSearch(!showSearch),
+                    setShowHistory(false),
+                    setSearchData("");
+                }}
+                className="searchTool"
               >
-                Xuất vật tư <Minus size={20} className="text-textpri" />
+                {showSearch ? (
+                  <ChevronsRight
+                    className={`cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#fdd700]`}
+                    size={18}
+                  />
+                ) : (
+                  <Search
+                    className={`cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-pri`}
+                    size={18}
+                  />
+                )}
               </button>
+
+              <input
+                type="text"
+                placeholder="Tìm kiếm..."
+                value={searchData}
+                onChange={(e) => setSearchData(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    saveHistory(searchData);
+                    setShowHistory(false);
+                  }
+                }}
+                onFocus={() => setShowHistory(true)}
+                className={`px-[10px] placeholder:text-textsec -mr-[15px] text-textpri text-[14px]  outline-none ${
+                  showSearch
+                    ? "ml-[5px] w-[150px] opacity-[1] pointer-events-auto"
+                    : "ml-[0px] w-0 opacity-0 pointer-events-none"
+                } transition-all duration-300`}
+              />
             </div>
-            <div className="flex flex-row">
-              <button className="searchTool">
-                <Search
-                  className="text-textpri cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300"
+
+            {showHistory && history.length > 0 && (
+              <div className="absolute top-[30px] left-[35px] w-[270px] max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60  bg-[#111111] border border-gray-400 border-t-highlightcl  rounded-lg shadow-xl z-20">
+                {history.map((item, index) => (
+                  <button
+                    key={index}
+                    onClick={() => {
+                      setSearchData(item);
+                      setShowHistory(false);
+                    }}
+                    className="w-full text-left px-3 py-2 text-textsec hover:bg-[#222] cursor-pointer"
+                  >
+                    <div className="flex flex-row justify-between items-center">
+                      <History size={15} /> {item}{" "}
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation(); // không bị click vào select
+                          deleteHistoryItem(item);
+                        }}
+                        className="text-textsec hover:text-red-400 transition-colors cursor-pointer"
+                      >
+                        <X size={15} />
+                      </button>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+
+            <Tooltip anchorSelect=".searchTool" place="top">
+              Tìm kiếm
+            </Tooltip>
+            <div className="border-r h-5 mx-2 text-textsec"></div>
+            <div className="flex flex-row gap-[10px] p-[0px_15px]">
+              <button className="sortTool">
+                <SlidersVertical
+                  className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
                   size={18}
                 />
               </button>
-              <Tooltip anchorSelect=".searchTool" place="top">
-                Tìm kiếm
+              <Tooltip anchorSelect=".sortTool" place="top">
+                Sắp xếp
               </Tooltip>
-              <div className="border-r h-5 mx-2 text-textsec"></div>
-              <div className="flex flex-row gap-[10px] p-[0px_15px]">
-                <button className="sortTool">
-                  <SlidersVertical
-                    className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
-                    size={18}
-                  />
-                </button>
-                <Tooltip anchorSelect=".sortTool" place="top">
-                  Sắp xếp
-                </Tooltip>
-                <button
-                  onClick={() => checkPermission()}
-                  className="exportTool"
-                >
-                  <Download
-                    className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
-                    size={18}
-                  />
-                </button>
-                <Tooltip anchorSelect=".exportTool" place="top">
-                  Xuất Excel
-                </Tooltip>
-                <button
-                  onClick={() => {
-                    setTimeout(() => {
-                      toast.success("Làm mới dữ liệu thành công!");
-                    }, 500);
-                    onReload();
-                  }}
-                  className="refreshTool"
-                >
-                  <RefreshCcw
-                    className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
-                    size={18}
-                  />
-                </button>
-                <Tooltip anchorSelect=".refreshTool" place="top">
-                  Làm mới
-                </Tooltip>
-              </div>
-              <div className="border-r h-5 mx-2 text-textsec "></div>
-              <button
-                onClick={(e) => {
-                  e.preventDefault(); // Ngăn Radix mở tự động
-                  if (checkPermission()) {
-                    setMode((prev) => (prev === "view" ? "edit" : "view"));
-                  }
-                }}
-                className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300 cursor-pointer ml-[15px]"
-              >
-                {mode === "view" ? `Chỉnh sửa` : `Chi tiết`}
-                {mode === "view" ? (
-                  <TrendingUp size={18} />
-                ) : (
-                  <TrendingUpDown size={18} />
-                )}
+              <button onClick={() => checkPermission()} className="exportTool">
+                <Download
+                  className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
+                  size={18}
+                />
               </button>
+              <Tooltip anchorSelect=".exportTool" place="top">
+                Xuất Excel
+              </Tooltip>
+              <button
+                onClick={() => {
+                  setTimeout(() => {
+                    toast.success("Làm mới dữ liệu thành công!");
+                  }, 500);
+                  onReload();
+                }}
+                className="refreshTool"
+              >
+                <RefreshCcw
+                  className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
+                  size={18}
+                />
+              </button>
+              <Tooltip anchorSelect=".refreshTool" place="top">
+                Làm mới
+              </Tooltip>
             </div>
+            <div className="border-r h-5 mx-2 text-textsec "></div>
+            <button
+              onClick={(e) => {
+                e.preventDefault(); // Ngăn Radix mở tự động
+                if (checkPermission()) {
+                  setMode((prev) => (prev === "view" ? "edit" : "view"));
+                }
+              }}
+              className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300 cursor-pointer ml-[15px]"
+            >
+              {mode === "view" ? `Chỉnh sửa` : `Chi tiết`}
+              {mode === "view" ? (
+                <TrendingUp size={18} />
+              ) : (
+                <TrendingUpDown size={18} />
+              )}
+            </button>
           </div>
         </div>
       </div>
-    </AnimatePresence>
+    </div>
   );
 };
 

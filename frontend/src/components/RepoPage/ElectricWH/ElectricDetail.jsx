@@ -35,7 +35,7 @@ const ElectricDetail = ({ item }) => {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-row gap-[25px]">
-            <div className="border-[3px] border-[#fdd700] rounded-[12px]">
+            <div className="border-[1px] border-[#fdd700] rounded-[12px]">
               <img
                 src={cadivi}
                 alt="day-dien-2x2.5-cadivi"
