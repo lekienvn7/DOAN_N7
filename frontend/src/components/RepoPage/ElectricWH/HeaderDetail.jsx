@@ -218,16 +218,15 @@ const HeaderDetail = ({
                     setShowHistory(false),
                     setSearchData("");
                 }}
-                className="searchTool"
               >
                 {showSearch ? (
                   <ChevronsRight
-                    className={`cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#fdd700]`}
+                    className={`searchClose cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#fdd700]`}
                     size={18}
                   />
                 ) : (
                   <Search
-                    className={`cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-pri`}
+                    className={`searchTool cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-pri`}
                     size={18}
                   />
                 )}
@@ -284,6 +283,11 @@ const HeaderDetail = ({
             <Tooltip anchorSelect=".searchTool" place="top">
               Tìm kiếm
             </Tooltip>
+
+            <Tooltip anchorSelect=".searchClose" place="top">
+              Đóng tìm kiếm
+            </Tooltip>
+
             <div className="border-r h-5 mx-2 text-textsec"></div>
             <div className="flex flex-row gap-[10px] p-[0px_15px]">
               <button className="sortTool">
