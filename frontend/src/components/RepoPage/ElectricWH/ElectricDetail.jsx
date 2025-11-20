@@ -67,7 +67,7 @@ const ElectricDetail = ({ item }) => {
                     </li>
                     <li>
                       <span className="text-[#60A5FA] font-semibold">
-                        Bảo trì định kỳ:
+                        Chu kỳ bảo trì:
                       </span>{" "}
                       {item.maintenanceCycle == 0
                         ? "—"

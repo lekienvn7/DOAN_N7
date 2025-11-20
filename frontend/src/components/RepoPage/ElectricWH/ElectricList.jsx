@@ -168,7 +168,7 @@ const ElectricList = ({ mode, reload }) => {
                 {mode === "view" ? (
                   <ElectricDetail item={item} />
                 ) : (
-                  <ElectricEdit item={item} />
+                  <ElectricEdit item={item} reload={reload} />
                 )}
               </td>
             </tr>

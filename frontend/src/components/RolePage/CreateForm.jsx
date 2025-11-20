@@ -103,8 +103,19 @@ const CreateForm = () => {
 
         <select
           value={yourRepo}
-          onChange={(e) => setYourRepo(e.target.value)}
-          className="p-[10px] rounded-lg bg-[#2a2a2a] text-white focus:outline-none focus:ring-2 focus:ring-[#2563eb] cursor-pointer"
+          onClick={() => {
+            if (!(role === "ADMINISTRATOR" || role === "WH MANAGER")) {
+              toast.error("Không thể chọn phân kho với quyền hiện tại!");
+            }
+          }}
+          onChange={(e) => {
+            {
+              !(role === "ADMINISTRATOR" || role === "WH MANAGER")
+                ? e.preventDefault()
+                : setYourRepo(e.target.value);
+            }
+          }}
+          className={`p-[10px] rounded-lg bg-[#2a2a2a] text-white focus:outline-none focus:ring-2 focus:ring-[#2563eb] cursor-pointer `}
         >
           <option value="">-- Chọn kho quản lý --</option>
           <option value="chemical">Kho hóa chất</option>

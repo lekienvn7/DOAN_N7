@@ -31,6 +31,7 @@ export const getAllRepository = async (req, res) => {
 };
 
 function removeNullFields(obj) {
+  if (!obj || typeof obj !== "object") return {};
   return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== null));
 }
 
@@ -56,7 +57,7 @@ export const getRepoMaterials = async (req, res) => {
     }
 
     const materialsList = repo.materials.map((item) => {
-      const mat = item.material;
+      const mat = item.material || {};
 
       return {
         ...removeNullFields(mat), // vật tư sạch
@@ -154,10 +155,10 @@ export const addRepository = async (req, res) => {
         managerId = manager._id;
         managerName = manager.fullName;
       } else if (manager.role.roleName === "Quản lý kho") {
-        if (manager.role.roleType !== repoType) {
+        if (manager.yourRepo !== repoType) {
           return res.status(400).json({
             success: false,
-            message: `Người quản lý '${manager.fullName}' phụ trách kho loại '${manager.role.roleType}', không thể gán cho kho '${repoType}'!`,
+            message: `Người quản lý '${manager.fullName}' phụ trách kho loại '${manager.yourRepo}', không thể gán cho kho '${repoType}'!`,
           });
         }
         managerId = manager._id;

@@ -13,23 +13,18 @@ const TransactionSchema = new mongoose.Schema(
       ref: "Repository",
       required: true,
     },
-    equipment: { type: mongoose.Schema.Types.ObjectId, ref: "Equipment" },
     material: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Material",
     },
     type: {
       type: String,
-      enum: ["import", "export"],
+      enum: ["import", "export", "return", "broken"],
       required: true,
     },
     quantity: {
       type: Number,
-      required: true,
-      min: 1,
     },
-    beforeQuantity: { type: Number, default: 0 },
-    afterQuantity: { type: Number, default: 0 },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",

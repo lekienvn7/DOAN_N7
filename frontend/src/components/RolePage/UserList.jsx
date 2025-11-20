@@ -14,21 +14,20 @@ import {
   DialogClose,
 } from "../ui/dialog";
 
-const UserList = () => {
+const UserList = ({ reload }) => {
   const [users, setUser] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const RepoList = {
-    all: "Tất cả các kho",
-    chemical: "Kho hóa chất",
-    electric: "Kho điện",
-    mechanical: "Kho cơ khí",
-    fashion: "Kho thời trang",
-    iot: "Kho nhúng và iot",
-    technology: "Kho CNTT",
-    automotive: "Kho CN oto",
-  };
-
+  const RepoList = [
+    { type: "all", name: "Tất cả các kho" },
+    { type: "chemical", name: "Kho hóa chất" },
+    { type: "electric", name: "Kho điện" },
+    { type: "mechanical", name: "Kho cơ khí" },
+    { type: "fashion", name: "Kho thời trang" },
+    { type: "iot", name: "Kho nhúng & iot" },
+    { type: "technical", name: "Kho CNTT" },
+    { type: "automotive", name: "Kho CN oto" },
+  ];
   const TrueFalse = {
     true: "Chưa đổi",
     false: "Đã đổi",
@@ -53,7 +52,7 @@ const UserList = () => {
       }
     };
     fetchUser();
-  }, []);
+  }, [reload]);
 
   const handleResetPassword = async (userID) => {
     try {
@@ -230,6 +229,16 @@ const UserList = () => {
               roleColor = "text-textpri";
             }
 
+            let repoColor = "";
+
+            if (item.yourRepo === "all") {
+              repoColor = "text-yellow-400";
+            } else if (!item.yourRepo) {
+              repoColor = "text-red-400";
+            } else {
+              repoColor = "text-textpri";
+            }
+
             return (
               <tr className="border-b-1 border-gray-700 text-left text-[14px] text-[#e5e5e7] hover:bg-[#1c1c1e]">
                 <td className="p-[5px]">{item.userID}</td>
@@ -250,23 +259,16 @@ const UserList = () => {
                   {TrueFalse[item.mustChangePassword.toString()]}
                 </td>
                 <td className={`p-[5px] ${roleColor}`}>{item.role.roleName}</td>
-                <td
-                  className={`p-[5px] ${
-                    item.yourRepo?.length === 0
-                      ? "text-red-400"
-                      : "text-textpri"
-                  }`}
-                >
-                  {item.yourRepo?.length > 0
-                    ? item.yourRepo
-                        .map((repo) => RepoList[repo] || repo)
-                        .join(", ")
+                <td className={`p-[5px] ${repoColor}`}>
+                  {item.yourRepo
+                    ? RepoList.find((repo) => repo.type === item.yourRepo)
+                        ?.name || item.yourRepo
                     : "Không có"}
                 </td>
                 <td className="p-[5px] border-r border-l text-center border-gray-700">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <button className="changeTool cursor-pointer p-[5px] justify-center text-[#f9d65c] hover:text-[#ffd700]">
+                      <button className="changeTool cursor-pointer p-[5px] justify-center text-[#ffd700] hover:text-[#dbdbdb]">
                         <PencilLine size={15} />
                       </button>
                     </DialogTrigger>

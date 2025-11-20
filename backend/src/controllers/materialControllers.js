@@ -9,6 +9,16 @@ import TechnologyMaterial from "../models/MaterialModel/TechnologyMaterial.js";
 import AutomotiveMaterial from "../models/MaterialModel/AutomotiveMaterial.js";
 import TelecomMaterial from "../models/MaterialModel/TelecomMaterial.js";
 import FashionMaterial from "../models/MaterialModel/FashionMaterial.js";
+import {
+  electricFields,
+  chemicalFields,
+  automotiveFields,
+  fashionFields,
+  technologyFields,
+  telecomFields,
+  mechanicalFields,
+  iotFields,
+} from "../utils/allowField.js";
 
 function removeNullFields(obj) {
   return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v !== null));
@@ -143,7 +153,6 @@ export const updateMaterial = async (req, res) => {
     const materialID = req.params.id;
 
     const existingMaterial = await Material.findOne({ materialID });
-
     if (!existingMaterial) {
       return res.status(404).json({
         success: false,
@@ -151,7 +160,9 @@ export const updateMaterial = async (req, res) => {
       });
     }
 
-    const type = existingMaterial.type;
+    const type = Array.isArray(existingMaterial.type)
+      ? existingMaterial.type[0]
+      : existingMaterial.type;
 
     const modelMap = {
       electric: ElectricMaterial,
@@ -169,40 +180,81 @@ export const updateMaterial = async (req, res) => {
     if (!SelectedModel) {
       return res.status(500).json({
         success: false,
-        message: `Không thể xác định model con cho loại vật tư '${type}'`,
+        message: `Không tìm thấy model con cho loại '${type}'`,
       });
     }
 
-    // 3. Lọc các field cho phép
-    const allowedFields = allowedMap[type];
-    const cleanData = filterFields(req.body, allowedFields);
+    // FIELD CHA
+    const baseFields = [
+      "name",
+      "quantity",
+      "status",
+      "unit",
+      "description",
+      "maintenanceCycle",
+    ];
 
-    // Không cho phép đổi type hoặc materialID hoặc createdBy
-    delete cleanData.type;
-    delete cleanData.materialID;
-    delete cleanData.createdBy;
+    // FIELD CON THEO TYPE
+    const childFieldMap = {
+      electric: electricFields,
+      chemical: chemicalFields,
+      mechanical: mechanicalFields,
+      iot: iotFields,
+      technology: technologyFields,
+      automotive: automotiveFields,
+      telecomFields,
+      fashion: fashionFields,
+    };
 
-    // 4. Ghi thông tin người sửa
-    cleanData.updatedBy = req.user?.userID; // hoặc token userId
-    cleanData.updatedAt = Date.now();
+    const childFields = childFieldMap[type];
 
-    // 5. Update bằng model con
-    const updatedMaterial = await SelectedModel.findOneAndUpdate(
+    // CLEAN FIELD
+    const cleanBase = filterFields(req.body, baseFields);
+    const cleanChild = filterFields(req.body, childFields);
+
+    delete cleanBase.materialID;
+    delete cleanBase.type;
+
+    delete cleanChild.materialID;
+    delete cleanChild.type;
+
+    cleanBase.updatedAt = Date.now();
+    cleanChild.updatedAt = Date.now();
+
+    if (req.user?.userID) {
+      cleanBase.updatedBy = req.user.userID;
+      cleanChild.updatedBy = req.user.userID;
+    }
+
+    // UPDATE CHA
+    const updatedMaterial = await Material.findOneAndUpdate(
       { materialID },
-      cleanData,
+      cleanBase,
       { new: true }
     );
+
+    // UPDATE CON
+    const updatedChild = await SelectedModel.findOneAndUpdate(
+      { materialID },
+      cleanChild,
+      { new: true }
+    );
+
+    console.log(req.body, req.params);
 
     return res.status(200).json({
       success: true,
       message: "Cập nhật vật tư thành công!",
-      data: updatedMaterial,
+      data: {
+        base: updatedMaterial,
+        detail: updatedChild,
+      },
     });
   } catch (error) {
-    console.error("Lỗi khi gọi updateMaterial:", error);
-    res.status(500).json({
+    console.log("Lỗi updateMaterial:", error);
+    return res.status(500).json({
       success: false,
-      message: "Lỗi hệ thống!",
+      message: "Lỗi hệ thống",
       error: error.message,
     });
   }

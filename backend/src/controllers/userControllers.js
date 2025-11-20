@@ -77,11 +77,7 @@ export const addUser = async (req, res) => {
       fullName,
       role: existingRole._id,
       mustChangePassword: true,
-      yourRepo: Array.isArray(yourRepo)
-        ? yourRepo.filter((r) => r && r !== "null" && r !== "")
-        : yourRepo
-        ? [yourRepo]
-        : [],
+      yourRepo: yourRepo,
     });
 
     res.status(201).json({
@@ -149,16 +145,7 @@ export const updateUser = async (req, res) => {
     if (fullName) updateData.fullName = fullName;
     if (email) updateData.email = email;
     if (phone) updateData.phone = phone;
-
-    // Xử lý yourRepo có thể là 1 string hoặc 1 mảng
-    if (yourRepo) {
-      if (Array.isArray(yourRepo)) {
-        // loại trùng và loại giá trị rỗng
-        updateData.yourRepo = [...new Set(yourRepo.filter(Boolean))];
-      } else if (typeof yourRepo === "string") {
-        updateData.yourRepo = [yourRepo];
-      }
-    }
+    if (yourRepo) updateData.yourRepo = yourRepo;
 
     // Nếu có role mới thì mới update, còn không thì bỏ qua
     if (role) {

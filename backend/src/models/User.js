@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       sparse: true,
     },
-    
+
     role: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Role",
@@ -53,23 +53,21 @@ const userSchema = new mongoose.Schema(
       type: String, // Cloudinary public_ID để xóa hình
     },
 
-    yourRepo: [
-      {
-        type: String,
-        enum: [
-          "all",
-          "chemical",
-          "automotive",
-          "electric",
-          "fashion",
-          "iot",
-          "mechanical",
-          "technology",
-          "telecom",
-        ],
-        trim: true,
-      },
-    ],
+    yourRepo: {
+      type: String,
+      enum: [
+        "all",
+        "chemical",
+        "automotive",
+        "electric",
+        "fashion",
+        "iot",
+        "mechanical",
+        "technology",
+        "telecom",
+      ],
+      trim: true,
+    },
   },
   { timestamps: true }
 );

@@ -4,9 +4,11 @@ import { useEffect } from "react";
 
 const ElectricUtilities = () => {
   const [repo, setRepo] = useState("");
+  const [loading, setLoading] = useState("");
   useEffect(() => {
     const fetchRepo = async () => {
       try {
+        setLoading(true);
         const res = await axiosClient.get("/repository/electric");
         if (res.data.success) {
           setRepo({
@@ -16,6 +18,8 @@ const ElectricUtilities = () => {
         }
       } catch (error) {
         console.error("Lỗi khi tải dữ liệu", error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchRepo();
@@ -27,7 +31,14 @@ const ElectricUtilities = () => {
         <h2 className="text-center text-[18px] font-satoshi font-bold">
           Tổng quan
         </h2>
-        <div>Tổng vật tư trong kho: {repo.totalMaterials}</div>
+        <div className="flex flex-row gap-[5px]">
+          <span>Tổng vật tư trong kho:</span>
+          {loading ? (
+            <span className="w-4 h-4 border-2 border-[#fdd700] border-t-transparent rounded-full animate-spin"></span>
+          ) : (
+            repo.totalMaterials
+          )}
+        </div>
       </div>
     </div>
   );
