@@ -83,7 +83,7 @@ const RepoMenu = () => {
         duration: 0.6,
         ease: [0.25, 0.8, 0.25, 1],
       }}
-      className="flex flex-row flex-wrap gap-[50px] items-center justify-center"
+      className="flex flex-row flex-wrap gap-[25px] items-center justify-center"
     >
       {repos.map((repo, index) => {
         const Icon = iconMap[repo.repoID] || PlugZap;
@@ -101,7 +101,7 @@ const RepoMenu = () => {
               }`}
             >
               <Icon
-                size={30}
+                size={20}
                 className={`transition-colors duration-300 ${
                   isActive
                     ? "text-[#FFD700]"

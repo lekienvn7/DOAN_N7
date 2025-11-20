@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import Session from "../models/Session.js";
-import Repository from "../models/Repository.js";
-import User from "../models/User.js";
+import Session from "../modules/session/Session.model.js";
+import Repository from "../modules/repository/Repository.model.js";
+import User from "../modules/user/User.model.js";
 
 // Middleware xác thực token
 export const verifyToken = async (req, res, next) => {

@@ -53,6 +53,21 @@
   font-style: normal;
 }
 
+.input-style {
+  @apply w-[250px] px-4 py-3 bg-[#2c2c2e] text-white border-2 border-[#5E5E60] rounded-xl
+         focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400;
+}
+
+.select-style {
+  @apply w-[250px] px-4 py-3 bg-[#2a2a2a] text-white border border-[#5E5E60] rounded-xl
+         focus:outline-none focus:ring-2 focus:ring-blue-500;
+}
+
+.submit-btn {
+  @apply mt-2 bg-[#ffd700] text-black font-semibold rounded-xl py-3
+         hover:bg-[#ffb700] transition cursor-pointer;
+}
+
 @keyframes apple-hover {
   0% {
     transform: scale(1) translateY(0);

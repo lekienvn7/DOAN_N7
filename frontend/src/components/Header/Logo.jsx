@@ -52,7 +52,7 @@ const HeaderLogo = () => {
       <Link
         to="/home"
         className="header__logo font-qurova no-underline
-        text-[#FFFFFF] text-[25px] font-bold hover:text-[#E5E5E7]"
+        text-[#FFFFFF] text-[20px] font-bold hover:text-[#E5E5E7]"
       >
         {logoContent}
       </Link>

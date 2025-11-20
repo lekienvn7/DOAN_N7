@@ -268,7 +268,7 @@ const UserList = ({ reload }) => {
                 <td className="p-[5px] border-r border-l text-center border-gray-700">
                   <Dialog>
                     <DialogTrigger asChild>
-                      <button className="changeTool cursor-pointer p-[5px] justify-center text-[#ffd700] hover:text-[#dbdbdb]">
+                      <button className="changeTool cursor-pointer p-[5px] justify-center text-[#ffd700] hover:text-[#ffb700]">
                         <PencilLine size={15} />
                       </button>
                     </DialogTrigger>

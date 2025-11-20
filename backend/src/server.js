@@ -1,13 +1,13 @@
 import express from "express";
 import homeRoutes from "./routes/homeRoutes.js";
-import materialRoutes from "./routes/materialRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import permissionRoutes from "./routes/permissionRoutes.js";
-import roleRoutes from "./routes/roleRoutes.js";
-import repoRoutes from "./routes/repoRoutes.js";
-import transactionRoutes from "./routes/transactionRoutes.js";
-import maintenanceRoutes from "./routes/maintenanceRoutes.js";
-import loginRoutes from "./routes/loginRoutes.js";
+import materialRoutes from "./modules/material/material.routes.js";
+import userRoutes from "./modules/user/user.routes.js";
+import permissionRoutes from "./modules/permission/permission.routes.js";
+import roleRoutes from "./modules/role/role.routes.js";
+import repoRoutes from "./modules/repository/repository.routes.js";
+import transactionRoutes from "./modules/transaction/transaction.routes.js";
+import maintenanceRoutes from "./modules/maintenance/maintenance.routes.js";
+import authRoutes from "./modules/auth/auth.routes.js";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -46,7 +46,7 @@ app.use("/api/transaction", transactionRoutes);
 
 app.use("/api/maintenance", maintenanceRoutes);
 
-app.use("/api/login", loginRoutes);
+app.use("/api/login", authRoutes);
 
 connectDB().then(() => {
   app.listen(PORT, () => {
