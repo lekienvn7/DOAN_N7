@@ -22,7 +22,7 @@ const UserListHeader = () => {
             <RotateCcw size={14} strokeWidth={3} /> <span>Làm mới</span>
           </button>
         </div>
-        <hr className="text-[#fdd700]" />
+        <hr className="text-gray-700" />
       </div>
       <div className="max-h-[490px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 ">
         <UserList reload={reload} />

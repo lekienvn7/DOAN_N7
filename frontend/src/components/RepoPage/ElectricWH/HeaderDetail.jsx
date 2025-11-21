@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Link } from "react-router";
 import { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
 import AddElectric from "./AddElectric";
@@ -13,7 +12,7 @@ import {
   ChevronsRight,
   TrendingUp,
   ToolCase,
-  SlidersVertical,
+  ArrowDownUp,
   Download,
   History,
   X,
@@ -38,6 +37,8 @@ const HeaderDetail = ({
   onReload,
   searchData,
   setSearchData,
+  sortMode,
+  setSortMode,
 }) => {
   const [open, setOpen] = useState(false);
   const [repository, setRepository] = useState("");
@@ -109,9 +110,9 @@ const HeaderDetail = ({
       <div className="flex flex-col gap-[5px]">
         <AnimatePresence>
           <motion.div
-            initial={{ x: 0, opacity: 0 }} // Bắt đầu lệch trái + mờ
+            initial={{ x: -20, opacity: 0 }} // Bắt đầu lệch trái + mờ
             animate={{ x: 0, opacity: 1 }} // Di chuyển về giữa + hiện rõ
-            exit={{ x: 0, opacity: 0 }} // Khi rời trang (nếu có)
+            exit={{ x: -20, opacity: 0 }} // Khi rời trang (nếu có)
             transition={{
               duration: 0.5,
             }}
@@ -218,15 +219,16 @@ const HeaderDetail = ({
                     setShowHistory(false),
                     setSearchData("");
                 }}
+                className=""
               >
                 {showSearch ? (
                   <ChevronsRight
-                    className={`searchClose cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#fdd700]`}
+                    className={`searchClose cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#FFD700] outline-none focus:outline-none ring-0 focus:ring-0 focus-visible:ring-0`}
                     size={18}
                   />
                 ) : (
                   <Search
-                    className={`searchTool cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-pri`}
+                    className={`searchTool cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#A1A1A6] outline-none focus:outline-none ring-0 focus:ring-0 focus-visible:ring-0`}
                     size={18}
                   />
                 )}
@@ -290,9 +292,16 @@ const HeaderDetail = ({
 
             <div className="border-r h-5 mx-2 text-textsec"></div>
             <div className="flex flex-row gap-[10px] p-[0px_15px]">
-              <button className="sortTool">
-                <SlidersVertical
-                  className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
+              <button
+                onClick={() => {
+                  setSortMode((prev) => !prev);
+                }}
+                className="sortTool"
+              >
+                <ArrowDownUp
+                  className={`${
+                    sortMode ? "text-[#FFD700] " : "text-[#A1A1A6] "
+                  } cursor-pointer hover:text-[#FFD700] transition-colors duration-300`}
                   size={18}
                 />
               </button>
@@ -301,7 +310,7 @@ const HeaderDetail = ({
               </Tooltip>
               <button onClick={() => checkPermission()} className="exportTool">
                 <Download
-                  className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
+                  className="text-[#A1A1A6] cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
                   size={18}
                 />
               </button>
@@ -318,7 +327,7 @@ const HeaderDetail = ({
                 className="refreshTool"
               >
                 <RefreshCcw
-                  className="text-textpri cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
+                  className="text-[#A1A1A6] cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
                   size={18}
                 />
               </button>

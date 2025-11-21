@@ -19,20 +19,25 @@ const ElectricList = ({ mode, reload, searchData }) => {
   const keywords = searchData.toLowerCase().trim().split(/\s+/);
 
   useEffect(() => {
-    const fetchElectrical = async () => {
-      try {
-        setLoading(true);
-        const res = await axiosClient.get("/repository/material/electric");
-        if (res.data.success) {
-          setElectrical([...res.data.materials]);
+    setLoading(true);
+
+    const timer = setTimeout(() => {
+      const fetchElectrical = async () => {
+        try {
+          const res = await axiosClient.get("/repository/material/electric");
+          if (res.data.success) {
+            setElectrical([...res.data.materials]);
+          }
+        } catch (error) {
+          console.error("Lỗi khi tải dữ liệu", error);
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("Lỗi khi tải dữ liệu", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchElectrical();
+      };
+      fetchElectrical();
+    }, 400);
+
+    return () => clearTimeout(timer);
   }, [reload]);
 
   const filterData = electrical.filter((item) => {

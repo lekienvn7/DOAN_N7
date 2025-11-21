@@ -76,9 +76,9 @@ const RepoMenu = () => {
 
   return (
     <motion.ul
-      initial={{ x: -5, opacity: 0 }}
+      initial={{ x: -200, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 5, opacity: 0 }}
+      exit={{ x: 200, opacity: 0 }}
       transition={{
         duration: 0.6,
         ease: [0.25, 0.8, 0.25, 1],

@@ -200,8 +200,8 @@ const UserList = ({ reload }) => {
 
   return (
     <div className="w-full">
-      <table className=" border-collapse w-full text-textpri  ">
-        <thead className="sticky top-0 z-20 border-b border-[#fdd700] bg-bgmain">
+      <table className=" border-collapse w-full text-[#fdd700]  ">
+        <thead className="sticky top-0 z-20 border-b border-gray-700 bg-[#1e1b11]">
           <tr className="text-left  text-[14px] font-semibold">
             <th className="relative p-[5px] w-[3%] ">UserID</th>
             <th className="relative p-[5px] w-[10%]">Tên đầy đủ</th>
@@ -211,7 +211,7 @@ const UserList = ({ reload }) => {
             <th className="relative p-[5px] w-[8%]">Quyền hạn</th>
             <th className="relative p-[5px] w-[10%] ">Phân kho (nếu có)</th>
 
-            <th colSpan={2} className=" p-[5px] w-[5%] ">
+            <th colSpan={2} className="text-center p-[5px] w-[5%] ">
               Lựa chọn
             </th>
           </tr>
@@ -240,7 +240,7 @@ const UserList = ({ reload }) => {
             }
 
             return (
-              <tr className="border-b-1 border-gray-700 text-left text-[14px] text-[#e5e5e7] hover:bg-[#1c1c1e]">
+              <tr className=" text-left text-[14px] text-[#e5e5e7] odd:bg-[#111111] even:bg-[#0d0d0d] hover:bg-[#1a1a1a]">
                 <td className="p-[5px]">{item.userID}</td>
                 <td className="p-[5px]">{item.fullName}</td>
                 <td className="p-[5px]">{item.username}</td>
@@ -265,7 +265,7 @@ const UserList = ({ reload }) => {
                         ?.name || item.yourRepo
                     : "Không có"}
                 </td>
-                <td className="p-[5px] border-r border-l text-center border-gray-700">
+                <td className="p-[5px] text-center border-gray-700">
                   <Dialog>
                     <DialogTrigger asChild>
                       <button className="changeTool cursor-pointer p-[5px] justify-center text-[#ffd700] hover:text-[#ffb700]">
@@ -275,7 +275,9 @@ const UserList = ({ reload }) => {
 
                     <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
                       <DialogHeader>
-                        <DialogTitle>Xác nhận reset mật khẩu</DialogTitle>
+                        <DialogTitle className="text-[#fdd700]">
+                          Xác nhận reset mật khẩu
+                        </DialogTitle>
 
                         <DialogDescription className="text-gray-400">
                           Bạn có chắc chắn muốn reset mật khẩu tài khoản{" "}
@@ -304,7 +306,9 @@ const UserList = ({ reload }) => {
 
                     <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
                       <DialogHeader>
-                        <DialogTitle>Xác nhận xoá tài khoản</DialogTitle>
+                        <DialogTitle className="text-[#fdd700]">
+                          Xác nhận xoá tài khoản
+                        </DialogTitle>
 
                         <DialogDescription className="text-gray-400">
                           Bạn có chắc chắn muốn xoá tài khoản{" "}

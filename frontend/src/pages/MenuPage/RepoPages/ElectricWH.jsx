@@ -8,6 +8,7 @@ const ElectricWH = () => {
   const [mode, setMode] = useState("view");
   const [reload, setReload] = useState(0);
   const [searchData, setSearchData] = useState("");
+  const [sortMode, setSortMode] = useState(false);
 
   const reloadList = () => {
     setReload((prev) => prev + 1);
@@ -23,8 +24,15 @@ const ElectricWH = () => {
           onReload={reloadList}
           searchData={searchData}
           setSearchData={setSearchData}
+          sortMode={sortMode}
+          setSortMode={setSortMode}
         />
-        <RepoDetail mode={mode} reload={reload} searchData={searchData} />
+        <RepoDetail
+          mode={mode}
+          reload={reload}
+          searchData={searchData}
+          sortMode={sortMode}
+        />
       </div>
     </div>
   );

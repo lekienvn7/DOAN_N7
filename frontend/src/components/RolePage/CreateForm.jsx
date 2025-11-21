@@ -130,7 +130,7 @@ const CreateForm = () => {
 
         <button
           onClick={handleSubmit}
-          className="mt-2 bg-[#ffd700] text-black font-semibold rounded-lg p-[10px] cursor-pointer hover:bg-[#ffb700] transition"
+          className="mt-2 bg-[#ffd700] text-black font-semibold rounded-[24px] p-[10px] cursor-pointer hover:bg-[#ffb700] transition"
         >
           Tạo tài khoản
         </button>
