@@ -1,22 +1,25 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import { ReceiptText } from "lucide-react";
+import {
+  ArrowDownUp,
+  ArrowDownAZ,
+  ArrowUpAZ,
+  ArrowDown01,
+  ArrowUp01,
+} from "lucide-react";
 import axiosClient from "@/api/axiosClient";
-import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
-import { AnimatePresence, motion } from "framer-motion";
+import { Tooltip } from "react-tooltip";
 import ElectricDetail from "./ElectricDetail";
 import ElectricEdit from "./ElectricEdit";
 
-const ElectricList = ({ mode, reload, searchData }) => {
-  const [open, setOpen] = useState(false);
-  const [selectMaterial, setSelectMaterial] = useState(null);
-
-  const { user } = useAuth();
-
+const ElectricList = ({ mode, reload, searchData, sortMode }) => {
   const [electrical, setElectrical] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = searchData.toLowerCase().trim().split(/\s+/);
+  const [sortName, setSortName] = useState(null);
+  const [sortQuantity, setSortQuantity] = useState(null);
+  const [filterData, setFilterData] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -27,6 +30,7 @@ const ElectricList = ({ mode, reload, searchData }) => {
           const res = await axiosClient.get("/repository/material/electric");
           if (res.data.success) {
             setElectrical([...res.data.materials]);
+            setFilterData([...res.data.materials]);
           }
         } catch (error) {
           console.error("Lỗi khi tải dữ liệu", error);
@@ -40,9 +44,13 @@ const ElectricList = ({ mode, reload, searchData }) => {
     return () => clearTimeout(timer);
   }, [reload]);
 
-  const filterData = electrical.filter((item) => {
-    return keywords.every((k) => item.name.toLowerCase().includes(k));
-  });
+  useEffect(() => {
+    const filtered = electrical.filter((item) =>
+      keywords.every((k) => item.name.toLowerCase().includes(k))
+    );
+
+    setFilterData(filtered);
+  }, [searchData, electrical]);
 
   const highlightText = (text, searchData) => {
     if (!searchData.trim()) return text;
@@ -92,6 +100,115 @@ const ElectricList = ({ mode, reload, searchData }) => {
     return `${day}/${month}/${year}`;
   };
 
+  const toggleSortName = () => {
+    setSortQuantity(null);
+    setSortName((prev) => {
+      if (prev === null) {
+        return "asc";
+      }
+      if (prev === "asc") {
+        return "desc";
+      }
+      return null;
+    });
+  };
+
+  const toggleSortQuantity = () => {
+    setSortName(null);
+    setSortQuantity((prev) => {
+      if (prev === null) {
+        return "asc";
+      }
+      if (prev === "asc") {
+        return "desc";
+      }
+      return null;
+    });
+  };
+
+  const labelTooltipName =
+    sortName === "asc"
+      ? "z → a"
+      : sortName === "desc"
+      ? "Danh sách gốc"
+      : "a → z";
+
+  const labelTooltipQuantity =
+    sortQuantity === "asc"
+      ? "Giảm dần"
+      : sortQuantity === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
+  const iconSortName =
+    sortName === "asc" ? (
+      <ArrowDownAZ
+        size={18}
+        className="text-textpri hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortName}
+      />
+    ) : sortName === "desc" ? (
+      <ArrowUpAZ
+        size={18}
+        className="text-textpri hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortName}
+      />
+    ) : (
+      <ArrowDownUp
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortName}
+      />
+    );
+
+  const iconSortQuantity =
+    sortQuantity === "asc" ? (
+      <ArrowDown01
+        size={18}
+        className="text-textpri hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortQuantity}
+      />
+    ) : sortQuantity === "desc" ? (
+      <ArrowUp01
+        size={18}
+        className="text-textpri hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortQuantity}
+      />
+    ) : (
+      <ArrowDownUp
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortQuantity}
+      />
+    );
+
+  useEffect(() => {
+    if (sortName === null && sortQuantity === null) {
+      // reset về danh sách theo search
+      const filtered = electrical.filter((item) =>
+        keywords.every((k) => item.name.toLowerCase().includes(k))
+      );
+      setFilterData(filtered);
+      return;
+    }
+
+    const sorted = [...filterData];
+    if (sortName) {
+      sorted.sort((a, b) => {
+        if (sortName === "asc") return a.name.localeCompare(b.name, "vi");
+        if (sortName === "desc") return b.name.localeCompare(a.name, "vi");
+      });
+    }
+    if (sortQuantity) {
+      sorted.sort((a, b) => {
+        if (sortQuantity === "asc") return a.quantity - b.quantity;
+        if (sortQuantity === "desc") return b.quantity - a.quantity;
+      });
+    }
+
+    setFilterData(sorted);
+  }, [sortName, sortQuantity]);
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-[460px] gap-4 text-textpri">
@@ -107,8 +224,50 @@ const ElectricList = ({ mode, reload, searchData }) => {
         <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#1e1b11]">
           <tr className="text-center text-[14px] font-semibold">
             <th className="py-[5px] w-[3%]">STT</th>
-            <th className=" w-[15%]">Tên thiết bị/vật tư</th>
-            <th className="w-[5%]">Số lượng</th>
+            <th className=" w-[15%]">
+              <div
+                className={`${
+                  sortMode
+                    ? "flex flex-row justify-center gap-[20px] items-center"
+                    : ""
+                }`}
+              >
+                <p>Tên thiết bị/vật tư</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipName}
+                  >
+                    {iconSortName}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
+            </th>
+            <th className="w-[5%]">
+              <div
+                className={`${
+                  sortMode
+                    ? "flex flex-row justify-center gap-[5px] items-center"
+                    : ""
+                }`}
+              >
+                <p>Số lượng</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipQuantity}
+                  >
+                    {iconSortQuantity}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
+            </th>
             <th className="w-[5%]">Đơn vị</th>
             <th className="w-[8%]">Hạn bảo trì</th>
             <th className="w-[5%]">Ngày thêm</th>

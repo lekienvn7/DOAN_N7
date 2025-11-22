@@ -223,35 +223,49 @@ const HeaderDetail = ({
               >
                 {showSearch ? (
                   <ChevronsRight
-                    className={`searchClose cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#FFD700] outline-none focus:outline-none ring-0 focus:ring-0 focus-visible:ring-0`}
+                    className={`searchClose cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#FFD700] no-outline`}
                     size={18}
                   />
                 ) : (
                   <Search
-                    className={`searchTool cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#A1A1A6] outline-none focus:outline-none ring-0 focus:ring-0 focus-visible:ring-0`}
+                    className={`searchTool cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#A1A1A6] no-outline`}
                     size={18}
                   />
                 )}
               </button>
 
-              <input
-                type="text"
-                placeholder="Tìm kiếm..."
-                value={searchData}
-                onChange={(e) => setSearchData(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    saveHistory(searchData);
+              <div className="flex flex-row items-center">
+                <input
+                  type="text"
+                  placeholder="Tìm kiếm..."
+                  value={searchData}
+                  onChange={(e) => setSearchData(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      saveHistory(searchData);
+                      setShowHistory(false);
+                    }
+                  }}
+                  onFocus={() => setShowHistory(true)}
+                  className={`px-[10px] placeholder:text-textsec -mr-[15px] text-textpri text-[14px]  outline-none ${
+                    showSearch
+                      ? "ml-[5px] w-[150px] opacity-[1] pointer-events-auto"
+                      : "ml-[0px] w-0 opacity-0 pointer-events-none"
+                  } transition-all duration-300`}
+                />
+                <X
+                  size={16}
+                  onClick={() => {
+                    setSearchData("");
                     setShowHistory(false);
-                  }
-                }}
-                onFocus={() => setShowHistory(true)}
-                className={`px-[10px] placeholder:text-textsec -mr-[15px] text-textpri text-[14px]  outline-none ${
-                  showSearch
-                    ? "ml-[5px] w-[150px] opacity-[1] pointer-events-auto"
-                    : "ml-[0px] w-0 opacity-0 pointer-events-none"
-                } transition-all duration-300`}
-              />
+                  }}
+                  className={`cursor-pointer text-[#a1a1a6] -ml-[15px] hover:text-red-400 transition-opacity duration-200 ${
+                    searchData?.length === 0
+                      ? "opacity-0 pointer-events-none"
+                      : "opacity-100"
+                  }`}
+                />
+              </div>
             </div>
 
             {showHistory && history.length > 0 && (
@@ -306,7 +320,7 @@ const HeaderDetail = ({
                 />
               </button>
               <Tooltip anchorSelect=".sortTool" place="top">
-                Sắp xếp
+                {sortMode ? "Tắt sắp xếp" : "Sắp xếp"}
               </Tooltip>
               <button onClick={() => checkPermission()} className="exportTool">
                 <Download

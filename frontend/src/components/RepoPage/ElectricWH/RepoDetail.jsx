@@ -2,7 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ElectricList from "./ElectricList";
 
-const RepoDetail = ({ mode, reload, searchData }) => {
+const RepoDetail = ({ mode, reload, searchData, sortMode }) => {
   return (
     <AnimatePresence>
       <motion.div
@@ -19,6 +19,7 @@ const RepoDetail = ({ mode, reload, searchData }) => {
           mode={mode}
           reload={reload}
           searchData={searchData}
+          sortMode={sortMode}
         />
       </motion.div>
     </AnimatePresence>

@@ -82,5 +82,23 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    function ({ addUtilities }) {
+      const newUtils = {
+        ".no-outline": {
+          outline: "none",
+          ring: "0",
+        },
+        ".no-outline:focus": {
+          outline: "none",
+          ring: "0",
+        },
+        ".no-outline:focus-visible": {
+          outline: "none",
+          ring: "0",
+        },
+      };
+      addUtilities(newUtils, ["responsive", "hover", "focus"]);
+    },
+  ],
 };
