@@ -35,7 +35,7 @@ const chemicalMaterialSchema = new mongoose.Schema({
     default: null,
   }, // Độ pH
   expiryDate: {
-    type: Date,
+    type: Number,
     default: null,
   }, // Hạn sử dụng
   flammability: {

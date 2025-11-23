@@ -2,6 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
 import { Tooltip } from "react-tooltip";
+import { useState, useEffect } from "react";
 import {
   Plus,
   Minus,
@@ -16,9 +17,24 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
+import axiosClient from "@/api/axiosClient.js";
 
-const HeaderDetail = () => {
+const HeaderDetail = ({
+  mode,
+  setMode,
+  onReload,
+  searchData,
+  setSearchData,
+  sortMode,
+  setSortMode,
+}) => {
+  const [open, setOpen] = useState(false);
+  const [repository, setRepository] = useState("");
   const { user } = useAuth();
+  const [showSearch, setShowSearch] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+
   const checkPermission = (callback) => {
     const hasAccess =
       user?.yourRepo?.includes("all") || user?.yourRepo?.includes("mechanical");

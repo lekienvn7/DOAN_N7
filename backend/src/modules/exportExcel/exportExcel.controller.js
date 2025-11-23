@@ -133,3 +133,23 @@ export const exportTechnologyExcel = async (req, res) => {
     res.status(500).json({ message: "Lỗi xuất Excel!" });
   }
 };
+
+export const exportTelecomExcel = async (req, res) => {
+  try {
+    const result = await exportExcelService.exportTelecomExcelService();
+    // ======= RESPONSE =======
+    res.setHeader(
+      "Content-Type",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    );
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=kho-dienTuVienThong.xlsx"
+    );
+
+    res.send(result);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Lỗi xuất Excel!" });
+  }
+};

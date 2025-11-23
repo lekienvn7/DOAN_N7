@@ -76,7 +76,8 @@ const HeaderDetail = ({
   }, []);
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("search_history")) || [];
+    const saved =
+      JSON.parse(localStorage.getItem("electric_search_history")) || [];
     setHistory(saved);
   }, []);
 
@@ -86,13 +87,13 @@ const HeaderDetail = ({
     const updated = [value, ...history.filter((h) => h !== value)].slice(0, 10);
 
     setHistory(updated);
-    localStorage.setItem("search_history", JSON.stringify(updated));
+    localStorage.setItem("electric_search_history", JSON.stringify(updated));
   };
 
   const deleteHistoryItem = (item) => {
     const updated = history.filter((h) => h !== item);
     setHistory(updated);
-    localStorage.setItem("search_history", JSON.stringify(updated));
+    localStorage.setItem("electric_search_history", JSON.stringify(updated));
   };
 
   const formatDate = (dataString) => {
@@ -209,7 +210,7 @@ const HeaderDetail = ({
                 </button>
               </DialogTrigger>
 
-              <DialogContent className="bg-[#1a1a1a] !max-w-none rounded-[12px] p-[25px] w-[920px] border-none text-white">
+              <DialogContent className="bg-[#1a1a1a] !max-w-none rounded-[12px] p-[25px] w-fit border-none text-white">
                 <DialogHeader>
                   <DialogTitle>
                     Phiếu nhập vật tư{" "}

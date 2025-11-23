@@ -2,6 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
 import { Tooltip } from "react-tooltip";
+import { useState, useEffect } from "react";
 import {
   Plus,
   Minus,
@@ -16,19 +17,100 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
+import axiosClient from "@/api/axiosClient.js";
 
-const HeaderDetail = () => {
+const HeaderDetail = ({
+  mode,
+  setMode,
+  onReload,
+  searchData,
+  setSearchData,
+  sortMode,
+  setSortMode,
+}) => {
+  const [open, setOpen] = useState(false);
+  const [repository, setRepository] = useState("");
   const { user } = useAuth();
-  const checkPermission = (callback) => {
+  const [showSearch, setShowSearch] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const checkPermission = () => {
     const hasAccess =
       user?.yourRepo?.includes("all") || user?.yourRepo?.includes("fashion");
 
     if (!hasAccess) {
       toast.error("Không có quyền sử dụng chức năng!");
-      return;
+      return false;
     }
 
-    callback();
+    return true;
+  };
+
+  useEffect(() => {
+    const fetchRepository = async () => {
+      try {
+        const res = await axiosClient.get("/repository/fashion");
+        if (res.data.success) {
+          setRepository(res.data.data);
+        }
+      } catch (error) {
+        console.error("Lỗi kết nối dữ liệu kho thời trang!", error);
+        toast.error("Lỗi khi kết nối dữ liệu kho thời trang!");
+      }
+    };
+
+    fetchRepository();
+  }, []);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("search_history")) || [];
+    setHistory(saved);
+  }, []);
+
+  const saveHistory = (value) => {
+    if (!value.trim()) return;
+
+    const updated = [value, ...history.filter((h) => h !== value)].slice(0, 10);
+
+    setHistory(updated);
+    localStorage.setItem("search_history", JSON.stringify(updated));
+  };
+
+  const deleteHistoryItem = (item) => {
+    const updated = history.filter((h) => h !== item);
+    setHistory(updated);
+    localStorage.setItem("search_history", JSON.stringify(updated));
+  };
+
+  const formatDate = (dataString) => {
+    const date = new Date(dataString);
+
+    const day = date.getDate().toString().padStart(2, 0);
+    const month = (date.getMonth() + 1).toString().padStart(2, 0);
+    const year = date.getFullYear().toString().slice(-2); // Lấy 2 số cuối của năm
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleExport = async () => {
+    try {
+      const res = await axiosClient.get("/export/fashion/export-excel", {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "kho-thoiTrang.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      toast.success("Đã xuất file Excel!");
+    } catch (err) {
+      toast.error("Lỗi khi xuất Excel!");
+    }
   };
 
   return (

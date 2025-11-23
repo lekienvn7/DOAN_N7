@@ -48,7 +48,7 @@ async function exportElectricExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "J1");
+  sheet.mergeCells("A1", "S1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO ĐIỆN";
   title.font = { size: 16, bold: true };
@@ -183,7 +183,7 @@ async function exportChemicalExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "J1");
+  sheet.mergeCells("A1", "T1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO HÓA CHẤT";
   title.font = { size: 16, bold: true };
@@ -315,7 +315,7 @@ async function exportAutomotiveExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "J1");
+  sheet.mergeCells("A1", "O1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO CÔNG NGHỆ Ô TÔ";
   title.font = { size: 16, bold: true };
@@ -437,7 +437,7 @@ async function exportFashionExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "J1");
+  sheet.mergeCells("A1", "O1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO THỜI TRANG";
   title.font = { size: 16, bold: true };
@@ -560,7 +560,7 @@ async function exportIotExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "J1");
+  sheet.mergeCells("A1", "P1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO NHÚNG VÀ IOT";
   title.font = { size: 16, bold: true };
@@ -687,7 +687,7 @@ async function exportMechanicalExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "J1");
+  sheet.mergeCells("A1", "R1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO CƠ KHÍ";
   title.font = { size: 16, bold: true };
@@ -815,7 +815,7 @@ async function exportTechnologyExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "J1");
+  sheet.mergeCells("A1", "O1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO CÔNG NGHỆ THÔNG TIN";
   title.font = { size: 16, bold: true };
@@ -894,6 +894,128 @@ async function exportTechnologyExcelService() {
   return result;
 }
 
+async function exportTelecomExcelService() {
+  const repository = await Repository.findOne({
+    repoType: "telecom",
+  }).populate({
+    path: "materials.material",
+    populate: { path: "detail" }, // hoặc electricDetail, hoặc field chứa model con
+  });
+
+  const telecom = repository.materials.map((item) => ({
+    name: item.material.name,
+    quantity: item.quantity,
+    unit: item.material.unit,
+    maintenanceCycle: item.material.maintenanceCycle,
+    createdAt: item.material.createdAt,
+    signalType: item.material.signalType,
+    frequency: item.material.frequency,
+    bandwidth: item.material.bandwidth,
+    connectorType: item.material.connectorType,
+    cableType: item.material.cableType,
+    transmissionRate: item.material.transmissionRate,
+    range: item.material.range,
+    impedance: item.material.impedance,
+    description: item.material.description,
+  }));
+
+  const workbook = new ExcelJS.Workbook();
+  const sheet = workbook.addWorksheet("Kho điện tử viễn thông");
+
+  // ======= STYLE =======
+  const headerFill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FFFDD700" }, // vàng đậm
+  };
+
+  const borderStyle = {
+    top: { style: "thin" },
+    left: { style: "thin" },
+    bottom: { style: "thin" },
+    right: { style: "thin" },
+  };
+
+  // ======= TITLE =======
+  sheet.mergeCells("A1", "O1");
+  const title = sheet.getCell("A1");
+  title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO ĐIỆN TỬ VIỄN THÔNG";
+  title.font = { size: 16, bold: true };
+  title.alignment = { vertical: "middle", horizontal: "center" };
+  title.fill = headerFill;
+
+  // ======= HEADER =======
+  sheet.addRow([
+    "STT",
+    "Tên vật tư",
+    "Số lượng",
+    "Đơn vị",
+    "Hạn bảo trì",
+    "Ngày thêm",
+    "Loại tín hiệu",
+    "Tần số",
+    "Băng thông",
+    "Loại đầu nối",
+    "Loại cáp",
+    "Tốc độ truyền dẫn",
+    "Phạm vi hoạt động",
+    "Trở kháng",
+    "Ghi chú",
+  ]);
+
+  const headerRow = sheet.getRow(2);
+  headerRow.eachCell((cell) => {
+    cell.font = { bold: true };
+    cell.fill = headerFill;
+    cell.alignment = { horizontal: "center", vertical: "middle" };
+    cell.border = borderStyle;
+  });
+
+  // ======= DATA =======
+  technology.forEach((item, index) => {
+    const row = sheet.addRow([
+      index + 1,
+      item.name,
+      item.quantity,
+      item.unit,
+      item.maintenanceCycle || "—",
+      item.createdAt
+        ? new Date(item.createdAt).toLocaleDateString("vi-VN")
+        : "",
+      item.deviceType || "—",
+      item.capacity || "—",
+      item.speed || "—",
+      item.brand || "—",
+      item.connectorType || "—",
+      item.powerConsumption || "—",
+      item.protocol || "—",
+      item.networkInterface || "—",
+      item.description || "",
+    ]);
+
+    row.eachCell((cell) => {
+      cell.border = borderStyle;
+      cell.alignment = { vertical: "middle", horizontal: "center" };
+    });
+
+    // Cột tên căn trái cho đẹp
+    row.getCell(2).alignment = { horizontal: "left" };
+  });
+
+  // ======= AUTO WIDTH =======
+  sheet.columns.forEach((col) => {
+    let max = 15;
+    col.eachCell({ includeEmpty: true }, (cell) => {
+      const len = cell.value?.toString().length ?? 0;
+      if (len > max) max = len;
+    });
+    col.width = max + 2;
+  });
+
+  const result = await workbook.xlsx.writeBuffer();
+  return result;
+}
+
 export default {
   exportElectricExcelService,
   exportChemicalExcelService,
@@ -902,4 +1024,5 @@ export default {
   exportIotExcelService,
   exportMechanicalExcelService,
   exportTechnologyExcelService,
+  exportTelecomExcelService,
 };

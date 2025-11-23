@@ -7,6 +7,7 @@ import {
   exportIotExcel,
   exportMechanicalExcel,
   exportTechnologyExcel,
+  exportTelecomExcel,
 } from "./exportExcel.controller.js";
 import {
   authorizeRoles,
@@ -28,5 +29,7 @@ router.get("/iot/export-excel", exportIotExcel);
 router.get("/mechanical/export-excel", exportMechanicalExcel);
 
 router.get("/technology/export-excel", exportTechnologyExcel);
+
+router.get("/telecom/export-excel", exportTelecomExcel);
 
 export default router;

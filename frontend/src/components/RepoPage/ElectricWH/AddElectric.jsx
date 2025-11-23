@@ -17,6 +17,7 @@ const AddElectric = ({ onReload }) => {
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
   const [description, setDescription] = useState("");
+  const [materialID, setMaterialID] = useState("");
 
   const [voltageRange, setVoltageRange] = useState("");
   const [power, setPower] = useState("");
@@ -31,7 +32,6 @@ const AddElectric = ({ onReload }) => {
   const [cableDiameter, setCableDiameter] = useState("");
   const [waterproofLevel, setWaterproofLevel] = useState("");
   const [operatingTemp, setOperatingTemp] = useState("");
-  const [materialID, setMaterialID] = useState("");
 
   const { user } = useAuth(); // lấy thông tin người dùng đăng nhập
   const createdBy = user?.userID || "unknown"; // fallback nếu chưa có
@@ -40,6 +40,7 @@ const AddElectric = ({ onReload }) => {
   // Kiểm tra hợp lệ
   const isValid =
     name.trim() !== "" &&
+    materialID.trim() !== "" &&
     maintenanceCycle !== "" &&
     !isNaN(maintenanceCycle) &&
     Number(maintenanceCycle) >= 0 &&

@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 const ChemicalUtilities = () => {
   return (
     <AnimatePresence>
-      <div className=" flex flex-col p-[15px] w-[240px] h-[calc(100vh-160px)] bg-bgmain border-t-1 border-r-1  border-gray-700">
+      <div className=" flex flex-col p-[15px] w-[240px]  h-[calc(100vh-120px)] bg-bgmain border-t-1 border-r-1  border-gray-700">
         <motion.div
           initial={{ x: -20, opacity: 0 }} // Bắt đầu lệch trái + mờ
           animate={{ x: 0, opacity: 1 }} // Di chuyển về giữa + hiện rõ
