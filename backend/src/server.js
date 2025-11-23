@@ -7,6 +7,7 @@ import roleRoutes from "./modules/role/role.routes.js";
 import repoRoutes from "./modules/repository/repository.routes.js";
 import transactionRoutes from "./modules/transaction/transaction.routes.js";
 import maintenanceRoutes from "./modules/maintenance/maintenance.routes.js";
+import exportExcel from "./modules/exportExcel/exportExcel.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
@@ -45,6 +46,7 @@ app.use("/api/repository", repoRoutes);
 app.use("/api/transaction", transactionRoutes);
 
 app.use("/api/maintenance", maintenanceRoutes);
+app.use("/api/export", exportExcel);
 
 app.use("/api/login", authRoutes);
 

@@ -80,8 +80,9 @@ const RepoMenu = () => {
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 200, opacity: 0 }}
       transition={{
-        duration: 0.6,
-        ease: [0.25, 0.8, 0.25, 1],
+        type: "spring",
+        stiffness: 90,
+        damping: 12,
       }}
       className="flex flex-row flex-wrap gap-[25px] items-center justify-center gpu"
     >

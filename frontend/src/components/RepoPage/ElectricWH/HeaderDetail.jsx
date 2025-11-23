@@ -105,6 +105,26 @@ const HeaderDetail = ({
     return `${day}/${month}/${year}`;
   };
 
+  const handleExport = async () => {
+    try {
+      const res = await axiosClient.get("/export/electric/export-excel", {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "kho-dien.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      toast.success("Đã xuất file Excel!");
+    } catch (err) {
+      toast.error("Lỗi khi xuất Excel!");
+    }
+  };
+
   return (
     <div className=" flex flex-col p-[20px] w-[1300px] h-[150px] bg-bgmain border-t-1 border-gray-700">
       <div className="flex flex-col gap-[5px]">
@@ -114,9 +134,11 @@ const HeaderDetail = ({
             animate={{ x: 0, opacity: 1 }} // Di chuyển về giữa + hiện rõ
             exit={{ x: -20, opacity: 0 }} // Khi rời trang (nếu có)
             transition={{
+              type: "tween",
               duration: 0.5,
+              ease: "easeOut",
             }}
-            className="flex flex-row justify-between gpu"
+            className="flex flex-row justify-between"
           >
             <div className="flex flex-col gap-[5px]">
               <p className="text-left text-[16px] text-[#FFD700] font-satoshi ">
@@ -181,7 +203,7 @@ const HeaderDetail = ({
                       setOpen(true); // Chỉ mở nếu có quyền
                     }
                   }}
-                  className="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300"
+                  className="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#ffe87a] transition-colors duration-300"
                 >
                   Thêm vật tư <Plus size={20} className="text-textpri" />
                 </button>
@@ -199,7 +221,7 @@ const HeaderDetail = ({
                     trống!
                   </DialogDescription>
                 </DialogHeader>
-                <AddElectric />
+                <AddElectric onReload={onReload} />
               </DialogContent>
             </Dialog>
 
@@ -223,19 +245,35 @@ const HeaderDetail = ({
               >
                 {showSearch ? (
                   <ChevronsRight
-                    className={`searchClose cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#FFD700] no-outline`}
+                    className={`searchClose cursor-pointer hover:text-[#ffe87a] mr-[15px] transition-colors duration-300 text-[#FFD700] no-outline`}
                     size={18}
                   />
                 ) : (
                   <Search
-                    className={`searchTool cursor-pointer hover:text-[#FFD700] mr-[15px] transition-colors duration-300 text-[#A1A1A6] no-outline`}
+                    className={`searchTool cursor-pointer hover:text-[#ffe87a] mr-[15px] transition-colors duration-300 text-[#A1A1A6] no-outline`}
                     size={18}
                   />
                 )}
               </button>
 
               <div className="flex flex-row items-center">
-                <input
+                <motion.input
+                  initial={{ width: 0, opacity: 0 }}
+                  animate={
+                    showSearch
+                      ? {
+                          width: ["0px", "180px", "150px"],
+                          opacity: [0, 1, 1],
+                        }
+                      : {
+                          width: ["150px", "180px", "0px"],
+                          opacity: [1, 1, 0],
+                        }
+                  }
+                  transition={{
+                    duration: 0.1,
+                    ease: "easeOut",
+                  }}
                   type="text"
                   placeholder="Tìm kiếm..."
                   value={searchData}
@@ -249,8 +287,8 @@ const HeaderDetail = ({
                   onFocus={() => setShowHistory(true)}
                   className={`px-[10px] placeholder:text-textsec -mr-[15px] text-textpri text-[14px]  outline-none ${
                     showSearch
-                      ? "ml-[5px] w-[150px] opacity-[1] pointer-events-auto"
-                      : "ml-[0px] w-0 opacity-0 pointer-events-none"
+                      ? "ml-[5px]  pointer-events-auto"
+                      : "ml-[0px] pointer-events-none"
                   } transition-all duration-300`}
                 />
                 <X
@@ -269,7 +307,13 @@ const HeaderDetail = ({
             </div>
 
             {showHistory && history.length > 0 && (
-              <div className="absolute top-[30px] left-[35px] w-[270px] max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60  bg-[#111111] border border-gray-400 border-t-highlightcl  rounded-lg shadow-xl z-20">
+              <motion.div
+                initial={{ y: -10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -10, opacity: 0 }}
+                transition={{ type: "tween", duration: 0.3 }}
+                className="absolute top-[30px] left-[35px] w-[270px] max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60  bg-[#111111] border border-gray-400 border-t-highlightcl  rounded-lg shadow-xl z-20"
+              >
                 {history.map((item, index) => (
                   <button
                     key={index}
@@ -293,7 +337,7 @@ const HeaderDetail = ({
                     </div>
                   </button>
                 ))}
-              </div>
+              </motion.div>
             )}
 
             <Tooltip anchorSelect=".searchTool" place="top">
@@ -315,16 +359,21 @@ const HeaderDetail = ({
                 <ArrowDownUp
                   className={`${
                     sortMode ? "text-[#FFD700] " : "text-[#A1A1A6] "
-                  } cursor-pointer hover:text-[#FFD700] transition-colors duration-300`}
+                  } cursor-pointer hover:text-[#ffe87a] transition-colors duration-300`}
                   size={18}
                 />
               </button>
               <Tooltip anchorSelect=".sortTool" place="top">
                 {sortMode ? "Tắt sắp xếp" : "Sắp xếp"}
               </Tooltip>
-              <button onClick={() => checkPermission()} className="exportTool">
+              <button
+                onClick={() => {
+                  if (checkPermission()) handleExport();
+                }}
+                className="exportTool"
+              >
                 <Download
-                  className="text-[#A1A1A6] cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
+                  className="text-[#A1A1A6] cursor-pointer hover:text-[#ffe87a] transition-colors duration-300"
                   size={18}
                 />
               </button>
@@ -335,13 +384,13 @@ const HeaderDetail = ({
                 onClick={() => {
                   setTimeout(() => {
                     toast.success("Làm mới dữ liệu thành công!");
-                  }, 500);
+                  }, 600);
                   onReload();
                 }}
                 className="refreshTool"
               >
                 <RefreshCcw
-                  className="text-[#A1A1A6] cursor-pointer hover:text-[#FFD700] transition-colors duration-300"
+                  className="text-[#A1A1A6] cursor-pointer hover:text-[#ffe87a] transition-colors duration-300"
                   size={18}
                 />
               </button>
@@ -357,7 +406,7 @@ const HeaderDetail = ({
                   setMode((prev) => (prev === "view" ? "edit" : "view"));
                 }
               }}
-              className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#FFD700] transition-colors duration-300 cursor-pointer ml-[15px]"
+              className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#ffe87a] transition-colors duration-300 cursor-pointer ml-[15px]"
             >
               {mode === "view" ? `Chỉnh sửa` : `Chi tiết`}
               {mode === "view" ? (

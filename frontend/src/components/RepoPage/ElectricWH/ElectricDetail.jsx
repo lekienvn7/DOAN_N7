@@ -23,7 +23,7 @@ const ElectricDetail = ({ item }) => {
           <ReceiptText size={15} />
         </button>
       </DialogTrigger>
-      <DialogContent className="bg-[#1a1a1a] !max-w-none w-[1000px]  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] ">
+      <DialogContent className="bg-[#1a1a1a] !max-w-none w-fit  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] ">
         <>
           <DialogHeader>
             <DialogTitle>
@@ -35,7 +35,7 @@ const ElectricDetail = ({ item }) => {
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-row gap-[25px]">
-            <div className="border-[1px] border-[#fdd700] rounded-[12px]">
+            <div className="w-[250px] h-[250px] border-[1px] border-[#fdd700] rounded-[12px]">
               <img
                 src={cadivi}
                 alt="day-dien-2x2.5-cadivi"

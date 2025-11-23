@@ -1,11 +1,12 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
 import {
-  ArrowDownUp,
   ArrowDownAZ,
-  ArrowUpAZ,
+  ChevronUp,
+  ChevronDown,
   ArrowDown01,
-  ArrowUp01,
+  ClockArrowDown,
 } from "lucide-react";
 import axiosClient from "@/api/axiosClient";
 import { toast } from "sonner";
@@ -19,6 +20,9 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
   const keywords = searchData.toLowerCase().trim().split(/\s+/);
   const [sortName, setSortName] = useState(null);
   const [sortQuantity, setSortQuantity] = useState(null);
+  const [sortMaintenance, setSortMaintenance] = useState(null);
+  const [sortPower, setSortPower] = useState(null);
+  const [sortCurrent, setSortCurrent] = useState(null);
   const [filterData, setFilterData] = useState([]);
 
   useEffect(() => {
@@ -39,7 +43,7 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
         }
       };
       fetchElectrical();
-    }, 400);
+    }, 600);
 
     return () => clearTimeout(timer);
   }, [reload]);
@@ -126,6 +130,42 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
     });
   };
 
+  const toggleSortMaintenance = () => {
+    setSortName(null);
+    setSortQuantity(null);
+
+    setSortMaintenance((prev) => {
+      if (!prev) return "asc";
+      if (prev === "asc") return "desc";
+      return null;
+    });
+  };
+
+  const toggleSortPower = () => {
+    setSortName(null);
+    setSortQuantity(null);
+    setSortMaintenance(null);
+
+    setSortPower((prev) => {
+      if (!prev) return "asc";
+      if (prev === "asc") return "desc";
+      return null;
+    });
+  };
+
+  const toggleSortCurrent = () => {
+    setSortName(null);
+    setSortQuantity(null);
+    setSortMaintenance(null);
+    setSortPower(null);
+
+    setSortCurrent((prev) => {
+      if (!prev) return "asc";
+      if (prev === "asc") return "desc";
+      return null;
+    });
+  };
+
   const labelTooltipName =
     sortName === "asc"
       ? "z → a"
@@ -140,21 +180,42 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
       ? "Danh sách gốc"
       : "Tăng dần";
 
+  const labelTooltipMaintenance =
+    sortMaintenance === "asc"
+      ? "Giảm dần"
+      : sortMaintenance === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
+  const labelTooltipPower =
+    sortPower === "asc"
+      ? "Giảm dần"
+      : sortPower === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
+  const labelTooltipCurrent =
+    sortCurrent === "asc"
+      ? "Giảm dần"
+      : sortCurrent === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
   const iconSortName =
     sortName === "asc" ? (
-      <ArrowDownAZ
+      <ChevronUp
         size={18}
-        className="text-textpri hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortName}
       />
     ) : sortName === "desc" ? (
-      <ArrowUpAZ
+      <ChevronDown
         size={18}
-        className="text-textpri hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortName}
       />
     ) : (
-      <ArrowDownUp
+      <ArrowDownAZ
         size={18}
         className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortName}
@@ -163,31 +224,111 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
 
   const iconSortQuantity =
     sortQuantity === "asc" ? (
-      <ArrowDown01
+      <ChevronUp
         size={18}
-        className="text-textpri hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortQuantity}
       />
     ) : sortQuantity === "desc" ? (
-      <ArrowUp01
+      <ChevronDown
         size={18}
-        className="text-textpri hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortQuantity}
       />
     ) : (
-      <ArrowDownUp
+      <ArrowDown01
         size={18}
         className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortQuantity}
       />
     );
 
+  const iconSortMaintenance =
+    sortMaintenance === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortMaintenance}
+      />
+    ) : sortMaintenance === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortMaintenance}
+      />
+    ) : (
+      <ClockArrowDown
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortMaintenance}
+      />
+    );
+
+  const iconSortPower =
+    sortPower === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortPower}
+      />
+    ) : sortPower === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortPower}
+      />
+    ) : (
+      <ArrowDown01
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortPower}
+      />
+    );
+
+  const iconSortCurrent =
+    sortCurrent === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortCurrent}
+      />
+    ) : sortCurrent === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortCurrent}
+      />
+    ) : (
+      <ArrowDown01
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortCurrent}
+      />
+    );
+
   useEffect(() => {
-    if (sortName === null && sortQuantity === null) {
-      // reset về danh sách theo search
-      const filtered = electrical.filter((item) =>
-        keywords.every((k) => item.name.toLowerCase().includes(k))
-      );
+    const filtered = electrical.filter((item) =>
+      keywords.every((k) => item.name.toLowerCase().includes(k))
+    );
+
+    if (!sortMode) {
+      setSortName(null);
+      setSortQuantity(null);
+      setSortMaintenance(null);
+      setSortPower(null);
+      setSortCurrent(null);
+
+      setFilterData(filtered);
+      return;
+    }
+
+    if (
+      !sortName &&
+      !sortQuantity &&
+      !sortMaintenance &&
+      !sortPower &&
+      !sortCurrent
+    ) {
       setFilterData(filtered);
       return;
     }
@@ -205,9 +346,53 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
         if (sortQuantity === "desc") return b.quantity - a.quantity;
       });
     }
+    if (sortMaintenance) {
+      sorted.sort((a, b) => {
+        if (a.maintenanceCycle == null) return 1;
+        if (b.maintenanceCycle == null) return -1;
+
+        if (sortMaintenance === "asc")
+          return (
+            (a.maintenanceCycle ?? Infinity) - (b.maintenanceCycle ?? Infinity)
+          );
+        if (sortMaintenance === "desc")
+          return (
+            (b.maintenanceCycle ?? Infinity) - (a.maintenanceCycle ?? Infinity)
+          );
+      });
+    }
+    if (sortPower) {
+      sorted.sort((a, b) => {
+        if (a.power == null) return 1;
+        if (b.power == null) return -1;
+
+        if (sortPower === "asc")
+          return (a.power ?? Infinity) - (b.power ?? Infinity);
+        if (sortPower === "desc")
+          return (b.power ?? Infinity) - (a.power ?? Infinity);
+      });
+    }
+    if (sortCurrent) {
+      sorted.sort((a, b) => {
+        if (a.current == null) return 1;
+        if (b.current == null) return -1;
+
+        if (sortCurrent === "asc")
+          return (a.current ?? Infinity) - (b.current ?? Infinity);
+        if (sortCurrent === "desc")
+          return (b.current ?? Infinity) - (a.current ?? Infinity);
+      });
+    }
 
     setFilterData(sorted);
-  }, [sortName, sortQuantity]);
+  }, [
+    sortName,
+    sortQuantity,
+    sortMaintenance,
+    sortPower,
+    sortCurrent,
+    sortMode,
+  ]);
 
   if (loading) {
     return (
@@ -222,14 +407,12 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
     <div className="w-full">
       <table className="electric w-full text-[#fdd700] border-collapse">
         <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#1e1b11]">
-          <tr className="text-center text-[14px] font-semibold">
-            <th className="py-[5px] w-[3%]">STT</th>
-            <th className=" w-[15%]">
-              <div
+          <tr className="text-left p-[5px] text-[14px] font-semibold">
+            <th className="text-center p-[5px] w-[3%]">STT</th>
+            <th className="p-[5px] w-[18%]">
+              <motion.div
                 className={`${
-                  sortMode
-                    ? "flex flex-row justify-center gap-[20px] items-center"
-                    : ""
+                  sortMode ? "flex flex-row justify-between items-center" : ""
                 }`}
               >
                 <p>Tên thiết bị/vật tư</p>{" "}
@@ -244,14 +427,12 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
                   ""
                 )}
                 <Tooltip id="SortTip"></Tooltip>
-              </div>
+              </motion.div>
             </th>
-            <th className="w-[5%]">
+            <th className="p-[5px] w-[7%]">
               <div
                 className={`${
-                  sortMode
-                    ? "flex flex-row justify-center gap-[5px] items-center"
-                    : ""
+                  sortMode ? "flex flex-row justify-between items-center" : ""
                 }`}
               >
                 <p>Số lượng</p>{" "}
@@ -268,13 +449,70 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
                 <Tooltip id="SortTip"></Tooltip>
               </div>
             </th>
-            <th className="w-[5%]">Đơn vị</th>
-            <th className="w-[8%]">Hạn bảo trì</th>
-            <th className="w-[5%]">Ngày thêm</th>
-            <th className="w-[5%] ">Điện áp</th>
-            <th className="w-[10%]">Công suất định mức</th>
-            <th className="w-[10%]">Dòng điện định mức</th>
-            <th colSpan={2} className="w-[5%]">
+            <th className="p-[5px] w-[3%]">Đơn vị</th>
+            <th className="p-[5px] w-[6%]">
+              <div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Hạn bảo trì</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipMaintenance}
+                  >
+                    {iconSortMaintenance}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
+            </th>
+            <th className="p-[5px] w-[5%]">Ngày thêm</th>
+            <th className="p-[5px] w-[8%] ">Điện áp</th>
+            <th className="p-[5px] w-[6%]">
+              <div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Công suất</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipPower}
+                  >
+                    {iconSortPower}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
+            </th>
+            <th className="p-[5px] w-[6%]">
+              <div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Cường độ</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipCurrent}
+                  >
+                    {iconSortCurrent}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
+            </th>
+            <th colSpan={2} className="text-center w-[3%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
             </th>
           </tr>
@@ -287,9 +525,9 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
               <td className="text-left  p-[5px]">
                 {highlightText(item.name, searchData)}
               </td>
-              <td className=" p-[5px]">{item.quantity}</td>
-              <td className=" p-[5px]">{item.unit}</td>
-              <td className=" p-[5px]">
+              <td className=" text-left p-[5px]">{item.quantity}</td>
+              <td className=" text-left p-[5px]">{item.unit}</td>
+              <td className=" text-left p-[5px]">
                 {item.maintenanceCycle
                   ? (() => {
                       const nextDate = getNextMaintenanceDate(
@@ -312,14 +550,16 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
                     })()
                   : "—"}
               </td>
-              <td className=" p-[5px]">{formatDate(item.createdAt)}</td>
-              <td className=" p-[5px]">
-                {item.voltageRange ? `${item.voltageRange}V` : "—"}
+              <td className=" text-left p-[5px]">
+                {formatDate(item.createdAt)}
               </td>
-              <td className=" p-[5px]">
+              <td className=" text-left p-[5px]">
+                {item.voltageRange ? `${item.voltageRange} V` : "—"}
+              </td>
+              <td className=" text-left p-[5px]">
                 {item.power ? `${item.power}W` : "—"}
               </td>
-              <td className=" p-[5px]">
+              <td className=" text-left p-[5px]">
                 {item.current ? `${item.current}A` : "—"}
               </td>
               <td className=" text-center p-[5px]">

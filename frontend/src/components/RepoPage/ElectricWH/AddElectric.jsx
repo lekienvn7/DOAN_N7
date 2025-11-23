@@ -11,7 +11,7 @@ import {
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 
-const AddElectric = () => {
+const AddElectric = ({ onReload }) => {
   const [name, setName] = useState("");
   const [maintenanceCycle, setMaintenanceCycle] = useState("");
   const [quantity, setQuantity] = useState("");
@@ -125,7 +125,7 @@ const AddElectric = () => {
 
             if (repoRes.data.success) {
               toast.success(`Vật tư ${materialID} đã được thêm vào kho điện!`);
-              setTimeout(() => window.location.reload(), 500);
+              setTimeout(() => onReload(), 500);
             } else {
               toast.error("Không thể thêm vào kho: " + repoRes.data.message);
             }

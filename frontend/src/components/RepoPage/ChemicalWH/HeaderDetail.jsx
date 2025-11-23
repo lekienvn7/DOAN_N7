@@ -1,4 +1,5 @@
 import React from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router";
 import { Tooltip } from "react-tooltip";
@@ -14,21 +15,104 @@ import {
   SlidersVertical,
   Download,
 } from "lucide-react";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "../../ui/dialog.jsx";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
+import axiosClient from "@/api/axiosClient.js";
 
 const HeaderDetail = () => {
+  const [open, setOpen] = useState(false);
+  const [repository, setRepository] = useState("");
   const { user } = useAuth();
-  const checkPermission = (callback) => {
+  const [showSearch, setShowSearch] = useState(false);
+  const [history, setHistory] = useState([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  const checkPermission = () => {
     const hasAccess =
       user?.yourRepo?.includes("all") || user?.yourRepo?.includes("chemical");
 
     if (!hasAccess) {
       toast.error("Không có quyền sử dụng chức năng!");
-      return;
+      return false;
     }
 
-    callback();
+    return true;
+  };
+
+  useEffect(() => {
+    const fetchRepository = async () => {
+      try {
+        const res = await axiosClient.get("/repository/chemical");
+        if (res.data.success) {
+          setRepository(res.data.data);
+        }
+      } catch (error) {
+        console.error("Lỗi kết nối dữ liệu kho hóa chất!", error);
+        toast.error("Lỗi khi kết nối dữ liệu kho hóa chất!");
+      }
+    };
+
+    fetchRepository();
+  }, []);
+
+  useEffect(() => {
+    const saved = JSON.parse(localStorage.getItem("search_history")) || [];
+    setHistory(saved);
+  }, []);
+
+  const saveHistory = (value) => {
+    if (!value.trim()) return;
+
+    const updated = [value, ...history.filter((h) => h !== value)].slice(0, 10);
+
+    setHistory(updated);
+    localStorage.setItem("search_history", JSON.stringify(updated));
+  };
+
+  const deleteHistoryItem = (item) => {
+    const updated = history.filter((h) => h !== item);
+    setHistory(updated);
+    localStorage.setItem("search_history", JSON.stringify(updated));
+  };
+
+  const formatDate = (dataString) => {
+    const date = new Date(dataString);
+
+    const day = date.getDate().toString().padStart(2, 0);
+    const month = (date.getMonth() + 1).toString().padStart(2, 0);
+    const year = date.getFullYear().toString().slice(-2); // Lấy 2 số cuối của năm
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const handleExport = async () => {
+    try {
+      const res = await axiosClient.get("/export/chemical/export-excel", {
+        responseType: "blob",
+      });
+
+      const url = window.URL.createObjectURL(new Blob([res.data]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", "kho-hoaChat.xlsx");
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+
+      toast.success("Đã xuất file Excel!");
+    } catch (err) {
+      toast.error("Lỗi khi xuất Excel!");
+    }
   };
 
   return (
@@ -40,7 +124,9 @@ const HeaderDetail = () => {
             animate={{ x: 0, opacity: 1 }} // Di chuyển về giữa + hiện rõ
             exit={{ x: -20, opacity: 0 }} // Khi rời trang (nếu có)
             transition={{
-              duration: 0.5, // Tốc độ mượt // Đường cong chuyển động
+              type: "tween",
+              duration: 0.5,
+              ease: "easeOut",
             }}
             className="flex flex-row justify-between"
           >
@@ -54,12 +140,45 @@ const HeaderDetail = () => {
               </p>
             </div>
 
-            <Link
-              to={"/material"}
-              className="h-[40px] p-[15px] bg-highlightcl rounded-[12px] items-center font-bold flex flex-row gap-[10px] cursor-pointer hover:bg-[#2563eb]"
-            >
-              <ToolCase /> Bảo trì
-            </Link>
+            <Dialog>
+              <DialogTrigger asChild>
+                <button className="h-[40px] p-[15px] bg-highlightcl rounded-[12px] items-center font-bold flex flex-row gap-[10px] cursor-pointer hover:bg-[#2563eb]">
+                  <ToolCase /> Thông tin
+                </button>
+              </DialogTrigger>
+
+              <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white ">
+                <DialogHeader>
+                  <DialogTitle>
+                    Thông tin chi tiết{" "}
+                    <span className="text-[#fdd700]">kho điện</span>
+                  </DialogTitle>
+                </DialogHeader>
+                <ul className="mt-[20px] flex flex-col gap-[5px]">
+                  <li>
+                    <span className="text-[#60A5FA] font-semibold">
+                      Vị trí:
+                    </span>{" "}
+                    {repository.location}
+                  </li>
+                  <li>
+                    <span className="text-[#60A5FA] font-semibold">
+                      {" "}
+                      Quản lý phụ trách:
+                    </span>{" "}
+                    {repository?.manager?.fullName || "Chưa có quản lý"}
+                    {" - "}
+                    {repository?.manager?.email || "—"}
+                  </li>
+                  <li>
+                    <span className="text-[#60A5FA] font-semibold">
+                      Tạo vào:
+                    </span>{" "}
+                    {formatDate(repository.createdAt)}
+                  </li>
+                </ul>
+              </DialogContent>
+            </Dialog>
           </motion.div>
 
           <div className="flex flex-row mt-[20px] justify-between">

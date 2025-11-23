@@ -34,24 +34,29 @@ const UserList = ({ reload }) => {
   };
 
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        setLoading(true);
-        const res = await axiosClient.get("/user");
+    setLoading(true);
 
-        if (res.data.success) {
-          const sorted = [...res.data.data].sort((a, b) =>
-            a.userID.localeCompare(b.userID)
-          );
-          setUser(sorted);
+    const timer = setTimeout(() => {
+      const fetchUser = async () => {
+        try {
+          const res = await axiosClient.get("/user");
+
+          if (res.data.success) {
+            const sorted = [...res.data.data].sort((a, b) =>
+              a.userID.localeCompare(b.userID)
+            );
+            setUser(sorted);
+          }
+        } catch (error) {
+          console.error("Lỗi khi kết nối dữ liệu!");
+        } finally {
+          setLoading(false);
         }
-      } catch (error) {
-        console.error("Lỗi khi kết nối dữ liệu!");
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchUser();
+      };
+      fetchUser();
+    }, 300);
+
+    return () => clearTimeout(timer);
   }, [reload]);
 
   const handleResetPassword = async (userID) => {

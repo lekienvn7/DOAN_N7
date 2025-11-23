@@ -26,8 +26,6 @@ router.put("/:id", updateRepository);
 
 router.delete(
   "/:id/removeMaterial",
-  verifyToken,
-  checkRepositoryPermission,
 
   removeMaterialFromRepo
 );
