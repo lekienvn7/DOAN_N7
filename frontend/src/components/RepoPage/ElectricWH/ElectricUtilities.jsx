@@ -31,12 +31,12 @@ const ElectricUtilities = () => {
         <h2 className="text-center text-[18px] font-satoshi font-bold">
           Tổng quan
         </h2>
-        <div className="flex flex-row gap-[5px]">
+        <div className="flex flex-row text-[15px] gap-[5px]">
           <span>Tổng vật tư trong kho:</span>
           {loading ? (
             <span className="w-4 h-4 border-2 border-[#fdd700] border-t-transparent rounded-full animate-spin"></span>
           ) : (
-            repo.totalMaterials
+            `${repo.totalMaterials} loại`
           )}
         </div>
       </div>

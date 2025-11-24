@@ -21,6 +21,8 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
   const [sortName, setSortName] = useState(null);
   const [sortQuantity, setSortQuantity] = useState(null);
   const [sortExpiryDate, setSortExpiryDate] = useState(null);
+  const [sortHazard, setSortHazard] = useState(null);
+  const [sortFlame, setSortFlame] = useState(null);
   const [filterData, setFilterData] = useState([]);
 
   useEffect(() => {
@@ -55,18 +57,18 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
   }, [searchData, chemical]);
 
   const hazardLevelList = [
-    { type: "low", name: "Không nguy hiểm" },
-    { type: "medium", name: "Trung bình" },
-    { type: "high", name: "Cao" },
-    { type: "extreme", name: "Cực kỳ nguy hiểm" },
+    { type: "low", name: "Không nguy hiểm", num: 0 },
+    { type: "medium", name: "Trung bình", num: 1 },
+    { type: "high", name: "Cao", num: 2 },
+    { type: "extreme", name: "Cực kỳ nguy hiểm", num: 3 },
   ];
 
   const flameList = [
-    { type: "Extremely Flammable", name: "Cực kỳ dễ cháy" },
-    { type: "Highly Flammable", name: "Rất dễ cháy" },
-    { type: "Flammable", name: "Dễ cháy" },
-    { type: "Combustible", name: "Ít dễ cháy" },
-    { type: "Không dễ cháy", name: "Không dễ cháy" },
+    { type: "Extremely Flammable", name: "Cực kỳ dễ cháy", num: 0 },
+    { type: "Highly Flammable", name: "Rất dễ cháy", num: 1 },
+    { type: "Flammable", name: "Dễ cháy", num: 2 },
+    { type: "Combustible", name: "Ít dễ cháy", num: 3 },
+    { type: "Không dễ cháy", name: "Không dễ cháy", num: 4 },
   ];
 
   const toxicList = [
@@ -127,6 +129,10 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
 
   const toggleSortName = () => {
     setSortQuantity(null);
+    setSortHazard(null);
+    setSortExpiryDate(null);
+    setSortFlame(null);
+
     setSortName((prev) => {
       if (prev === null) {
         return "asc";
@@ -140,6 +146,10 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
 
   const toggleSortQuantity = () => {
     setSortName(null);
+    setSortHazard(null);
+    setSortExpiryDate(null);
+    setSortFlame(null);
+
     setSortQuantity((prev) => {
       if (prev === null) {
         return "asc";
@@ -154,8 +164,36 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
   const toggleSortExpiryDate = () => {
     setSortName(null);
     setSortQuantity(null);
+    setSortHazard(null);
+    setSortFlame(null);
 
     setSortExpiryDate((prev) => {
+      if (!prev) return "asc";
+      if (prev === "asc") return "desc";
+      return null;
+    });
+  };
+
+  const toggleSortHazard = () => {
+    setSortName(null);
+    setSortQuantity(null);
+    setSortExpiryDate(null);
+    setSortFlame(null);
+
+    setSortHazard((prev) => {
+      if (!prev) return "asc";
+      if (prev === "asc") return "desc";
+      return null;
+    });
+  };
+
+  const toggleSortFlame = () => {
+    setSortName(null);
+    setSortQuantity(null);
+    setSortExpiryDate(null);
+    setSortHazard(null);
+
+    setSortFlame((prev) => {
       if (!prev) return "asc";
       if (prev === "asc") return "desc";
       return null;
@@ -180,6 +218,20 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
     sortExpiryDate === "asc"
       ? "Giảm dần"
       : sortExpiryDate === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
+  const labelTooltipHazard =
+    sortHazard === "asc"
+      ? "Giảm dần"
+      : sortHazard === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
+  const labelTooltipFlame =
+    sortFlame === "asc"
+      ? "Giảm dần"
+      : sortFlame === "desc"
       ? "Danh sách gốc"
       : "Tăng dần";
 
@@ -246,6 +298,48 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
       />
     );
 
+  const iconSortHazard =
+    sortHazard === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortHazard}
+      />
+    ) : sortHazard === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortHazard}
+      />
+    ) : (
+      <ArrowDown01
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortHazard}
+      />
+    );
+
+  const iconSortFlame =
+    sortFlame === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortFlame}
+      />
+    ) : sortFlame === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortFlame}
+      />
+    ) : (
+      <ArrowDown01
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortFlame}
+      />
+    );
+
   useEffect(() => {
     const filtered = chemical.filter((item) =>
       keywords.every((k) => item.name.toLowerCase().includes(k))
@@ -255,12 +349,20 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
       setSortName(null);
       setSortQuantity(null);
       setSortExpiryDate(null);
+      setSortHazard(null);
+      setSortFlame(null);
 
       setFilterData(filtered);
       return;
     }
 
-    if (!sortName && !sortQuantity && !sortExpiryDate) {
+    if (
+      !sortName &&
+      !sortQuantity &&
+      !sortExpiryDate &&
+      !sortHazard &&
+      !sortFlame
+    ) {
       setFilterData(filtered);
       return;
     }
@@ -289,9 +391,50 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
           return (b.expiryDate ?? Infinity) - (a.expiryDate ?? Infinity);
       });
     }
+    if (sortHazard) {
+      sorted.sort((a, b) => {
+        const hazardNum = (chemical) => {
+          return (
+            hazardLevelList.find((prev) => prev.type === chemical.hazardLevel)
+              ?.num ?? null
+          );
+        };
+
+        const aNum = hazardNum(a);
+        const bNum = hazardNum(b);
+
+        if (aNum === null && bNum !== null) return 1;
+        if (aNum !== null && bNum === null) return -1;
+        if (aNum === null && bNum === null) return 0;
+
+        if (sortHazard === "asc") return aNum - bNum;
+        if (sortHazard === "desc") return bNum - aNum;
+      });
+    }
+
+    if (sortFlame) {
+      sorted.sort((a, b) => {
+        const flameNum = (chemical) => {
+          return (
+            flameList.find((prev) => prev.type === chemical.flammability)
+              ?.num ?? null
+          );
+        };
+
+        const aNum = flameNum(a);
+        const bNum = flameNum(b);
+
+        if (aNum === null && bNum !== null) return 1;
+        if (aNum !== null && bNum === null) return -1;
+        if (aNum === null && bNum === null) return 0;
+
+        if (sortFlame === "asc") return aNum - bNum;
+        if (sortFlame === "desc") return bNum - aNum;
+      });
+    }
 
     setFilterData(sorted);
-  }, [sortName, sortQuantity, sortExpiryDate, sortMode]);
+  }, [sortName, sortQuantity, sortExpiryDate, sortHazard, sortFlame, sortMode]);
 
   if (loading) {
     return (
@@ -308,7 +451,7 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
         <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#1e1b11]">
           <tr className="text-left p-[5px] text-[14px] font-semibold">
             <th className="text-center p-[5px] w-[3%]">STT</th>
-            <th className="p-[5px] w-[15%]">
+            <th className="p-[5px] w-[14%]">
               <motion.div
                 className={`${
                   sortMode ? "flex flex-row justify-between items-center" : ""
@@ -328,7 +471,7 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
                 <Tooltip id="SortTip"></Tooltip>
               </motion.div>
             </th>
-            <th className="p-[5px] w-[5%]">
+            <th className="p-[5px] w-[7%]">
               <div
                 className={`${
                   sortMode ? "flex flex-row justify-between items-center" : ""
@@ -370,8 +513,46 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
               </div>
             </th>
             <th className="p-[5px] w-[5%]">Ngày thêm</th>
-            <th className="p-[5px] w-[8%] ">Mức độ nguy hiểm</th>
-            <th className="p-[5px] w-[8%]">Tính dễ cháy</th>
+            <th className="p-[5px] w-[8%] ">
+              <div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Mức độ nguy hiểm</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipHazard}
+                  >
+                    {iconSortHazard}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
+            </th>
+            <th className="p-[5px] w-[7%]">
+              <div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Tính dễ cháy</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipFlame}
+                  >
+                    {iconSortFlame}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
+            </th>
             <th className="p-[5px] w-[6%]">Độc tính</th>
             <th colSpan={2} className="text-center w-[3%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}

@@ -62,10 +62,7 @@ async function getRepository(repoID) {
     throw err;
   }
 
-  const totalMaterials = repo.materials.reduce(
-    (sum, item) => sum + item.quantity,
-    0
-  );
+  const totalMaterials = repo.materials.length;
 
   return { repo, totalMaterials };
 }

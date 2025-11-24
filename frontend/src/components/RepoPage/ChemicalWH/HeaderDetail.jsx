@@ -46,6 +46,8 @@ const HeaderDetail = ({
   const [showSearch, setShowSearch] = useState(false);
   const [history, setHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
+  const searchRef = useRef(null);
+  const historyRef = useRef(null);
 
   const checkPermission = () => {
     const hasAccess =
@@ -127,6 +129,23 @@ const HeaderDetail = ({
       toast.error("Lỗi khi xuất Excel!");
     }
   };
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (
+        searchRef.current &&
+        !searchRef.current.contains(e.target) &&
+        historyRef.current &&
+        !historyRef.current.contains(e.target)
+      ) {
+        setShowHistory(false);
+        setShowSearch(false);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className=" flex flex-col p-[20px] w-[1300px] h-[150px] bg-bgmain border-t-1 border-gray-700">
@@ -277,6 +296,7 @@ const HeaderDetail = ({
                     duration: 0.1,
                     ease: "easeOut",
                   }}
+                  ref={searchRef}
                   type="text"
                   placeholder="Tìm kiếm..."
                   value={searchData}
@@ -311,6 +331,7 @@ const HeaderDetail = ({
 
             {showHistory && history.length > 0 && (
               <motion.div
+                ref={historyRef}
                 initial={{ y: -10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -10, opacity: 0 }}
