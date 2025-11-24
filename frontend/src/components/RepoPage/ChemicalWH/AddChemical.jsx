@@ -15,7 +15,6 @@ const AddChemical = ({ onReload }) => {
   const [name, setName] = useState("");
   const [quantity, setQuantity] = useState("");
   const [unit, setUnit] = useState("");
-  const [createdAt, setCreatedAt] = useState("");
   const [description, setDescription] = useState("");
   const [materialID, setMaterialID] = useState("");
 

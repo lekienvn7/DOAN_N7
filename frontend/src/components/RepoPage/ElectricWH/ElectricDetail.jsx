@@ -23,24 +23,20 @@ const ElectricDetail = ({ item }) => {
           <ReceiptText size={15} />
         </button>
       </DialogTrigger>
-      <DialogContent className="bg-[#1a1a1a] !max-w-none w-fit  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] ">
+      <DialogContent className="bg-[#1a1a1a] !max-w-none w-fit  h-auto max-h-fit rounded-[12px] border-none  text-white p-[25px] ">
         <>
-          <DialogHeader>
-            <DialogTitle>
-              Chi tiết vật tư
-              <span className="text-[#ffd700]"> {item.name}</span>
-            </DialogTitle>
-            <DialogDescription className="text-gray-400">
-              {item.description?.length > 0 ? item.description : "—"}
-            </DialogDescription>
-          </DialogHeader>
           <div className="flex flex-row gap-[25px]">
-            <div className="w-[250px] h-[250px] border-[1px] border-[#fdd700] rounded-[12px]">
-              <img
-                src={cadivi}
-                alt="day-dien-2x2.5-cadivi"
-                className="w-[250px] h-[250px] rounded-[12px] "
-              />
+            <div className="flex flex-col gap-[25px]">
+              <div className="w-[250px] h-[250px] border-[1px] border-[#fdd700] rounded-[12px]">
+                <img
+                  src={cadivi}
+                  alt="day-dien-2x2.5-cadivi"
+                  className="w-[250px] h-[250px] rounded-[12px] "
+                />
+              </div>
+              <p className="ml-[10px] text-textsec font-inter text-left ">
+                • {item.description ? item.description : "—"}
+              </p>
             </div>
 
             <motion.div
@@ -48,106 +44,116 @@ const ElectricDetail = ({ item }) => {
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 50 }}
               transition={{ duration: 0.3 }}
-              className=""
+              className="flex flex-col gap-[25px] whitespace-nowrap"
             >
+              <div className="flex flex-col text-left">
+                <span className="text-[#ffd700] font-bold text-[24px]">
+                  {" "}
+                  {item.name}
+                </span>
+                <p className="text-textsec">
+                  {item.materialID} • {item.quantity} {item.unit} •{" "}
+                  {item.maintenanceCycle == 0
+                    ? "—"
+                    : `${item.maintenanceCycle} tháng`}
+                </p>
+              </div>
               <ul className="flex flex-col gap-[10px] ">
                 <div className="flex flex-row gap-[25px]">
-                  <div className="flex flex-col gap-[10px]">
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Mã vật tư:
-                      </span>{" "}
-                      {item.materialID}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Số lượng:
-                      </span>{" "}
-                      {item.quantity} {item.unit}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Chu kỳ bảo trì:
-                      </span>{" "}
-                      {item.maintenanceCycle == 0
-                        ? "—"
-                        : `${item.maintenanceCycle} tháng`}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Thêm bởi:
-                      </span>{" "}
-                      {item.createdBy.fullName} {"-"} {item.createdBy.email}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Cách điện:
-                      </span>{" "}
-                      <span>
-                        {item.materialInsulation
-                          ? item.materialInsulation === "Cách điện"
-                            ? "Có"
-                            : "Không"
-                          : "—"}
-                      </span>
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Tần số:
-                      </span>{" "}
-                      {item.frequency ? `${item.frequency}Hz` : "—"}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Điện trở:
-                      </span>{" "}
-                      {item.resistance ? `${item.resistance}Ω` : "—"}
-                    </li>
+                  <div className="bg-[#111111] p-5 rounded-[12px] border border-gray-400">
+                    <h2 className="text-[18px] font-semibold mb-3">
+                      Thông tin chung
+                    </h2>
+                    <div className="flex flex-col gap-[10px] text-[14px] border-t border-gray-400">
+                      <li className="mt-3">
+                        <span className="text-[#60A5FA] font-semibold">
+                          Thêm bởi:
+                        </span>{" "}
+                        {item.createdBy ? item.createdBy.fullName : "—"}
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Email:
+                        </span>{" "}
+                        {item.createdBy ? item.createdBy.email : "—"}
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Cách điện:
+                        </span>{" "}
+                        <span>
+                          {item.materialInsulation
+                            ? item.materialInsulation === "Cách điện"
+                              ? "Có"
+                              : "Không"
+                            : "—"}
+                        </span>
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Tần số:
+                        </span>{" "}
+                        {item.frequency ? `${item.frequency}Hz` : "—"}
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Điện trở:
+                        </span>{" "}
+                        {item.resistance ? `${item.resistance}Ω` : "—"}
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Loại pha điện:
+                        </span>{" "}
+                        {item.phaseType ? item.phaseType : "—"}
+                      </li>
+                    </div>
                   </div>
 
-                  <div className="flex flex-col gap-[10px]">
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Loại pha điện:
-                      </span>{" "}
-                      {item.phaseType ? item.phaseType : "—"}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Vật liệu lõi:
-                      </span>{" "}
-                      {item.conductorMaterial ? item.conductorMaterial : "—"}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Lớp bọc ngoài:
-                      </span>{" "}
-                      {item.insulationMaterial ? item.insulationMaterial : "—"}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Khả năng chịu lửa:
-                      </span>{" "}
-                      {item.fireResistance ? item.fireResistance : "—"}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Đường kính dây:
-                      </span>{" "}
-                      {item.cableDiameter ? `${item.cableDiameter} mm²` : "—"}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Mức độ bảo vệ:
-                      </span>{" "}
-                      {item.waterproofLevel ? item.waterproofLevel : "—"}
-                    </li>
-                    <li>
-                      <span className="text-[#60A5FA] font-semibold">
-                        Nhiệt độ hoạt động:
-                      </span>{" "}
-                      {item.operatingTemp ? item.operatingTemp : "—"}
-                    </li>
+                  <div className="bg-[#111111] p-5 rounded-[12px] border border-gray-400">
+                    <h2 className="text-[18px] font-semibold mb-3">
+                      Thông số kỹ thuật
+                    </h2>
+                    <div className="flex flex-col gap-[10px] text-[14px] border-t border-gray-400">
+                      <li className="mt-3">
+                        <span className="text-[#60A5FA] font-semibold">
+                          Vật liệu lõi:
+                        </span>{" "}
+                        {item.conductorMaterial ? item.conductorMaterial : "—"}
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Lớp bọc ngoài:
+                        </span>{" "}
+                        {item.insulationMaterial
+                          ? item.insulationMaterial
+                          : "—"}
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Khả năng chịu lửa:
+                        </span>{" "}
+                        {item.fireResistance ? item.fireResistance : "—"}
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Đường kính dây:
+                        </span>{" "}
+                        {item.cableDiameter ? `${item.cableDiameter} mm²` : "—"}
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Mức độ bảo vệ:
+                        </span>{" "}
+                        {item.waterproofLevel ? item.waterproofLevel : "—"}
+                      </li>
+                      <li>
+                        <span className="text-[#60A5FA] font-semibold">
+                          Nhiệt độ hoạt động:
+                        </span>{" "}
+                        {item.operatingTemp ? item.operatingTemp : "—"}
+                      </li>
+                    </div>
                   </div>
                 </div>
               </ul>
