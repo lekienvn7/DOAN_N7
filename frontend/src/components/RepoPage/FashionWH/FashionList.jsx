@@ -53,7 +53,13 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
 
   useEffect(() => {
     const filtered = fashion.filter((item) =>
-      keywords.every((k) => item.name.toLowerCase().includes(k))
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.color?.toLowerCase().includes(k) ||
+          item.fabricType?.toLowerCase().includes(k) ||
+          item.origin?.toLowerCase().includes(k)
+      )
     );
 
     setFilterData(filtered);
@@ -175,7 +181,13 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
 
   useEffect(() => {
     const filtered = fashion.filter((item) =>
-      keywords.every((k) => item.name.toLowerCase().includes(k))
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.color?.toLowerCase().includes(k) ||
+          item.fabricType?.toLowerCase().includes(k) ||
+          item.origin?.toLowerCase().includes(k)
+      )
     );
 
     if (!sortMode) {
@@ -276,43 +288,67 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
         </thead>
 
         <tbody>
-          {filterData.map((item, index) => (
-            <tr className=" text-center text-[14px] odd:bg-[#111111] even:bg-[#0d0d0d] hover:bg-[#1a1a1a] text-[#e5e5e7] ">
-              <td className=" p-[5px]">{index + 1}</td>
-              <td className="text-left  p-[5px]">
-                {highlightText(item.name, searchData)}
-              </td>
-              <td className=" text-left p-[5px]">{item.quantity}</td>
-              <td className=" text-left p-[5px]">{item.unit}</td>
-              <td className=" text-left p-[5px]">
-                {item.fabricType ? item.fabricType : "—"}
-              </td>
-              <td className=" text-left p-[5px]">
-                {formatDate(item.createdAt)}
-              </td>
-              <td className=" text-left p-[5px]">
-                {item.origin ? item.origin : "—"}
-              </td>
-              <td className=" text-left p-[5px]">
-                {item.color ? `${item.color}` : "—"}
-              </td>
-              <td className=" text-left p-[5px]">
-                {item.durability
-                  ? `${
-                      durableList.find((prev) => prev.type === item.durability)
-                        ?.name
-                    }`
-                  : "—"}
-              </td>
-              <td className=" text-center p-[5px]">
-                {mode === "view" ? (
-                  <FashionDetail item={item} />
-                ) : (
-                  <FashionEdit item={item} reload={reload} />
-                )}
-              </td>
-            </tr>
-          ))}
+          {filterData.map((item, index) => {
+            let durableColor = "";
+
+            if (item.durability === "low") durableColor = "text-[#ef4444]";
+            else if (item.durability === "medium") {
+              durableColor = "text-[#f59e0b]";
+            } else {
+              durableColor = "text-[#22c55e]";
+            }
+
+            return (
+              <tr className=" text-center text-[14px] odd:bg-[#111111] even:bg-[#0d0d0d] hover:bg-[#1a1a1a] text-[#e5e5e7] ">
+                <td className=" p-[5px]">{index + 1}</td>
+                <td className="text-left  p-[5px]">
+                  {highlightText(item.name, searchData)}
+                </td>
+                <td className=" text-left p-[5px]">{item.quantity}</td>
+                <td className=" text-left p-[5px]">{item.unit}</td>
+                <td className=" text-left p-[5px]">
+                  {highlightText(
+                    item.fabricType ? `${item.fabricType}` : "—",
+                    searchData
+                  )}
+                </td>
+                <td className=" text-left p-[5px]">
+                  {formatDate(item.createdAt)}
+                </td>
+                <td className=" text-left p-[5px]">
+                  {highlightText(
+                    item.origin ? `${item.origin}` : "—",
+                    searchData
+                  )}
+                </td>
+                <td
+                  className={`text-left p-[5px]`}
+                  style={{ color: item.colorType }}
+                >
+                  {highlightText(
+                    item.color ? `${item.color}` : "—",
+                    searchData
+                  )}
+                </td>
+                <td className={` text-left p-[5px] ${durableColor}`}>
+                  {item.durability
+                    ? `${
+                        durableList.find(
+                          (prev) => prev.type === item.durability
+                        )?.name
+                      }`
+                    : "—"}
+                </td>
+                <td className=" text-center p-[5px]">
+                  {mode === "view" ? (
+                    <FashionDetail item={item} />
+                  ) : (
+                    <FashionEdit item={item} reload={reload} />
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

@@ -65,6 +65,10 @@ export const iotFields = [
   "memory",
   "operatingTemp",
   "interface",
+  "moduleSize",
+  "powerConsumption",
+  "accuracy",
+  "responseTime",
 ];
 
 export const technologyFields = [
@@ -104,12 +108,18 @@ export const telecomFields = [
 export const fashionFields = [
   "fabricType",
   "color",
+  "colorType",
   "size",
   "pattern",
   "elasticity",
   "origin",
   "washInstruction",
   "durability",
+  "breathability",
+  "fabricThickness",
+  "colorfastness",
+  "wrinkleResistance",
+  "SPM",
 ];
 
 export const allowedMap = {

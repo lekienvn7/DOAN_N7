@@ -286,7 +286,7 @@ async function exportAutomotiveExcelService() {
     unit: item.material.unit,
     maintenanceCycle: item.material.maintenanceCycle,
     createdAt: item.material.createdAt,
-    
+
     partType: item.material.partType,
     vehicleModel: item.material.vehicleModel,
     manufacturer: item.material.manufacturer,
@@ -417,6 +417,11 @@ async function exportFashionExcelService() {
     origin: item.material.origin,
     washInstruction: item.material.washInstruction,
     durability: item.material.durability,
+    breathability: item.material.breathability,
+    fabricThickness: item.material.fabricThickness,
+    colorfastness: item.material.colorfastness,
+    wrinkleResistance: item.material.wrinkleResistance,
+    SPM: item.material.SPM,
     description: item.material.description,
   }));
 
@@ -438,7 +443,7 @@ async function exportFashionExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "O1");
+  sheet.mergeCells("A1", "T1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO THỜI TRANG";
   title.font = { size: 16, bold: true };
@@ -461,6 +466,11 @@ async function exportFashionExcelService() {
     "Xuất xứ",
     "Hướng dẫn giặt",
     "Độ bền",
+    "Độ thoáng khí",
+    "Độ dày vải",
+    "Khả năng giữ màu",
+    "Khả năng chống nhăn",
+    "Tốc độ mũi khâu",
     "Ghi chú",
   ]);
 
@@ -491,6 +501,11 @@ async function exportFashionExcelService() {
       item.origin || "—",
       item.washInstruction || "—",
       item.durability || "—",
+      item.breathability || "—",
+      item.fabricThickness || "—",
+      item.colorfastness || "—",
+      item.wrinkleResistance || "—",
+      item.SPM || "—",
       item.description || "",
     ]);
 
@@ -540,6 +555,10 @@ async function exportIotExcelService() {
     memory: item.material.memory,
     operatingTemp: item.material.operatingTemp,
     interface: item.material.interface,
+    moduleSize: item.material.moduleSize,
+    powerConsumption: item.material.powerConsumption,
+    accuracy: item.material.accuracy,
+    responseTime: item.material.responseTime,
     description: item.material.description,
   }));
 
@@ -561,7 +580,7 @@ async function exportIotExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "P1");
+  sheet.mergeCells("A1", "T1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO NHÚNG VÀ IOT";
   title.font = { size: 16, bold: true };
@@ -585,6 +604,10 @@ async function exportIotExcelService() {
     "Bộ nhớ",
     "Nhiệt độ hoạt động",
     "Giao tiếp kết nối",
+    "Kích thước",
+    "Công suất tiêu thụ",
+    "Độ nhạy",
+    "Thời gian phản hồi",
     "Ghi chú",
   ]);
 
@@ -616,6 +639,10 @@ async function exportIotExcelService() {
       item.memory || "—",
       item.operatingTemp || "—",
       item.interface || "—",
+      item.moduleSize || "—",
+      item.powerConsumption || "—",
+      item.accuracy || "—",
+      item.responseTime || "—",
       item.description || "",
     ]);
 

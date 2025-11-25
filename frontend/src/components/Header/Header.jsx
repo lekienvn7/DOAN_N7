@@ -8,12 +8,14 @@ const Header = () => {
   const location = useLocation(); // Kiểm tra URL hiện tại
 
   return (
-    <div className="header__container sticky flex flex-row items-center text-center m-[0px_25px] p-[30px] h-[50px] gap-[40px] w-screen bg-[#f8f9fa">
-      <HeaderLogo />
-      <div className="sticky left-[500px]">
+    <div className="header__container sticky flex flex-row items-center justify-between text-center m-[0%_2.5%] py-[30px] h-[50px] gap-[40px] w-screen bg-[#f8f9fa">
+      <div className="w-[71.5%] flex flex-row items-center justify-between text-center">
+        <HeaderLogo />
+    
         <Menu />
       </div>
-      <div className="sticky left-[1500px]">{<LoginButton />}</div>
+
+      <div className="">{<LoginButton />}</div>
     </div>
   );
 };

@@ -11,6 +11,10 @@ const fashionMaterialSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    colorType: {
+      type: String,
+      default: null,
+    },
     size: {
       type: String,
       default: null,
@@ -35,6 +39,26 @@ const fashionMaterialSchema = new mongoose.Schema(
       type: String,
       default: null,
     }, // Độ bền màu
+    breathability: {
+      type: String,
+      default: null,
+    },
+    fabricThickness: {
+      type: String,
+      default: null,
+    },
+    colorfastness: {
+      type: String,
+      default: null,
+    },
+    wrinkleResistance: {
+      type: String,
+      default: null,
+    },
+    SPM: {
+      type: Number,
+      default: null,
+    },
   },
   { _id: false }
 );

@@ -17,6 +17,78 @@ const FashionDetail = ({ item }) => {
   if (!item) return null;
   const [showInfo, setShowInfo] = useState(null);
 
+  const breathList = [
+    { type: "highly", name: "Rất thoáng khí" },
+    { type: "good", name: "Thoáng khí tốt" },
+    { type: "medium", name: "Thoáng khí trung bình" },
+    { type: "low", name: "Thoáng khí thấp" },
+    { type: "none", name: "Không thoáng khí" },
+  ];
+
+  const breathColor = (prev) => {
+    if (prev.breathability === "highly") return "text-[#e0f2fe]";
+    else if (prev.breathability === "good") return "text-[#93c5fd]";
+    else if (prev.breathability === "medium") return "text-[#60a5fa]";
+    else if (prev.breathability === "low") return "text-[#2563eb]";
+    else {
+      return "text-[#1e3a8a]";
+    }
+  };
+
+  const fabricList = [
+    { type: "light", name: "Vải siêu mỏng" },
+    { type: "Lightweight", name: "Vải mỏng" },
+    { type: "medium", name: "Vải trung bình" },
+    { type: "Heavyweight", name: "Vải dày" },
+    { type: "ultra", name: "Vải siêu dày" },
+  ];
+
+  const fabricColor = (prev) => {
+    if (prev.fabricThickness === "light") return "text-[#f1f5f9]";
+    else if (prev.fabricThickness === "Lightweight") return "text-[#cbd5e1]";
+    else if (prev.fabricThickness === "medium") return "text-[#94a3b8]";
+    else if (prev.fabricThickness === "Heavyweight") return "text-[#475569]";
+    else {
+      return "text-[#1e293b]";
+    }
+  };
+
+  const colorList = [
+    { type: "Excellent", name: "Xuất sắc" },
+    { type: "Good", name: "Tốt" },
+    { type: "Fair", name: "Trung bình" },
+    { type: "Poor", name: "Kém" },
+    { type: "Very poor", name: "Rất kém" },
+  ];
+
+  const colorColor = (prev) => {
+    if (prev.colorfastness === "Excellent") return "text-[#16a34a]";
+    else if (prev.colorfastness === "Good") return "text-[#3b82f6]";
+    else if (prev.colorfastness === "Fair") return "text-[#a3a3a3]";
+    else if (prev.colorfastness === "Poor") return "text-[#f97316]";
+    else {
+      return "text-[#text-[#dc2626]]";
+    }
+  };
+
+  const wrinkleList = [
+    { type: "Free", name: "Không nhăn" },
+    { type: "Easy Care", name: "Chống nhăn tốt" },
+    { type: "Resistant", name: "Chống nhăn trung bình" },
+    { type: "Crease-Prone", name: "Dễ nhăn" },
+    { type: "High-Crease", name: "Rất dễ nhăn" },
+  ];
+
+  const wrinkleColor = (prev) => {
+    if (prev.wrinkleResistance === "Free") return "text-[#16a34a]";
+    else if (prev.wrinkleResistance === "Easy Care") return "text-[#3b82f6]";
+    else if (prev.wrinkleResistance === "Resistant") return "text-[#a3a3a3]";
+    else if (prev.wrinkleResistance === "Crease-Prone") return "text-[#f97316]";
+    else {
+      return "text-[#text-[#dc2626]]";
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -120,6 +192,42 @@ const FashionDetail = ({ item }) => {
                         </span>{" "}
                         {item.createdBy ? item.createdBy.email : "—"}
                       </li>
+                      <li
+                        className={`${
+                          item.breathability
+                            ? `${breathColor(item)}`
+                            : "text-textpri"
+                        }`}
+                      >
+                        <span className={`text-[#60A5FA] font-semibold `}>
+                          Độ thoáng khí:
+                        </span>{" "}
+                        {item.breathability
+                          ? `${
+                              breathList.find(
+                                (prev) => prev.type === item.breathability
+                              )?.name
+                            }`
+                          : "—"}
+                      </li>
+                      <li
+                        className={`${
+                          item.fabricThickness
+                            ? `${fabricColor(item)}`
+                            : "text-textpri"
+                        }`}
+                      >
+                        <span className={`text-[#60A5FA] font-semibold `}>
+                          Độ dày vải:
+                        </span>{" "}
+                        {item.fabricThickness
+                          ? `${
+                              fabricList.find(
+                                (prev) => prev.type === item.fabricThickness
+                              )?.name
+                            }`
+                          : "—"}
+                      </li>
                     </div>
                   </div>
 
@@ -146,11 +254,49 @@ const FashionDetail = ({ item }) => {
                         </span>{" "}
                         {item.elasticity ? `${item.elasticity}` : "—"}
                       </li>
+                      <li
+                        className={`${
+                          item.colorfastness
+                            ? `${colorColor(item)}`
+                            : "text-textpri"
+                        }`}
+                      >
+                        <span className={`text-[#60A5FA] font-semibold `}>
+                          Khả năng giữ màu:
+                        </span>{" "}
+                        {item.colorfastness
+                          ? `${
+                              colorList.find(
+                                (prev) => prev.type === item.colorfastness
+                              )?.name
+                            }`
+                          : "—"}
+                      </li>
+
+                      <li
+                        className={`${
+                          item.wrinkleResistance
+                            ? `${wrinkleColor(item)}`
+                            : "text-textpri"
+                        }`}
+                      >
+                        <span className={`text-[#60A5FA] font-semibold `}>
+                          Khả năng chống nhăn:
+                        </span>{" "}
+                        {item.wrinkleResistance
+                          ? `${
+                              wrinkleList.find(
+                                (prev) => prev.type === item.wrinkleResistance
+                              )?.name
+                            }`
+                          : "—"}
+                      </li>
+
                       <li>
                         <span className="text-[#60A5FA] font-semibold">
-                          Màu sắc:
+                          Tốc độ mũi khâu (máy khâu):
                         </span>{" "}
-                        <span>{item.color ? `${item.color} tháng` : "—"}</span>
+                        {item.SPM ? item.SPM : "—"}
                       </li>
                     </div>
                   </div>

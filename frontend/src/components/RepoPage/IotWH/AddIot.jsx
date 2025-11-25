@@ -18,6 +18,7 @@ const AddIot = ({ onReload }) => {
   const [unit, setUnit] = useState("");
   const [description, setDescription] = useState("");
   const [materialID, setMaterialID] = useState("");
+  const [maintenanceCycle, setMaintenanceCycle] = useState("");
 
   const [sensorType, setSensorType] = useState("");
   const [cpuClock, setCpuClock] = useState("");
@@ -28,6 +29,10 @@ const AddIot = ({ onReload }) => {
   const [memory, setMemory] = useState("");
   const [operatingTemp, setOperatingTemp] = useState("");
   const [deviceInterface, setDeviceInterface] = useState("");
+  const [moduleSize, setModuleSize] = useState("");
+  const [powerConsumption, setPowerConsumption] = useState("");
+  const [accuracy, setAccuracy] = useState("");
+  const [responseTime, setResponseTime] = useState("");
 
   const { user } = useAuth(); // lấy thông tin người dùng đăng nhập
   const createdBy = user?.userID || "unknown"; // fallback nếu chưa có
@@ -38,6 +43,9 @@ const AddIot = ({ onReload }) => {
     name.trim() !== "" &&
     materialID.trim() !== "" &&
     quantity !== "" &&
+    maintenanceCycle !== "" &&
+    !isNaN(maintenanceCycle) &&
+    Number(maintenanceCycle) >= 0 &&
     !isNaN(quantity) &&
     Number(quantity) >= 0 &&
     unit.trim() !== "";
@@ -62,6 +70,7 @@ const AddIot = ({ onReload }) => {
         unit,
         description,
         materialID,
+        maintenanceCycle,
 
         sensorType,
         cpuClock,
@@ -72,6 +81,10 @@ const AddIot = ({ onReload }) => {
         memory,
         operatingTemp,
         deviceInterface,
+        moduleSize,
+        powerConsumption,
+        accuracy,
+        responseTime,
 
         type: "iot", // cố định là “electric”
         createdBy, // lấy id người nhập từ context
@@ -86,6 +99,7 @@ const AddIot = ({ onReload }) => {
         setUnit("");
         setDescription("");
         setMaterialID("");
+        setMaintenanceCycle("");
 
         setSensorType("");
         setCpuClock("");
@@ -96,6 +110,10 @@ const AddIot = ({ onReload }) => {
         setMemory("");
         setOperatingTemp("");
         setDeviceInterface("");
+        setModuleSize("");
+        setPowerConsumption("");
+        setAccuracy("");
+        setResponseTime("");
 
         const materialID = res.data.data.materialID; // lấy ID vừa tạo
 
@@ -300,6 +318,44 @@ const AddIot = ({ onReload }) => {
                 </SelectContent>
               </Select>
             </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-[20px]">
+          <InputField
+            label="Kích thước"
+            placeholder="VD: 52mm x 28mm x 7mm"
+            value={moduleSize}
+            onChange={setModuleSize}
+          />
+
+          <InputField
+            label="Công suất tiêu thụ"
+            placeholder="VD: 80mA hoạt động"
+            value={powerConsumption}
+            onChange={setPowerConsumption}
+          />
+
+          <InputField
+            label="Độ nhạy"
+            placeholder="VD: ±3% RH"
+            value={accuracy}
+            onChange={setAccuracy}
+          />
+
+          <InputField
+            label="Thời gian phản hồi"
+            placeholder="VD: 5ms"
+            value={responseTime}
+            onChange={setResponseTime}
+          />
+
+          <div className="text-[#5eead4]">
+            <InputField
+              label="Hạn bảo trì"
+              placeholder="VD: 6 tháng"
+              value={maintenanceCycle}
+              onChange={setMaintenanceCycle}
+            />
           </div>
         </div>
       </div>

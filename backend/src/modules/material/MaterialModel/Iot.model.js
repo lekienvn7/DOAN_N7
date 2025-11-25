@@ -39,6 +39,18 @@ const iotMaterialSchema = new mongoose.Schema(
       type: String,
       default: null,
     }, // GPIO, ADC, DAC…
+    moduleSize: {
+      type: String,
+      default: null,
+    },
+    powerConsumption: {
+      type: String,
+      default: null,
+    },
+    accuracy: {
+      type: String,
+      default: null,
+    },
   },
   { _id: false }
 );

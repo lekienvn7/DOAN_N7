@@ -235,7 +235,7 @@ const HeaderDetail = ({
                 <DialogHeader>
                   <DialogTitle>
                     Phiếu nhập vật tư{" "}
-                    <span className="text-[#f472b6]">kho Hóa chất</span>
+                    <span className="text-[#f472b6]">kho Thời trang</span>
                   </DialogTitle>
                   <DialogDescription className="text-gray-400">
                     Nhập vật tư vào kho - Những mục được{" "}
@@ -336,7 +336,7 @@ const HeaderDetail = ({
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -10, opacity: 0 }}
                 transition={{ type: "tween", duration: 0.3 }}
-                className="absolute top-[30px] left-[35px] w-[270px] max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#c7a7ff]/50 hover:scrollbar-thumb-[#e8d6ff]/60  bg-[#111111] border border-gray-400 border-t-highlightcl  rounded-lg shadow-xl z-20"
+                className="absolute top-[30px] left-[35px] w-[270px] max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#c7a7ff]/50 hover:scrollbar-thumb-[#e8d6ff]/60  bg-[#111111] border border-gray-400 border-t-[#f472b6]  rounded-lg shadow-xl z-20"
               >
                 {history.map((item, index) => (
                   <button

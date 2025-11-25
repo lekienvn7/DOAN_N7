@@ -45,6 +45,15 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
     return () => clearTimeout(timer);
   }, [reload]);
 
+  const tempList = [
+    { type: "Commercial Grade", name: "0°C → 70°C" },
+    { type: "Industrial Grade", name: "-20°C → 85°C" },
+    { type: "Extended Industrial", name: "-40°C → 85°C" },
+    { type: "Military Grade", name: "-40°C → 85°C" },
+    { type: "Automotive Grade", name: "-40°C → 125°C" },
+    { type: "others", name: "Khác" },
+  ];
+
   useEffect(() => {
     const filtered = iot.filter((item) =>
       keywords.every((k) => item.name.toLowerCase().includes(k))
@@ -73,6 +82,22 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
       }
       return part;
     });
+  };
+
+  const getNextMaintenanceDate = (startDate, months) => {
+    if (!startDate || !months) return null;
+
+    const date = new Date(startDate);
+    date.setMonth(date.getMonth() + months);
+    return date;
+  };
+
+  const getDaysLeft = (targetDate) => {
+    if (!targetDate) return null;
+
+    const today = new Date();
+    const diff = targetDate - today;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
   };
 
   const formatDate = (dateString) => {
@@ -214,7 +239,7 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
   return (
     <div className="w-full">
       <table className="w-full text-[#5eead4] border-collapse">
-        <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#1a0f08]">
+        <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#081f1c]">
           <tr className="text-left p-[5px] text-[14px] font-semibold">
             <th className="text-center p-[5px] w-[3%]">STT</th>
             <th className="p-[5px] w-[12%]">
@@ -259,9 +284,9 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
             </th>
             <th className="p-[5px] w-[3%]">Đơn vị</th>
             <th className="p-[5px] w-[10%]">Giao thức kết nối</th>
-            <th className="p-[5px] w-[5%]">Ngày thêm</th>
-            <th className="p-[5px] w-[8%] ">Loại cảm biến</th>
-            <th className="p-[5px] w-[6%]">Nguồn cấp</th>
+            <th className="p-[5px] w-[5%]">Hạn bảo trì</th>
+            <th className="p-[5px] w-[8%] ">Ngày thêm</th>
+            <th className="p-[5px] w-[6%]">Loại cảm biến</th>
             <th className="p-[5px] w-[10%]">Nhiệt độ hoạt động</th>
             <th colSpan={2} className="text-center w-[3%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
@@ -270,38 +295,82 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
         </thead>
 
         <tbody>
-          {filterData.map((item, index) => (
-            <tr className=" text-center text-[14px] odd:bg-[#111111] even:bg-[#0d0d0d] hover:bg-[#1a1a1a] text-[#e5e5e7] ">
-              <td className=" p-[5px]">{index + 1}</td>
-              <td className="text-left  p-[5px]">
-                {highlightText(item.name, searchData)}
-              </td>
-              <td className=" text-left p-[5px]">{item.quantity}</td>
-              <td className=" text-left p-[5px]">{item.unit}</td>
-              <td className=" text-left p-[5px]">
-                {item.communicationProtocol ? item.communicationProtocol : "—"}
-              </td>
-              <td className=" text-left p-[5px]">
-                {formatDate(item.createdAt)}
-              </td>
-              <td className=" text-left p-[5px]">
-                {item.sensorType ? item.sensorType : "—"}
-              </td>
-              <td className=" text-left p-[5px]">
-                {item.powerSupply ? `${item.powerSupply}` : "—"}
-              </td>
-              <td className=" text-left p-[5px]">
-                {item.operatingTemp ? `${item.operatingTemp}` : "—"}
-              </td>
-              <td className=" text-center p-[5px]">
-                {mode === "view" ? (
-                  <IotDetail item={item} />
-                ) : (
-                  <IotEdit item={item} reload={reload} />
-                )}
-              </td>
-            </tr>
-          ))}
+          {filterData.map((item, index) => {
+            let tempColor = "";
+
+            if (item.operatingTemp === "Commercial Grade")
+              tempColor = "text-[#facc15]";
+            else if (item.operatingTemp === "Industrial Grade")
+              tempColor = "text-[#4ade80]";
+            else if (item.operatingTemp === "Extended Industrial")
+              tempColor = "text-[#38bdf8]";
+            else if (item.operatingTemp === "Military Grade")
+              tempColor = "text-[#1e40af]";
+            else if (item.operatingTemp === "Automotive Grade")
+              tempColor = "text-[#f97316]";
+            else tempColor = "text-[#a3a3a3]";
+
+            return (
+              <tr className=" text-center text-[14px] odd:bg-[#111111] even:bg-[#0d0d0d] hover:bg-[#1a1a1a] text-[#e5e5e7] ">
+                <td className=" p-[5px]">{index + 1}</td>
+                <td className="text-left  p-[5px]">
+                  {highlightText(item.name, searchData)}
+                </td>
+                <td className=" text-left p-[5px]">{item.quantity}</td>
+                <td className=" text-left p-[5px]">{item.unit}</td>
+                <td className=" text-left p-[5px]">
+                  {item.communicationProtocol
+                    ? item.communicationProtocol
+                    : "—"}
+                </td>
+                <td className=" text-left p-[5px]">
+                  {item.maintenanceCycle
+                    ? (() => {
+                        const nextDate = getNextMaintenanceDate(
+                          item.createdAt,
+                          item.maintenanceCycle
+                        );
+                        const daysLeft = getDaysLeft(nextDate);
+
+                        return (
+                          <span
+                            className={`${
+                              daysLeft <= 7 ? "text-red-500" : "text-textpri"
+                            } `}
+                          >
+                            {daysLeft <= 7
+                              ? `Còn ${daysLeft} ngày`
+                              : formatDate(nextDate)}
+                          </span>
+                        );
+                      })()
+                    : "—"}
+                </td>
+                <td className=" text-left p-[5px]">
+                  {formatDate(item.createdAt)}
+                </td>
+                <td className=" text-left p-[5px]">
+                  {item.sensorType ? `${item.sensorType}` : "—"}
+                </td>
+                <td className={`text-left ${tempColor} p-[5px]`}>
+                  {item.operatingTemp
+                    ? `${
+                        tempList.find(
+                          (prev) => prev.type === item.operatingTemp
+                        )?.name
+                      }`
+                    : "—"}
+                </td>
+                <td className=" text-center p-[5px]">
+                  {mode === "view" ? (
+                    <IotDetail item={item} />
+                  ) : (
+                    <IotEdit item={item} reload={reload} />
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

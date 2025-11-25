@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "@/api/axiosClient";
 import { DialogFooter, DialogClose } from "../../ui/dialog";
+import ColorField from "@/lib/ColorInputField";
 import {
   Select,
   SelectTrigger,
@@ -20,12 +21,18 @@ const AddFashion = ({ onReload }) => {
 
   const [fabricType, setFabricType] = useState("");
   const [color, setColor] = useState("");
+  const [colorType, setColorType] = useState("#f472b6");
   const [size, setSize] = useState("");
   const [pattern, setPattern] = useState("");
   const [elasticity, setElasticity] = useState("");
   const [origin, setOrigin] = useState("");
   const [washInstruction, setWashInstruction] = useState("");
   const [durability, setDurability] = useState("");
+  const [breathability, setBreathability] = useState("");
+  const [fabricThickness, setFabricThickness] = useState("");
+  const [colorfastness, setColorfastness] = useState("");
+  const [wrinkleResistance, setWrinkleResistance] = useState("");
+  const [SPM, setSPM] = useState("");
 
   const { user } = useAuth(); // lấy thông tin người dùng đăng nhập
   const createdBy = user?.userID || "unknown"; // fallback nếu chưa có
@@ -63,12 +70,18 @@ const AddFashion = ({ onReload }) => {
 
         fabricType,
         color,
+        colorType,
         size,
         pattern,
         elasticity,
         origin,
         washInstruction,
         durability,
+        breathability,
+        fabricThickness,
+        colorfastness,
+        wrinkleResistance,
+        SPM,
 
         type: "fashion", // cố định là “electric”
         createdBy, // lấy id người nhập từ context
@@ -92,6 +105,11 @@ const AddFashion = ({ onReload }) => {
         setOrigin("");
         setWashInstruction("");
         setDurability("");
+        setBreathability("");
+        setFabricThickness("");
+        setColorfastness("");
+        setWrinkleResistance("");
+        setSPM("");
 
         const materialID = res.data.data.materialID; // lấy ID vừa tạo
 
@@ -269,11 +287,11 @@ const AddFashion = ({ onReload }) => {
               onChange={setOrigin}
             />
 
-            <InputField
-              label="Màu sắc"
-              placeholder="VD: Xanh navy, hồng,..."
-              value={color}
-              onChange={setColor}
+            <ColorField
+              name={color}
+              setName={setColor}
+              value={colorType}
+              setValue={setColorType}
             />
 
             <div className="flex flex-col gap-[5px] items-left">
@@ -309,6 +327,195 @@ const AddFashion = ({ onReload }) => {
               </Select>
             </div>
           </div>
+        </div>
+        <div className="flex flex-col gap-[20px]">
+          <div className="flex flex-col gap-[5px] items-left">
+            <p className="ml-[10px]">Độ thoáng khí</p>
+            <Select
+              value={breathability}
+              onValueChange={(value) => setBreathability(value)}
+            >
+              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
+                <SelectValue placeholder="-- Chọn --" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
+                <SelectItem
+                  value="highly"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Rất thoáng khí
+                </SelectItem>
+                <SelectItem
+                  value="good"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Thoáng khí tốt
+                </SelectItem>
+                <SelectItem
+                  value="medium"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Thoáng khí trung bình
+                </SelectItem>
+                <SelectItem
+                  value="low"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Thoáng khí thấp
+                </SelectItem>
+                <SelectItem
+                  value="none"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Không thoáng khí
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-[5px] items-left">
+            <p className="ml-[10px]">Độ dày vải</p>
+            <Select
+              value={fabricThickness}
+              onValueChange={(value) => setFabricThickness(value)}
+            >
+              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
+                <SelectValue placeholder="-- Chọn --" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
+                <SelectItem
+                  value="light"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Vải siêu mỏng
+                </SelectItem>
+                <SelectItem
+                  value="Lightweight"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Vải mỏng
+                </SelectItem>
+                <SelectItem
+                  value="medium"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Vải trung bình
+                </SelectItem>
+                <SelectItem
+                  value="Heavyweight"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Vải dày
+                </SelectItem>
+                <SelectItem
+                  value="ultra"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Vải siêu dày
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-[5px] items-left">
+            <p className="ml-[10px]">Khả năng giữ màu</p>
+            <Select
+              value={colorfastness}
+              onValueChange={(value) => setColorfastness(value)}
+            >
+              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
+                <SelectValue placeholder="-- Chọn --" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
+                <SelectItem
+                  value="Excellent"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Colorfastness 5 – Xuất sắc
+                </SelectItem>
+                <SelectItem
+                  value="Good"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Colorfastness 4 – Tốt (Good)
+                </SelectItem>
+                <SelectItem
+                  value="Fair"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Colorfastness 3 – Trung bình
+                </SelectItem>
+                <SelectItem
+                  value="Poor"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Colorfastness 2 – Kém
+                </SelectItem>
+                <SelectItem
+                  value="Very Poor"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Colorfastness 1 – Rất kém
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-col gap-[5px] items-left">
+            <p className="ml-[10px]">Khả năng chống nhăn</p>
+            <Select
+              value={wrinkleResistance}
+              onValueChange={(value) => setWrinkleResistance(value)}
+            >
+              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
+                <SelectValue placeholder="-- Chọn --" />
+              </SelectTrigger>
+
+              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
+                <SelectItem
+                  value="Free"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Không nhăn
+                </SelectItem>
+                <SelectItem
+                  value="Easy Care"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Chống nhăn tốt
+                </SelectItem>
+                <SelectItem
+                  value="Resistant"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Chống nhăn trung bình
+                </SelectItem>
+                <SelectItem
+                  value="Crease-Prone"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Dễ nhăn
+                </SelectItem>
+                <SelectItem
+                  value="High-Crease"
+                  className="cursor-pointer hover:bg-[#f472b6]"
+                >
+                  Rất dễ nhăn
+                </SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <InputField
+            label="Tốc độ khâu (máy khâu)"
+            placeholder="VD: 3500 SPM..."
+            type="number"
+            value={SPM}
+            onChange={setSPM}
+          />
         </div>
       </div>
 
