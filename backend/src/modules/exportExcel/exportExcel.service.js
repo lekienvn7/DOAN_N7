@@ -286,6 +286,7 @@ async function exportAutomotiveExcelService() {
     unit: item.material.unit,
     maintenanceCycle: item.material.maintenanceCycle,
     createdAt: item.material.createdAt,
+    
     partType: item.material.partType,
     vehicleModel: item.material.vehicleModel,
     manufacturer: item.material.manufacturer,

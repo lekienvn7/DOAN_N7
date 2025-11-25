@@ -17,7 +17,7 @@ import ChemicalEdit from "./ChemicalEdit";
 const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
   const [chemical, setChemical] = useState([]);
   const [loading, setLoading] = useState(false);
-  const keywords = searchData.toLowerCase().trim().split(/\s+/);
+  const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
   const [sortName, setSortName] = useState(null);
   const [sortQuantity, setSortQuantity] = useState(null);
   const [sortExpiryDate, setSortExpiryDate] = useState(null);
@@ -80,24 +80,23 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
   ];
 
   const highlightText = (text, searchData) => {
-    if (!searchData.trim()) return text;
+    const safeText = typeof text === "string" ? text : "";
+    const safeSearch = typeof searchData === "string" ? searchData.trim() : "";
 
-    // Tách nhiều từ khóa: dây điện cadivi → ["dây","điện","cadivi"]
-    const keywords = searchData.toLowerCase().trim().split(/\s+/);
+    if (!safeSearch) return safeText;
 
-    // Tạo regex highlight nhiều từ cùng lúc (không phân biệt hoa thường)
+    const keywords = safeSearch.toLowerCase().split(/\s+/);
     const regex = new RegExp(`(${keywords.join("|")})`, "gi");
 
-    // Tách text, mỗi match sẽ nằm trong array
-    return text.split(regex).map((part, index) => {
-      if (keywords.includes(part.toLowerCase())) {
-        return (
-          <span key={index} className="text-highlightcl font-semibold">
-            {part}
-          </span>
-        );
-      }
-      return part;
+    return safeText.split(regex).map((part, index) => {
+      const isMatch = keywords.includes(part.toLowerCase());
+      return isMatch ? (
+        <span key={index} className="text-highlightcl font-semibold">
+          {part}
+        </span>
+      ) : (
+        part
+      );
     });
   };
 
@@ -239,13 +238,13 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
     sortName === "asc" ? (
       <ChevronUp
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortName}
       />
     ) : sortName === "desc" ? (
       <ChevronDown
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortName}
       />
     ) : (
@@ -260,13 +259,13 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
     sortQuantity === "asc" ? (
       <ChevronUp
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortQuantity}
       />
     ) : sortQuantity === "desc" ? (
       <ChevronDown
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortQuantity}
       />
     ) : (
@@ -281,13 +280,13 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
     sortExpiryDate === "asc" ? (
       <ChevronUp
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortExpiryDate}
       />
     ) : sortExpiryDate === "desc" ? (
       <ChevronDown
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortExpiryDate}
       />
     ) : (
@@ -302,13 +301,13 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
     sortHazard === "asc" ? (
       <ChevronUp
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortHazard}
       />
     ) : sortHazard === "desc" ? (
       <ChevronDown
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortHazard}
       />
     ) : (
@@ -323,13 +322,13 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
     sortFlame === "asc" ? (
       <ChevronUp
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortFlame}
       />
     ) : sortFlame === "desc" ? (
       <ChevronDown
         size={18}
-        className="text-[#fdd700] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        className="text-[#c7a7ff] hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortFlame}
       />
     ) : (
@@ -439,7 +438,7 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center h-[460px] gap-4 text-textpri">
-        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+        <div className="w-10 h-10 border-4 border-[#c7a7ff] border-t-transparent rounded-full animate-spin"></div>
         <p>Đang tải dữ liệu...</p>
       </div>
     );
@@ -447,8 +446,8 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
 
   return (
     <div className="w-full">
-      <table className="electric w-full text-[#fdd700] border-collapse">
-        <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#1e1b11]">
+      <table className="electric w-full text-[#c7a7ff] border-collapse">
+        <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#0b0a0e]">
           <tr className="text-left p-[5px] text-[14px] font-semibold">
             <th className="text-center p-[5px] w-[3%]">STT</th>
             <th className="p-[5px] w-[14%]">

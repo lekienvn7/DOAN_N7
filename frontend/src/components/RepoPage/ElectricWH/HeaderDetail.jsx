@@ -154,9 +154,9 @@ const HeaderDetail = ({
             animate={{ x: 0, opacity: 1 }} // Di chuyển về giữa + hiện rõ
             exit={{ x: -20, opacity: 0 }} // Khi rời trang (nếu có)
             transition={{
-              type: "tween",
-              duration: 0.5,
-              ease: "easeOut",
+              type: "spring",
+              stiffness: 90,
+              damping: 12,
             }}
             className="flex flex-row justify-between"
           >

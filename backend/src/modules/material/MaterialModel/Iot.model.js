@@ -24,7 +24,7 @@ const iotMaterialSchema = new mongoose.Schema(
       default: null,
     }, // 3.3V / 5V
     ioPins: {
-      type: Number,
+      type: String,
       default: null,
     }, // Số chân I/O
     memory: {

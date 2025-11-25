@@ -29,6 +29,17 @@ const RepoMenu = () => {
     fashion: Shirt,
   };
 
+  const REPO_COLORS = {
+    mechanical: "#E5E7EB", // Cơ khí
+    iot: "#5eead4", // Nhúng & IoT
+    technology: "#60a5fa", // CNTT
+    automotive: "#fb923c", // Công nghệ ô tô
+    telecom: "#a78bfa", // Điện tử viễn thông
+    fashion: "#f472b6", // Thiết kế thời trang
+    electric: "#fdd700", // Điện
+    chemical: "#c7a7ff", // Hóa chất
+  };
+
   // Lấy danh sách kho từ backend
   useEffect(() => {
     const fetchRepos = async () => {
@@ -97,7 +108,7 @@ const RepoMenu = () => {
               to={path}
               className={`group flex flex-col items-center text-center transition-all duration-200 cursor-pointer ${
                 isActive
-                  ? "text-[#FFD700]"
+                  ? `text-[${REPO_COLORS[repo.repoID]}]`
                   : "text-[#A1A1A6] hover:text-textpri"
               }`}
             >
@@ -105,7 +116,7 @@ const RepoMenu = () => {
                 size={20}
                 className={`transition-colors duration-300 ${
                   isActive
-                    ? "text-[#FFD700]"
+                    ? `text-[${REPO_COLORS[repo.repoID]}]`
                     : "text-[#A1A1A6] group-hover:text-textpri"
                 }`}
               />

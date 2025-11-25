@@ -15,7 +15,7 @@ const RolePage = () => {
           duration: 0.5,
           ease: "easeInOut",
         }}
-        className="flex flex-row gap-[25px] p-[40px_20px] items-center"
+        className="flex flex-row gap-[30px] p-[40px_30px] items-center"
       >
         <UserList /> <CreateUser />
       </motion.div>

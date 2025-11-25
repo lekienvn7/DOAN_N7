@@ -149,7 +149,7 @@ const AddChemical = ({ onReload }) => {
       <div className="flex flex-row gap-[20px]">
         <div className="flex flex-col gap-[20px] justify-center text-textpri">
           <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#fdd700]">
+            <div className="text-[#c7a7ff]">
               <InputField
                 label="Tên vật tư"
                 placeholder="Tên vật tư"
@@ -157,7 +157,7 @@ const AddChemical = ({ onReload }) => {
                 onChange={setName}
               />
             </div>
-            <div className="text-[#fdd700]">
+            <div className="text-[#c7a7ff]">
               <InputField
                 label="Mã vật tư"
                 placeholder="VD: VT001"
@@ -166,7 +166,7 @@ const AddChemical = ({ onReload }) => {
                 onChange={setMaterialID}
               />
             </div>
-            <div className="text-[#fdd700]">
+            <div className="text-[#c7a7ff]">
               <InputField
                 label="Số lượng"
                 placeholder="Số lượng"
@@ -178,7 +178,7 @@ const AddChemical = ({ onReload }) => {
           </div>
 
           <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#fdd700]">
+            <div className="text-[#c7a7ff]">
               <InputField
                 label="Đơn vị"
                 placeholder="VD: cái, mét..."
@@ -457,24 +457,37 @@ const AddChemical = ({ onReload }) => {
         </div>
       </div>
 
-      <DialogFooter className="mt-5 flex justify-end gap-3">
-        <DialogClose asChild>
-          <button className="px-4 py-2 bg-gray-700 text-white rounded-[12px] hover:bg-gray-600 transition">
-            Hủy
-          </button>
-        </DialogClose>
+      <DialogFooter className="!flex-row !justify-between !items-center mt-5">
+        <p className="w-fit text-[22px] font-vegan text-textsec drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+          <span className="text-[#c7a7ff]/70 drop-shadow-[0_0_7px_rgba(215,184,255,0.55)]">
+            U
+          </span>
+          neti{" "}
+          <span className="text-[#c7a7ff]/70 drop-shadow-[0_0_7px_rgba(215,184,255,0.55)]">
+            C
+          </span>
+          hemical
+        </p>
 
-        <button
-          onClick={handleSubmit}
-          disabled={!isValid}
-          className={`px-4 py-2 rounded-[12px] transition font-semibold ${
-            isValid
-              ? "bg-[#FFD700] text-black hover:bg-[#f8e16c] cursor-pointer"
-              : "bg-gray-600 text-gray-300 cursor-not-allowed"
-          }`}
-        >
-          {loading ? "Đang thêm..." : "Nhập vật tư"}
-        </button>
+        <div className="flex flex-row gap-3">
+          <DialogClose asChild>
+            <button className="px-4 py-2 bg-gray-700 text-white rounded-[12px] hover:bg-gray-600 transition">
+              Hủy
+            </button>
+          </DialogClose>
+
+          <button
+            onClick={handleSubmit}
+            disabled={!isValid}
+            className={`px-4 py-2 rounded-[12px] transition font-semibold ${
+              isValid
+                ? "bg-[#c7a7ff] text-black hover:bg-[#e8d6ff] cursor-pointer"
+                : "bg-gray-600 text-gray-300 cursor-not-allowed"
+            }`}
+          >
+            {loading ? "Đang thêm..." : "Nhập vật tư"}
+          </button>
+        </div>
       </DialogFooter>
     </div>
   );

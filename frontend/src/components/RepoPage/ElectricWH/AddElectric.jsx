@@ -474,24 +474,37 @@ const AddElectric = ({ onReload }) => {
         </div>
       </div>
 
-      <DialogFooter className="mt-5 flex justify-end gap-3">
-        <DialogClose asChild>
-          <button className="px-4 py-2 bg-gray-700 text-white rounded-[12px] hover:bg-gray-600 transition">
-            Hủy
-          </button>
-        </DialogClose>
+      <DialogFooter className="!flex-row !justify-between !items-center mt-5">
+        <p className="w-fit text-[22px] font-vegan text-textsec drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] ">
+          <span className="text-[#fdd700]/70 drop-shadow-[0_0_6px_rgba(253,215,0,0.55)]">
+            U
+          </span>
+          neti{" "}
+          <span className="text-[#fdd700]/70 drop-shadow-[0_0_6px_rgba(253,215,0,0.55)]">
+            E
+          </span>
+          lectrical
+        </p>
 
-        <button
-          onClick={handleSubmit}
-          disabled={!isValid}
-          className={`px-4 py-2 rounded-[12px] transition font-semibold ${
-            isValid
-              ? "bg-[#FFD700] text-black hover:bg-[#f8e16c] cursor-pointer"
-              : "bg-gray-600 text-gray-300 cursor-not-allowed"
-          }`}
-        >
-          {loading ? "Đang thêm..." : "Nhập vật tư"}
-        </button>
+        <div className="flex flex-row gap-3">
+          <DialogClose asChild>
+            <button className="px-4 py-2 bg-gray-700 text-white rounded-[12px] hover:bg-gray-600 transition">
+              Hủy
+            </button>
+          </DialogClose>
+
+          <button
+            onClick={handleSubmit}
+            disabled={!isValid}
+            className={`px-4 py-2 rounded-[12px] transition font-semibold ${
+              isValid
+                ? "bg-[#FFD700] text-black hover:bg-[#f8e16c] cursor-pointer"
+                : "bg-gray-600 text-gray-300 cursor-not-allowed"
+            }`}
+          >
+            {loading ? "Đang thêm..." : "Nhập vật tư"}
+          </button>
+        </div>
       </DialogFooter>
     </div>
   );

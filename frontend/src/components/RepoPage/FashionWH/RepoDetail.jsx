@@ -1,8 +1,8 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import MainDetail from "./FashionList";
+import FashionList from "./FashionList";
 
-const RepoDetail = () => {
+const RepoDetail = ({ mode, reload, searchData, sortMode }) => {
   return (
     <AnimatePresence>
       <motion.div
@@ -12,9 +12,15 @@ const RepoDetail = () => {
         transition={{
           duration: 0.5,
         }}
-        className=" w-[1300px] max-h-[425px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-[#fdd700]"
+        className=" w-[1300px] max-h-[465px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-gray-700"
       >
-        <MainDetail />
+        <FashionList
+          key={reload}
+          mode={mode}
+          reload={reload}
+          searchData={searchData}
+          sortMode={sortMode}
+        />
       </motion.div>
     </AnimatePresence>
   );

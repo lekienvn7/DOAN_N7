@@ -1,4 +1,5 @@
 import React from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import {
   Dialog,
@@ -10,11 +11,13 @@ import {
   DialogDescription,
   DialogClose,
 } from "@/components/ui/dialog";
-import { ReceiptText } from "lucide-react";
+import { Tooltip } from "react-tooltip";
+import { ReceiptText, Info } from "lucide-react";
 import cadivi from "@/assets/images/cadivi225.png";
 
 const ElectricDetail = ({ item }) => {
   if (!item) return null;
+  const [showInfo, setShowInfo] = useState(null);
 
   return (
     <Dialog>
@@ -25,42 +28,79 @@ const ElectricDetail = ({ item }) => {
       </DialogTrigger>
       <DialogContent className="bg-[#1a1a1a] !max-w-none w-fit  h-auto max-h-fit rounded-[12px] border-none  text-white p-[25px] ">
         <>
+          <DialogHeader>
+            <DialogTitle>
+              {" "}
+              <span className="text-[#ffd700] font-bold text-[24px]">
+                {" "}
+                {item.name}
+              </span>
+            </DialogTitle>
+            <DialogDescription>
+              <p className="text-textsec flex flex-row items-center">
+                {item.materialID} • {item.quantity} {item.unit} •{" "}
+                {item.maintenanceCycle == 0
+                  ? "—"
+                  : `${item.maintenanceCycle} tháng`}{" "}
+                •{" "}
+                <div className="flex flex-row gap-[8px] items-center whitespace-nowrap">
+                  <Info
+                    onClick={() => setShowInfo((prev) => !prev)}
+                    size={14}
+                    className="info ml-[8px] mt-[2px] cursor-pointer hover:text-[#fdd700] outline-none"
+                  />{" "}
+                  <motion.span
+                    initial={{ width: 0, opacity: 0 }}
+                    animate={
+                      showInfo
+                        ? {
+                            x: 0,
+                            opacity: 1,
+                          }
+                        : {
+                            x: -10,
+                            opacity: 0,
+                          }
+                    }
+                    transition={{
+                      type: "spring",
+                      stiffness: 90,
+                      damping: 12,
+                    }}
+                    className={`text-textpri ${
+                      showInfo ? "" : "pointer-events-none"
+                    }`}
+                  >
+                    {item.description}
+                  </motion.span>
+                </div>
+              </p>
+            </DialogDescription>
+          </DialogHeader>
           <div className="flex flex-row gap-[25px]">
             <div className="flex flex-col gap-[25px]">
-              <div className="w-[250px] h-[250px] border-[1px] border-[#fdd700] rounded-[12px]">
+              <div className="w-[270px] h-[270px] border-[1px] border-[#fdd700] rounded-[12px]">
                 <img
                   src={cadivi}
                   alt="day-dien-2x2.5-cadivi"
                   className="w-[250px] h-[250px] rounded-[12px] "
                 />
               </div>
-              <p className="ml-[10px] text-textsec font-inter text-left ">
+              {/* <p className="ml-[10px] text-textsec font-inter text-left ">
                 • {item.description ? item.description : "—"}
-              </p>
+              </p> */}
             </div>
 
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 50 }}
-              transition={{ duration: 0.3 }}
+              transition={{ type: "spring", stiffness: 90, damping: 12 }}
               className="flex flex-col gap-[25px] whitespace-nowrap"
             >
-              <div className="flex flex-col text-left">
-                <span className="text-[#ffd700] font-bold text-[24px]">
-                  {" "}
-                  {item.name}
-                </span>
-                <p className="text-textsec">
-                  {item.materialID} • {item.quantity} {item.unit} •{" "}
-                  {item.maintenanceCycle == 0
-                    ? "—"
-                    : `${item.maintenanceCycle} tháng`}
-                </p>
-              </div>
               <ul className="flex flex-col gap-[10px] ">
                 <div className="flex flex-row gap-[25px]">
-                  <div className="bg-[#111111] p-5 rounded-[12px] border border-gray-400">
+                  <div className="bg-[#111111] w-[300px] p-5 rounded-[12px] border border-gray-400">
                     <h2 className="text-[18px] font-semibold mb-3">
                       Thông tin chung
                     </h2>
@@ -110,7 +150,7 @@ const ElectricDetail = ({ item }) => {
                     </div>
                   </div>
 
-                  <div className="bg-[#111111] p-5 rounded-[12px] border border-gray-400">
+                  <div className="bg-[#111111] w-[400px] p-5 rounded-[12px] border border-gray-400">
                     <h2 className="text-[18px] font-semibold mb-3">
                       Thông số kỹ thuật
                     </h2>

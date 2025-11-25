@@ -16,10 +16,28 @@ import cadivi from "@/assets/images/cadivi225.png";
 const ChemicalDetail = ({ item }) => {
   if (!item) return null;
 
+  const tempList = [
+    { type: "Room Temperature", name: "Nhiệt độ phòng (15°C – 25°C)" },
+    { type: "Cool", name: "Mát (8°C – 15°C)" },
+    { type: "Refrigerated", name: "Lạnh (2°C – 8°C)" },
+    { type: "Frozen", name: "Đông lạnh (–10°C đến –20°C)" },
+    { type: "Deep Freezing", name: "Siêu lạnh (–70°C đến –80°C)" },
+    { type: "Cryogenic", name: "Nitơ lỏng (≈ –196°C)" },
+  ];
+
+  const tempColor = (prev) => {
+    if (prev.storageTemperature === "Room Temperature") return "text-[#facc15]";
+    if (prev.storageTemperature === "Cool") return "text-[#38bdf8]";
+    if (prev.storageTemperature === "Refrigerated") return "text-[#0ea5e9]";
+    if (prev.storageTemperature === "Frozen") return "text-[#0a84ff]";
+    if (prev.storageTemperature === "Deep Freezing") return "text-[#1e40af]";
+    if (prev.storageTemperature === "Cryogenic") return "text-[#0f172a]";
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="cursor-pointer p-[5px] justify-center text-[#ffd700] hover:text-[#ffb700]">
+        <button className="cursor-pointer p-[5px] justify-center text-[#c7a7ff] hover:text-[#e8d6ff]">
           <ReceiptText size={15} />
         </button>
       </DialogTrigger>
@@ -27,7 +45,7 @@ const ChemicalDetail = ({ item }) => {
         <>
           <div className="flex flex-row gap-[25px]">
             <div className="flex flex-col gap-[25px]">
-              <div className="w-[250px] h-[250px] border-[1px] border-[#fdd700] rounded-[12px]">
+              <div className="w-[250px] h-[250px] border-[1px] border-[#c7a7ff] rounded-[12px]">
                 <img
                   src={cadivi}
                   alt="day-dien-2x2.5-cadivi"
@@ -43,11 +61,11 @@ const ChemicalDetail = ({ item }) => {
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 50 }}
-              transition={{ duration: 0.3 }}
+              transition={{ type: "spring", stiffness: 90, damping: 12 }}
               className="flex flex-col gap-[25px] whitespace-nowrap"
             >
               <div className="flex flex-col text-left">
-                <span className="text-[#ffd700] font-bold text-[24px]">
+                <span className="text-[#c7a7ff] font-bold text-[24px]">
                   {" "}
                   {item.name}
                 </span>
@@ -136,9 +154,22 @@ const ChemicalDetail = ({ item }) => {
                         <span className="text-[#60A5FA] font-semibold">
                           Nhiệt độ bảo quản:
                         </span>{" "}
-                        {item.storageTemperature
-                          ? `${item.storageTemperature} °C`
-                          : "—"}
+                        <span
+                          className={`${
+                            item.storageTemperature
+                              ? `${tempColor(item)}`
+                              : "text-textpri"
+                          }`}
+                        >
+                          {item.storageTemperature
+                            ? `${
+                                tempList.find(
+                                  (prev) =>
+                                    prev.type === item.storageTemperature
+                                )?.name
+                              } °C`
+                            : "—"}
+                        </span>
                       </li>
                       <li>
                         <span className="text-[#60A5FA] font-semibold">

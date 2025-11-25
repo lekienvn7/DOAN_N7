@@ -28,6 +28,7 @@ module.exports = {
         sporting: ["Sporting", "sans-serif"],
         satoshi: ["Satoshi", "sans-serif"],
         inter: ["Inter", "sans-serif"],
+        vegan: ["Vegan", "sans-serif"],
       },
       colors: {
         bgmain: "#0a0a0a",

@@ -37,6 +37,14 @@
   font-style: normal;
 }
 
+@font-face {
+  font-family: "Vegan";
+  src: url("./assets/fonts/Vegan/VeganStylePersonalUse-5Y58.ttf")
+    format("opentype");
+  font-weight: 400;
+  font-style: normal;
+}
+
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
