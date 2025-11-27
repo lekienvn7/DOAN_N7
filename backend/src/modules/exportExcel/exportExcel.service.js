@@ -694,6 +694,10 @@ async function exportMechanicalExcelService() {
     loadCapacity: item.material.loadCapacity,
     heatResistance: item.material.heatResistance,
     corrosionResistance: item.material.corrosionResistance,
+    surfaceFinish: item.material.surfaceFinish,
+    magneticProperty: item.material.magneticProperty,
+    impactResistance: item.material.impactResistance,
+    ductility: item.material.ductility,
     description: item.material.description,
   }));
 
@@ -715,7 +719,7 @@ async function exportMechanicalExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "R1");
+  sheet.mergeCells("A1", "V1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO CƠ KHÍ";
   title.font = { size: 16, bold: true };
@@ -741,6 +745,10 @@ async function exportMechanicalExcelService() {
     "Tải trọng chịu được",
     "Khả năng chịu nhiệt",
     "Khả năng chống ăn mòn",
+    "Độ nhẵn bề mặt",
+    "Tính từ",
+    "Khả năng chịu va đập",
+    "Độ dẻo",
     "Ghi chú",
   ]);
 
@@ -774,6 +782,10 @@ async function exportMechanicalExcelService() {
       item.loadCapacity || "—",
       item.heatResistance || "—",
       item.corrosionResistance || "—",
+      item.surfaceFinish || "—",
+      item.magneticProperty || "—",
+      item.impactResistance || "—",
+      item.ductility || "—",
       item.description || "",
     ]);
 
@@ -822,6 +834,10 @@ async function exportTechnologyExcelService() {
     powerConsumption: item.material.powerConsumption,
     protocol: item.material.protocol,
     networkInterface: item.material.networkInterface,
+    operatingSystem: item.material.operatingSystem,
+    durabilityRating: item.material.durabilityRating,
+    formFactor: item.material.formFactor,
+    dataTransferRate: item.material.dataTransferRate,
     description: item.material.description,
   }));
 
@@ -843,7 +859,7 @@ async function exportTechnologyExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "O1");
+  sheet.mergeCells("A1", "S1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO CÔNG NGHỆ THÔNG TIN";
   title.font = { size: 16, bold: true };
@@ -866,6 +882,10 @@ async function exportTechnologyExcelService() {
     "Mức tiêu thụ điện",
     "Giao thức",
     "Chuẩn giao tiếp mạng / Giao diện mạng",
+    "Hệ điều hành hỗ trợ",
+    "Độ bền",
+    "Kích thước",
+    "Tốc độ truyền dữ liệu",
     "Ghi chú",
   ]);
 
@@ -896,6 +916,10 @@ async function exportTechnologyExcelService() {
       item.powerConsumption || "—",
       item.protocol || "—",
       item.networkInterface || "—",
+      item.operatingSystem || "—",
+      item.durabilityRating || "—",
+      item.formFactor || "—",
+      item.dataTransferRate || "—",
       item.description || "",
     ]);
 

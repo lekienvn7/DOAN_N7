@@ -53,6 +53,10 @@ export const mechanicalFields = [
   "loadCapacity",
   "heatResistance",
   "corrosionResistance",
+  "surfaceFinish",
+  "magneticProperty",
+  "impactResistance",
+  "ductility",
 ];
 
 export const iotFields = [

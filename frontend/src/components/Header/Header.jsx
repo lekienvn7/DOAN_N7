@@ -9,7 +9,7 @@ const Header = () => {
 
   return (
     <div className="header__container sticky flex flex-row items-center justify-between text-center m-[0%_2.5%] py-[30px] h-[50px] gap-[40px] w-screen bg-[#f8f9fa">
-      <div className="w-[71.5%] flex flex-row items-center justify-between text-center">
+      <div className="w-[70%] flex flex-row items-center justify-between text-center">
         <HeaderLogo />
     
         <Menu />

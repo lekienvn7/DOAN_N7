@@ -83,7 +83,7 @@ const ElectricDetail = ({ item }) => {
                 <img
                   src={cadivi}
                   alt="day-dien-2x2.5-cadivi"
-                  className="w-[250px] h-[250px] rounded-[12px] "
+                  className="w-[270px] h-[270px] rounded-[12px] "
                 />
               </div>
               {/* <p className="ml-[10px] text-textsec font-inter text-left ">

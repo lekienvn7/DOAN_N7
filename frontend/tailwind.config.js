@@ -36,6 +36,8 @@ module.exports = {
         textpri: "#ffffff",
         textsec: "#a1a1a6",
         highlightcl: "#0a84ff",
+        mechanicalColor: "#e6eef2",
+        
       },
       backgroundImage: {
         "gradient-primary": "var(--gradient-primary)",
@@ -47,6 +49,8 @@ module.exports = {
         "custom-md": "var(--shadow-md)",
         "custom-lg": "var(--shadow-lg)",
         glow: "var(--shadow-glow)",
+        mechanicalShadow:
+          "0_0_1px_rgba(230,238,242,0.7),0_0_3px_rgba(230,238,242,0.5),0_0_5px_rgba(230,238,242,0.3)",
       },
       transitionProperty: {
         smooth: "var(--transition-smooth)",

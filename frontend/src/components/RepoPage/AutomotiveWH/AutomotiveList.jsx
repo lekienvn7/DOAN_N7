@@ -57,7 +57,12 @@ const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
 
   useEffect(() => {
     const filtered = automotive.filter((item) =>
-      keywords.every((k) => item.name.toLowerCase().includes(k))
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.vehicleModel?.toLowerCase().includes(k) ||
+          item.manufacturer?.toLowerCase().includes(k)
+      )
     );
 
     setFilterData(filtered);
@@ -234,7 +239,12 @@ const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
 
   useEffect(() => {
     const filtered = automotive.filter((item) =>
-      keywords.every((k) => item.name.toLowerCase().includes(k))
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.vehicleModel?.toLowerCase().includes(k) ||
+          item.manufacturer?.toLowerCase().includes(k)
+      )
     );
 
     if (!sortMode) {
@@ -413,10 +423,16 @@ const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
                   : "—"}
               </td>
               <td className=" text-left p-[5px]">
-                {item.vehicleModel ? `${item.vehicleModel}` : "—"}
+                {highlightText(
+                  item.vehicleModel ? `${item.vehicleModel}` : "—",
+                  searchData
+                )}
               </td>
               <td className=" text-left p-[5px]">
-                {item.manufacturer ? `${item.manufacturer}` : "—"}
+                {highlightText(
+                  item.manufacturer ? `${item.manufacturer}` : "—",
+                  searchData
+                )}
               </td>
               <td className=" text-center p-[5px]">
                 {mode === "view" ? (

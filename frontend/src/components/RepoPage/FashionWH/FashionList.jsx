@@ -20,6 +20,7 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
   const [sortName, setSortName] = useState(null);
   const [sortQuantity, setSortQuantity] = useState(null);
+  const [sortDurable, setSortDurable] = useState(null);
   const [filterData, setFilterData] = useState([]);
 
   useEffect(() => {
@@ -46,9 +47,9 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
   }, [reload]);
 
   const durableList = [
-    { type: "high", name: "Bền cao" },
-    { type: "medium", name: "Trung bình" },
-    { type: "low", name: "Dễ hỏng " },
+    { type: "high", name: "Bền cao", num: 3 },
+    { type: "medium", name: "Trung bình", num: 2 },
+    { type: "low", name: "Dễ hỏng ", num: 1 },
   ];
 
   useEffect(() => {
@@ -99,6 +100,8 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
 
   const toggleSortName = () => {
     setSortQuantity(null);
+    setSortDurable(null);
+
     setSortName((prev) => {
       if (prev === null) {
         return "asc";
@@ -112,7 +115,24 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
 
   const toggleSortQuantity = () => {
     setSortName(null);
+    setSortDurable(null);
+
     setSortQuantity((prev) => {
+      if (prev === null) {
+        return "asc";
+      }
+      if (prev === "asc") {
+        return "desc";
+      }
+      return null;
+    });
+  };
+
+  const toggleSortDurable = () => {
+    setSortName(null);
+    setSortQuantity(null);
+
+    setSortDurable((prev) => {
       if (prev === null) {
         return "asc";
       }
@@ -134,6 +154,13 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
     sortQuantity === "asc"
       ? "Giảm dần"
       : sortQuantity === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
+  const labelTooltipDurable =
+    sortDurable === "asc"
+      ? "Giảm dần"
+      : sortDurable === "desc"
       ? "Danh sách gốc"
       : "Tăng dần";
 
@@ -179,6 +206,27 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
       />
     );
 
+  const iconSortDurable =
+    sortDurable === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#f472b6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortDurable}
+      />
+    ) : sortDurable === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#f472b6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortDurable}
+      />
+    ) : (
+      <ArrowDown01
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortDurable}
+      />
+    );
+
   useEffect(() => {
     const filtered = fashion.filter((item) =>
       keywords.every(
@@ -193,12 +241,13 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
     if (!sortMode) {
       setSortName(null);
       setSortQuantity(null);
+      setSortDurable(null);
 
       setFilterData(filtered);
       return;
     }
 
-    if (!sortName && !sortQuantity) {
+    if (!sortName && !sortQuantity && !sortDurable) {
       setFilterData(filtered);
       return;
     }
@@ -217,8 +266,29 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
       });
     }
 
+    if (sortDurable) {
+      sorted.sort((a, b) => {
+        const durableNum = (prev) => {
+          return (
+            durableList.find((item) => item.type === prev.durability)?.num ??
+            null
+          );
+        };
+
+        const aNum = durableNum(a);
+        const bNum = durableNum(b);
+
+        if (aNum === null && bNum !== null) return 1;
+        if (aNum !== null && bNum === null) return -1;
+        if (aNum === null && bNum === null) return 0;
+
+        if (sortDurable === "asc") return aNum - bNum;
+        if (sortDurable === "desc") return bNum - aNum;
+      });
+    }
+
     setFilterData(sorted);
-  }, [sortName, sortQuantity, sortMode]);
+  }, [sortName, sortQuantity, sortDurable, sortMode]);
 
   if (loading) {
     return (
@@ -280,7 +350,27 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
             <th className="p-[5px] w-[5%]">Ngày thêm</th>
             <th className="p-[5px] w-[8%] ">Xuất xứ</th>
             <th className="p-[5px] w-[6%]">Màu sắc</th>
-            <th className="p-[5px] w-[6%]">Độ bền</th>
+            <th className="p-[5px] w-[6%]">
+              {" "}
+              <div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Độ bền</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipDurable}
+                  >
+                    {iconSortDurable}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
+            </th>
             <th colSpan={2} className="text-center w-[3%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
             </th>

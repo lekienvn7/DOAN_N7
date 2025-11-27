@@ -135,7 +135,11 @@ const FashionDetail = ({ item }) => {
                     showInfo ? "" : "pointer-events-none"
                   }`}
                 >
-                  {item.description}
+                  <div className="flex flex-row gap-[15px] items-center">
+                    {item.description} <div>•</div>
+                    <span className="text-[#f472b6]">Hướng dẫn giặt:</span>{" "}
+                    {item.washInstruction ? item.washInstruction : "—"}
+                  </div>
                 </motion.span>
               </div>
             </div>
@@ -145,11 +149,11 @@ const FashionDetail = ({ item }) => {
         <>
           <div className="flex flex-row gap-[25px]">
             <div className="flex flex-col gap-[25px]">
-              <div className="w-[250px] h-[250px] border-[1px] border-[#f472b6] rounded-[12px]">
+              <div className="w-[270px] h-[270px] border-[1px] border-[#f472b6] rounded-[12px]">
                 <img
                   src={cadivi}
                   alt="day-dien-2x2.5-cadivi"
-                  className="w-[250px] h-[250px] rounded-[12px] "
+                  className="w-[270px] h-[270px] rounded-[12px] "
                 />
               </div>
             </div>
@@ -302,10 +306,6 @@ const FashionDetail = ({ item }) => {
                   </div>
                 </div>
               </ul>
-              <p className="text-textsec font-inter text-left ">
-                • <span className="text-[#60A5FA]">Hướng dẫn giặt:</span>{" "}
-                {item.washInstruction ? item.washInstruction : "—"}
-              </p>
             </motion.div>
           </div>
         </>

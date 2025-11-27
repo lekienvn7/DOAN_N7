@@ -20,6 +20,7 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
   const [sortName, setSortName] = useState(null);
   const [sortQuantity, setSortQuantity] = useState(null);
+  const [sortTemp, setSortTemp] = useState(null);
   const [filterData, setFilterData] = useState([]);
 
   useEffect(() => {
@@ -46,17 +47,21 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
   }, [reload]);
 
   const tempList = [
-    { type: "Commercial Grade", name: "0°C → 70°C" },
-    { type: "Industrial Grade", name: "-20°C → 85°C" },
-    { type: "Extended Industrial", name: "-40°C → 85°C" },
-    { type: "Military Grade", name: "-40°C → 85°C" },
-    { type: "Automotive Grade", name: "-40°C → 125°C" },
-    { type: "others", name: "Khác" },
+    { type: "Commercial Grade", name: "0°C → 70°C", num: 1 },
+    { type: "Industrial Grade", name: "-20°C → 85°C", num: 2 },
+    { type: "Extended Industrial", name: "-40°C → 85°C", num: 3 },
+    { type: "Military Grade", name: "-40°C → 85°C", num: 4 },
+    { type: "Automotive Grade", name: "-40°C → 125°C", num: 5 },
+    { type: "others", name: "Khác", num: 6 },
   ];
 
   useEffect(() => {
     const filtered = iot.filter((item) =>
-      keywords.every((k) => item.name.toLowerCase().includes(k))
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.sensorType?.toLowerCase().includes(k)
+      )
     );
 
     setFilterData(filtered);
@@ -112,6 +117,8 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
 
   const toggleSortName = () => {
     setSortQuantity(null);
+    setSortTemp(null);
+
     setSortName((prev) => {
       if (prev === null) {
         return "asc";
@@ -125,7 +132,24 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
 
   const toggleSortQuantity = () => {
     setSortName(null);
+    setSortTemp(null);
+
     setSortQuantity((prev) => {
+      if (prev === null) {
+        return "asc";
+      }
+      if (prev === "asc") {
+        return "desc";
+      }
+      return null;
+    });
+  };
+
+  const toggleSortTemp = () => {
+    setSortName(null);
+    setSortQuantity(null);
+
+    setSortTemp((prev) => {
       if (prev === null) {
         return "asc";
       }
@@ -147,6 +171,13 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
     sortQuantity === "asc"
       ? "Giảm dần"
       : sortQuantity === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
+  const labelTooltipTemp =
+    sortTemp === "asc"
+      ? "Giảm dần"
+      : sortTemp === "desc"
       ? "Danh sách gốc"
       : "Tăng dần";
 
@@ -192,20 +223,46 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
       />
     );
 
+  const iconSortTemp =
+    sortTemp === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#5eead4] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortTemp}
+      />
+    ) : sortTemp === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#5eead4] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortTemp}
+      />
+    ) : (
+      <ArrowDown01
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortTemp}
+      />
+    );
+
   useEffect(() => {
     const filtered = iot.filter((item) =>
-      keywords.every((k) => item.name.toLowerCase().includes(k))
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.sensorType?.toLowerCase().includes(k)
+      )
     );
 
     if (!sortMode) {
       setSortName(null);
       setSortQuantity(null);
+      setSortTemp(null);
 
       setFilterData(filtered);
       return;
     }
 
-    if (!sortName && !sortQuantity) {
+    if (!sortName && !sortQuantity && !sortTemp) {
       setFilterData(filtered);
       return;
     }
@@ -224,8 +281,29 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
       });
     }
 
+    if (sortTemp) {
+      sorted.sort((a, b) => {
+        const tempNum = (item) => {
+          return (
+            tempList.find((prev) => prev.type === item.operatingTemp)?.num ??
+            null
+          );
+        };
+
+        const aNum = tempNum(a);
+        const bNum = tempNum(b);
+
+        if (aNum === null && bNum !== null) return 1;
+        if (aNum !== null && bNum === null) return -1;
+        if (aNum === null && bNum === null) return 0;
+
+        if (sortTemp === "asc") return aNum - bNum;
+        if (sortTemp === "desc") return bNum - aNum;
+      });
+    }
+
     setFilterData(sorted);
-  }, [sortName, sortQuantity, sortMode]);
+  }, [sortName, sortQuantity, sortTemp, sortMode]);
 
   if (loading) {
     return (
@@ -242,7 +320,7 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
         <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#081f1c]">
           <tr className="text-left p-[5px] text-[14px] font-semibold">
             <th className="text-center p-[5px] w-[3%]">STT</th>
-            <th className="p-[5px] w-[12%]">
+            <th className="p-[5px] w-[18%]">
               <motion.div
                 className={`${
                   sortMode ? "flex flex-row justify-between items-center" : ""
@@ -262,7 +340,7 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
                 <Tooltip id="SortTip"></Tooltip>
               </motion.div>
             </th>
-            <th className="p-[5px] w-[7%]">
+            <th className="p-[5px] w-[5%]">
               <div
                 className={`${
                   sortMode ? "flex flex-row justify-between items-center" : ""
@@ -283,11 +361,30 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
               </div>
             </th>
             <th className="p-[5px] w-[3%]">Đơn vị</th>
-            <th className="p-[5px] w-[10%]">Giao thức kết nối</th>
+            <th className="p-[5px] w-[8%]">Giao thức kết nối</th>
             <th className="p-[5px] w-[5%]">Hạn bảo trì</th>
-            <th className="p-[5px] w-[8%] ">Ngày thêm</th>
+            <th className="p-[5px] w-[6%] ">Ngày thêm</th>
             <th className="p-[5px] w-[6%]">Loại cảm biến</th>
-            <th className="p-[5px] w-[10%]">Nhiệt độ hoạt động</th>
+            <th className="p-[5px] w-[10%]">
+              <div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Nhiệt độ hoạt động</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipTemp}
+                  >
+                    {iconSortTemp}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
+            </th>
             <th colSpan={2} className="text-center w-[3%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
             </th>
@@ -299,16 +396,16 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
             let tempColor = "";
 
             if (item.operatingTemp === "Commercial Grade")
-              tempColor = "text-[#facc15]";
+              tempColor = "text-[#22c55e]";
             else if (item.operatingTemp === "Industrial Grade")
               tempColor = "text-[#4ade80]";
             else if (item.operatingTemp === "Extended Industrial")
-              tempColor = "text-[#38bdf8]";
+              tempColor = "text-[#eab308]";
             else if (item.operatingTemp === "Military Grade")
-              tempColor = "text-[#1e40af]";
+              tempColor = "text-[#fb923c]";
             else if (item.operatingTemp === "Automotive Grade")
               tempColor = "text-[#f97316]";
-            else tempColor = "text-[#a3a3a3]";
+            else tempColor = "text-[#ef4444]";
 
             return (
               <tr className=" text-center text-[14px] odd:bg-[#111111] even:bg-[#0d0d0d] hover:bg-[#1a1a1a] text-[#e5e5e7] ">
@@ -317,10 +414,11 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
                   {highlightText(item.name, searchData)}
                 </td>
                 <td className=" text-left p-[5px]">{item.quantity}</td>
+
                 <td className=" text-left p-[5px]">{item.unit}</td>
                 <td className=" text-left p-[5px]">
                   {item.communicationProtocol
-                    ? item.communicationProtocol
+                    ? `${item.communicationProtocol}`
                     : "—"}
                 </td>
                 <td className=" text-left p-[5px]">
@@ -350,7 +448,10 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
                   {formatDate(item.createdAt)}
                 </td>
                 <td className=" text-left p-[5px]">
-                  {item.sensorType ? `${item.sensorType}` : "—"}
+                  {highlightText(
+                    item.sensorType ? `${item.sensorType}` : "—",
+                    searchData
+                  )}
                 </td>
                 <td className={`text-left ${tempColor} p-[5px]`}>
                   {item.operatingTemp
