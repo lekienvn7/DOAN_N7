@@ -119,7 +119,7 @@ const HeaderDetail = ({
       const url = window.URL.createObjectURL(new Blob([res.data]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", "kho-thoiTrang.xlsx");
+      link.setAttribute("download", "kho-cntt.xlsx");
       document.body.appendChild(link);
       link.click();
       link.remove();

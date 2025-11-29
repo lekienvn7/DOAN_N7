@@ -18,6 +18,7 @@ const AddTechnology = ({ onReload }) => {
   const [unit, setUnit] = useState("");
   const [description, setDescription] = useState("");
   const [materialID, setMaterialID] = useState("");
+  const [maintenanceCycle, setMaintenanceCycle] = useState("");
 
   const [deviceType, setDeviceType] = useState("");
   const [capacity, setCapacity] = useState("");
@@ -64,24 +65,23 @@ const AddTechnology = ({ onReload }) => {
         quantity,
         unit,
         description,
+        maintenanceCycle,
         materialID,
 
-        fabricType,
-        color,
-        colorType,
-        size,
-        pattern,
-        elasticity,
-        origin,
-        washInstruction,
-        durability,
-        breathability,
-        fabricThickness,
-        colorfastness,
-        wrinkleResistance,
-        SPM,
+        deviceType,
+        capacity,
+        speed,
+        brand,
+        connectorType,
+        powerConsumption,
+        protocol,
+        networkInterface,
+        operatingSystem,
+        durabilityRating,
+        formFactor,
+        dataTransferRate,
 
-        type: "fashion", // cố định là “electric”
+        type: "technology", // cố định là “electric”
         createdBy, // lấy id người nhập từ context
         status: "Trong kho", // mặc định “Trong kho”
       });
@@ -93,21 +93,21 @@ const AddTechnology = ({ onReload }) => {
         setQuantity("");
         setUnit("");
         setDescription("");
+        setMaintenanceCycle("");
         setMaterialID("");
 
-        setFabricType("");
-        setColor("");
-        setSize("");
-        setPattern("");
-        setElasticity("");
-        setOrigin("");
-        setWashInstruction("");
-        setDurability("");
-        setBreathability("");
-        setFabricThickness("");
-        setColorfastness("");
-        setWrinkleResistance("");
-        setSPM("");
+        setDeviceType("");
+        setCapacity("");
+        setSpeed("");
+        setBrand("");
+        setConnectorType("");
+        setPowerConsumption("");
+        setProtocol("");
+        setNetworkInterface("");
+        setOperatingSystem("");
+        setDurabilityRating("");
+        setFormFactor("");
+        setDataTransferRate("");
 
         const materialID = res.data.data.materialID; // lấy ID vừa tạo
 
@@ -115,13 +115,13 @@ const AddTechnology = ({ onReload }) => {
         setTimeout(async () => {
           try {
             setLoading(true);
-            const repoRes = await axiosClient.put(`/repository/fashion`, {
+            const repoRes = await axiosClient.put(`/repository/technology`, {
               materials: [{ material: materialID, quantity: Number(quantity) }],
             });
 
             if (repoRes.data.success) {
               toast.success(
-                `Vật tư ${materialID} đã được thêm vào kho thời trang!`
+                `Vật tư ${materialID} đã được thêm vào kho công nghệ thông tin!`
               );
               setTimeout(() => onReload(), 500);
             } else {
@@ -150,7 +150,7 @@ const AddTechnology = ({ onReload }) => {
       <div className="flex flex-row gap-[20px]">
         <div className="flex flex-col gap-[20px] justify-center text-textpri">
           <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#f472b6]">
+            <div className="text-[#60a5fa]">
               <InputField
                 label="Tên vật tư"
                 placeholder="Tên vật tư"
@@ -158,7 +158,7 @@ const AddTechnology = ({ onReload }) => {
                 onChange={setName}
               />
             </div>
-            <div className="text-[#f472b6]">
+            <div className="text-[#60a5fa]">
               <InputField
                 label="Mã vật tư"
                 placeholder="VD: VT001"
@@ -167,7 +167,7 @@ const AddTechnology = ({ onReload }) => {
                 onChange={setMaterialID}
               />
             </div>
-            <div className="text-[#f472b6]">
+            <div className="text-[#60a5fa]">
               <InputField
                 label="Số lượng"
                 placeholder="Số lượng"
@@ -179,7 +179,7 @@ const AddTechnology = ({ onReload }) => {
           </div>
 
           <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#f472b6]">
+            <div className="text-[#60a5fa]">
               <InputField
                 label="Đơn vị"
                 placeholder="VD: cái, mét..."
@@ -203,330 +203,120 @@ const AddTechnology = ({ onReload }) => {
 
           <div className="flex flex-row gap-[20px] items-center">
             <InputField
-              label="Loại vải"
-              placeholder="VD: Cotton 100%, Polyester..."
-              value={fabricType}
-              onChange={setFabricType}
+              label="Loại thiết bị"
+              placeholder="VD: RAM, Card mạng..."
+              value={deviceType}
+              onChange={setDeviceType}
             />
 
-            <div className="flex flex-col gap-[5px] items-left">
-              <p className="ml-[10px]">Hướng dẫn giặt:</p>
-              <input
-                value={washInstruction}
-                onChange={(e) => setWashInstruction(e.target.value)}
-                placeholder="Hướng dẫn giặt"
-                className="w-[420px] py-[5px] px-[10px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
-                       focus:outline-none focus:ring-2 focus:ring-blue-500
-                       placeholder:text-gray-400 transition-all duration-200"
-              />
-            </div>
+            <InputField
+              label="Dung lượng"
+              placeholder="VD: 512GB SSD, 8GB RAM..."
+              value={capacity}
+              onChange={setCapacity}
+            />
+
+            <InputField
+              label="Tốc độ"
+              placeholder="VD: 3200MHz , 540MB/s..."
+              value={speed}
+              onChange={setSpeed}
+            />
           </div>
 
           <div className="flex flex-row gap-[20px] items-center">
             <InputField
-              label="Kích cỡ"
-              placeholder="VD: M, XL,..."
-              value={size}
-              onChange={setSize}
+              label="Thương hiệu"
+              placeholder="VD: Dell, Asus,..."
+              value={brand}
+              onChange={setBrand}
             />
 
             <InputField
-              label="Họa tiết / hoa văn"
-              placeholder="VD: trơn, kẻ sọc,..."
-              value={pattern}
-              onChange={setPattern}
+              label="Chuẩn kết nối"
+              placeholder="VD: NVMe, USB-C,..."
+              value={connectorType}
+              onChange={setConnectorType}
             />
 
-            <div className="flex flex-col gap-[5px] items-left">
-              <p className="ml-[10px]">Độ co giãn</p>
-              <Select
-                value={elasticity}
-                onValueChange={(value) => setElasticity(value)}
-              >
-                <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                  <SelectValue placeholder="-- Chọn --" />
-                </SelectTrigger>
-
-                <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                  <SelectItem
-                    value="No"
-                    className="cursor-pointer hover:bg-[#f472b6]"
-                  >
-                    Không co giãn
-                  </SelectItem>
-                  <SelectItem
-                    value="low"
-                    className="cursor-pointer hover:bg-[#f472b6]"
-                  >
-                    Co giãn nhẹ
-                  </SelectItem>
-                  <SelectItem
-                    value="medium"
-                    className="cursor-pointer hover:bg-[#f472b6]"
-                  >
-                    Co giãn 2 chiều
-                  </SelectItem>
-                  <SelectItem
-                    value="high"
-                    className="cursor-pointer hover:bg-[#f472b6]"
-                  >
-                    Co giãn 4 chiều (spandex)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <InputField
+              label="Mức tiêu thụ điện"
+              placeholder="VD: 15W, 65W,..."
+              value={powerConsumption}
+              onChange={setPowerConsumption}
+            />
           </div>
 
           <div className="flex flex-row gap-[20px] items-center">
             <InputField
-              label="Xuất xứ"
-              placeholder="VD: Việt Nam, Pháp,..."
-              value={origin}
-              onChange={setOrigin}
+              label="Giao thức hỗ trợ"
+              placeholder="VD: TCP/IP, HTTP,..."
+              value={protocol}
+              onChange={setProtocol}
             />
 
-            <ColorField
-              name={color}
-              setName={setColor}
-              value={colorType}
-              setValue={setColorType}
+            <InputField
+              label="Giao diện mạng"
+              placeholder="VD: Ethernet 1GbE, Wi-Fi 6,..."
+              value={networkInterface}
+              onChange={setNetworkInterface}
             />
 
-            <div className="flex flex-col gap-[5px] items-left">
-              <p className="ml-[10px]">Độ bền</p>
-              <Select
-                value={durability}
-                onValueChange={(value) => setDurability(value)}
-              >
-                <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                  <SelectValue placeholder="-- Chọn --" />
-                </SelectTrigger>
-
-                <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                  <SelectItem
-                    value="high"
-                    className="cursor-pointer hover:bg-[#f472b6]"
-                  >
-                    Bền cao (dùng lâu, ít xù lông)
-                  </SelectItem>
-                  <SelectItem
-                    value="medium"
-                    className="cursor-pointer hover:bg-[#f472b6]"
-                  >
-                    Trung bình
-                  </SelectItem>
-                  <SelectItem
-                    value="low"
-                    className="cursor-pointer hover:bg-[#f472b6]"
-                  >
-                    Dễ hỏng (vải mềm, mỏng)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+            <InputField
+              label="Hệ điều hành hỗ trợ"
+              placeholder="VD: Window, Linux,..."
+              value={operatingSystem}
+              onChange={setOperatingSystem}
+            />
           </div>
         </div>
         <div className="flex flex-col gap-[20px]">
-          <div className="flex flex-col gap-[5px] items-left">
-            <p className="ml-[10px]">Độ thoáng khí</p>
-            <Select
-              value={breathability}
-              onValueChange={(value) => setBreathability(value)}
-            >
-              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                <SelectValue placeholder="-- Chọn --" />
-              </SelectTrigger>
-
-              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                <SelectItem
-                  value="highly"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Rất thoáng khí
-                </SelectItem>
-                <SelectItem
-                  value="good"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Thoáng khí tốt
-                </SelectItem>
-                <SelectItem
-                  value="medium"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Thoáng khí trung bình
-                </SelectItem>
-                <SelectItem
-                  value="low"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Thoáng khí thấp
-                </SelectItem>
-                <SelectItem
-                  value="none"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Không thoáng khí
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col gap-[5px] items-left">
-            <p className="ml-[10px]">Độ dày vải</p>
-            <Select
-              value={fabricThickness}
-              onValueChange={(value) => setFabricThickness(value)}
-            >
-              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                <SelectValue placeholder="-- Chọn --" />
-              </SelectTrigger>
-
-              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                <SelectItem
-                  value="light"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Vải siêu mỏng
-                </SelectItem>
-                <SelectItem
-                  value="Lightweight"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Vải mỏng
-                </SelectItem>
-                <SelectItem
-                  value="medium"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Vải trung bình
-                </SelectItem>
-                <SelectItem
-                  value="Heavyweight"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Vải dày
-                </SelectItem>
-                <SelectItem
-                  value="ultra"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Vải siêu dày
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col gap-[5px] items-left">
-            <p className="ml-[10px]">Khả năng giữ màu</p>
-            <Select
-              value={colorfastness}
-              onValueChange={(value) => setColorfastness(value)}
-            >
-              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                <SelectValue placeholder="-- Chọn --" />
-              </SelectTrigger>
-
-              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                <SelectItem
-                  value="Excellent"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Colorfastness 5 – Xuất sắc
-                </SelectItem>
-                <SelectItem
-                  value="Good"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Colorfastness 4 – Tốt (Good)
-                </SelectItem>
-                <SelectItem
-                  value="Fair"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Colorfastness 3 – Trung bình
-                </SelectItem>
-                <SelectItem
-                  value="Poor"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Colorfastness 2 – Kém
-                </SelectItem>
-                <SelectItem
-                  value="Very Poor"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Colorfastness 1 – Rất kém
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col gap-[5px] items-left">
-            <p className="ml-[10px]">Khả năng chống nhăn</p>
-            <Select
-              value={wrinkleResistance}
-              onValueChange={(value) => setWrinkleResistance(value)}
-            >
-              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                <SelectValue placeholder="-- Chọn --" />
-              </SelectTrigger>
-
-              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                <SelectItem
-                  value="Free"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Không nhăn
-                </SelectItem>
-                <SelectItem
-                  value="Easy Care"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Chống nhăn tốt
-                </SelectItem>
-                <SelectItem
-                  value="Resistant"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Chống nhăn trung bình
-                </SelectItem>
-                <SelectItem
-                  value="Crease-Prone"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Dễ nhăn
-                </SelectItem>
-                <SelectItem
-                  value="High-Crease"
-                  className="cursor-pointer hover:bg-[#f472b6]"
-                >
-                  Rất dễ nhăn
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+          <InputField
+            label="Chuẩn kích thước"
+            placeholder="VD: 2.5-inch SSD, M.2 2280,..."
+            value={formFactor}
+            onChange={setFormFactor}
+          />
 
           <InputField
-            label="Tốc độ khâu (máy khâu)"
-            placeholder="VD: 3500 SPM..."
-            type="number"
-            value={SPM}
-            onChange={setSPM}
+            label="Độ bền"
+            placeholder="VD: MTBF 1.5 triệu giờ, Class A,..."
+            value={durabilityRating}
+            onChange={setDurabilityRating}
           />
+
+          <InputField
+            label="Tốc độ truyền dữ liệu"
+            placeholder="VD: PCIe 4.0 x4 ~ 7.5GB/s,..."
+            value={dataTransferRate}
+            onChange={setDataTransferRate}
+          />
+
+          <div className="flex flex-row gap-[20px] items-center">
+            <div className="text-[#60a5fa]">
+              <InputField
+                label="Hạn bảo trì"
+                placeholder="VD: 6 tháng,..."
+                value={maintenanceCycle}
+                onChange={setMaintenanceCycle}
+              />
+            </div>
+          </div>
         </div>
       </div>
 
       <DialogFooter className="!flex-row !justify-between !items-center mt-5">
         <p className="w-fit text-[22px] font-vegan text-textsec drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
-          <span className="text-[#f472b6]/70 drop-shadow-[0_0_14px_rgba(244,114,182,1)]">
+          <span className="text-[#60a5fa]/70 drop-shadow-[0_0_14px_rgba(96,165,250,1)]
+">
             U
           </span>
           neti{" "}
-          <span className="text-[#f472b6]/70 drop-shadow-[0_0_14px_rgba(244,114,182,1)]">
-            F
+          <span className="text-[#60a5fa]/70 drop-shadow-[0_0_14px_rgba(96,165,250,1)]
+">
+            T
           </span>
-          ashion
+          echnology
         </p>
 
         <div className="flex flex-row gap-3">
@@ -541,7 +331,7 @@ const AddTechnology = ({ onReload }) => {
             disabled={!isValid}
             className={`px-4 py-2 rounded-[12px] transition font-semibold ${
               isValid
-                ? "bg-[#f472b6] text-black hover:bg-[#fa8dc6] cursor-pointer"
+                ? "bg-[#60a5fa] text-black hover:bg-[#3184f3] cursor-pointer"
                 : "bg-gray-600 text-gray-300 cursor-not-allowed"
             }`}
           >

@@ -32,6 +32,7 @@ const ElectricWH = () => {
           reload={reload}
           searchData={searchData}
           sortMode={sortMode}
+          onReload={reloadList}
         />
       </div>
     </div>

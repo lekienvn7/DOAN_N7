@@ -131,7 +131,6 @@ async function updateMaterial(materialID, body, user) {
   }
 
   const type = Array.isArray(material.type) ? material.type[0] : material.type;
-
   const SelectedModel = modelMap[type];
 
   if (!SelectedModel) {
@@ -168,29 +167,35 @@ async function updateMaterial(materialID, body, user) {
 
   delete cleanBase.type;
   delete cleanBase.materialID;
-
   delete cleanChild.type;
   delete cleanChild.materialID;
 
   cleanBase.updatedAt = Date.now();
-  cleanChild.updatedAt = Date.now();
 
   if (user?.userID) {
     cleanBase.updatedBy = user.userID;
     cleanChild.updatedBy = user.userID;
   }
 
+  // Update base
   const baseUpdated = await Material.findOneAndUpdate(
     { materialID },
     cleanBase,
     { new: true }
   );
 
-  const detailUpdated = await SelectedModel.findOneAndUpdate(
-    { materialID },
-    cleanChild,
-    { new: true }
-  );
+  // Update detail (chỉ update nếu có field)
+  let detailUpdated;
+
+  if (Object.keys(cleanChild).length > 0) {
+    detailUpdated = await SelectedModel.findOneAndUpdate(
+      { materialID },
+      cleanChild,
+      { new: true }
+    );
+  } else {
+    detailUpdated = await SelectedModel.findOne({ materialID });
+  }
 
   return {
     message: "Cập nhật vật tư thành công!",

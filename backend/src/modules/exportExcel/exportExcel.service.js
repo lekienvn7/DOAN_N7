@@ -968,6 +968,10 @@ async function exportTelecomExcelService() {
     transmissionRate: item.material.transmissionRate,
     range: item.material.range,
     impedance: item.material.impedance,
+    modulationType: item.material.modulationType,
+    attenuation: item.material.attenuation,
+    polarization: item.material.polarization,
+    noiseFigure: item.material.noiseFigure,
     description: item.material.description,
   }));
 
@@ -989,7 +993,7 @@ async function exportTelecomExcelService() {
   };
 
   // ======= TITLE =======
-  sheet.mergeCells("A1", "O1");
+  sheet.mergeCells("A1", "S1");
   const title = sheet.getCell("A1");
   title.value = "BÁO CÁO DANH SÁCH VẬT TƯ KHO ĐIỆN TỬ VIỄN THÔNG";
   title.font = { size: 16, bold: true };
@@ -1012,6 +1016,10 @@ async function exportTelecomExcelService() {
     "Tốc độ truyền dẫn",
     "Phạm vi hoạt động",
     "Trở kháng",
+    "PT biến đổi tín hiệu",
+    "Suy hao tín hiệu",
+    "Phân cực sóng",
+    "Hệ số nhiễu",
     "Ghi chú",
   ]);
 
@@ -1034,14 +1042,18 @@ async function exportTelecomExcelService() {
       item.createdAt
         ? new Date(item.createdAt).toLocaleDateString("vi-VN")
         : "",
-      item.deviceType || "—",
-      item.capacity || "—",
-      item.speed || "—",
-      item.brand || "—",
+      item.signalType || "—",
+      item.frequency || "—",
+      item.bandwidth || "—",
       item.connectorType || "—",
-      item.powerConsumption || "—",
-      item.protocol || "—",
-      item.networkInterface || "—",
+      item.cableType || "—",
+      item.transmissionRate || "—",
+      item.range || "—",
+      item.impedance || "—",
+      item.modulationType || "—",
+      item.attenuation || "—",
+      item.polarization || "—",
+      item.noiseFigure || "—",
       item.description || "",
     ]);
 

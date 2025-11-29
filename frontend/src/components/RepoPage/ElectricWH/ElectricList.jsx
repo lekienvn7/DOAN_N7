@@ -14,7 +14,7 @@ import { Tooltip } from "react-tooltip";
 import ElectricDetail from "./ElectricDetail";
 import ElectricEdit from "./ElectricEdit";
 
-const ElectricList = ({ mode, reload, searchData, sortMode }) => {
+const ElectricList = ({ mode, reload, searchData, sortMode, onReload }) => {
   const [electrical, setElectrical] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = searchData.toLowerCase().trim().split(/\s+/);
@@ -512,7 +512,7 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
                 <Tooltip id="SortTip"></Tooltip>
               </div>
             </th>
-            <th colSpan={2} className="text-center w-[3%]">
+            <th colSpan={2} className="text-center w-[5%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
             </th>
           </tr>
@@ -566,7 +566,7 @@ const ElectricList = ({ mode, reload, searchData, sortMode }) => {
                 {mode === "view" ? (
                   <ElectricDetail item={item} />
                 ) : (
-                  <ElectricEdit item={item} reload={reload} />
+                  <ElectricEdit item={item} onReload={onReload} />
                 )}
               </td>
             </tr>

@@ -85,6 +85,10 @@ export const technologyFields = [
   "protocol",
   "networkInterface",
   "warranty",
+  "dataTransferRate",
+  "durabilityRating",
+  "formFactor",
+  "dataTransferRate",
 ];
 
 export const automotiveFields = [
@@ -107,6 +111,10 @@ export const telecomFields = [
   "transmissionRate",
   "range",
   "impedance",
+  "attenuation",
+  "polarization",
+  "noiseFigure",
+  "modulationType",
 ];
 
 export const fashionFields = [

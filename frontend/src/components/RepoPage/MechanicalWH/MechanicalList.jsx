@@ -26,7 +26,7 @@ const MechanicalList = ({ mode, reload, searchData, sortMode }) => {
     setLoading(true);
 
     const timer = setTimeout(() => {
-      const fetchIot = async () => {
+      const fetchMechanical = async () => {
         try {
           const res = await axiosClient.get("/repository/material/mechanical");
           if (res.data.success) {
@@ -39,7 +39,7 @@ const MechanicalList = ({ mode, reload, searchData, sortMode }) => {
           setLoading(false);
         }
       };
-      fetchIot();
+      fetchMechanical();
     }, 600);
 
     return () => clearTimeout(timer);

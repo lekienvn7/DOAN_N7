@@ -15,7 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { toast } from "sonner";
 
-const ElectricEdit = ({ item, reload }) => {
+const ElectricEdit = ({ item, onReload }) => {
   const [description, setDescription] = useState(item.description || "");
   const [voltageRange, setVoltageRange] = useState(item.voltageRange || "");
   const [power, setPower] = useState(item.power || "");
@@ -93,7 +93,7 @@ const ElectricEdit = ({ item, reload }) => {
 
       if (res.data.success) {
         toast.success("Đã cập nhật vật tư!");
-        reload((prev) => prev + 1);
+        setTimeout(() => onReload(), 500);
       }
     } catch (error) {
       console.log(error);
@@ -135,21 +135,21 @@ const ElectricEdit = ({ item, reload }) => {
                    placeholder:text-gray-400 transition-all duration-200`}
             />
           </div>
+          <div className="flex flex-row gap-[20px]">
+            <InputField
+              label="Công suất định mức"
+              placeholder="VD: 10W"
+              value={power}
+              onChange={setPower}
+            />
 
-          <InputField
-            label="Điện áp"
-            placeholder="VD: 220V"
-            type="text"
-            value={voltageRange}
-            onChange={setVoltageRange}
-          />
-          <InputField
+            <InputField
             label="Công suất định mức"
             placeholder="VD: 10W"
-            type="number"
             value={power}
-            onChange={(e) => setPower(e.target.value)}
+            onChange={setPower}
           />
+          </div>
         </div>
 
         <DialogFooter className="mt-5 flex justify-end gap-3">
@@ -177,7 +177,6 @@ const ElectricEdit = ({ item, reload }) => {
 const InputField = ({
   label,
   placeholder,
-  type = "text",
   value,
   onChange,
   width = "200px",
@@ -185,7 +184,6 @@ const InputField = ({
   <div className="flex flex-col gap-[5px] items-left">
     <p className="ml-[10px]">{label}:</p>
     <input
-      type={type}
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}

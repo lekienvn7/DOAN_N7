@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import "@/assets/css/Header/header.css";
 import { Link } from "react-router-dom";
 
 const HeaderLogo = () => {

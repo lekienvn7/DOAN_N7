@@ -35,6 +35,22 @@ const technologyMaterialSchema = new mongoose.Schema(
       type: String,
       default: null,
     }, // Ethernet / Fiber
+    operatingSystem: {
+      type: String,
+      default: null,
+    },
+    durabilityRating: {
+      type: String,
+      default: null,
+    },
+    formFactor: {
+      type: String,
+      default: null,
+    },
+    dataTransferRate: {
+      type: String,
+      default: null,
+    },
   },
   { _id: false }
 );

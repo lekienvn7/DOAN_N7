@@ -1,50 +1,302 @@
 import React from "react";
-import axiosClient from "@/api/axiosClient";
-import { PencilLine, Trash2 } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useAuth } from "@/context/authContext";
+import { motion } from "framer-motion";
+import {
+  ArrowDownAZ,
+  ChevronUp,
+  ChevronDown,
+  ArrowDown01,
+  ClockArrowDown,
+} from "lucide-react";
+import axiosClient from "@/api/axiosClient";
 import { toast } from "sonner";
+import { Tooltip } from "react-tooltip";
+import TechnologyDetail from "./TechnologyDetail";
+import TechnologyEdit from "./TechnologyEdit";
 
-const TechnologyList = () => {
-  const [loading, setLoading] = useState(true);
-
-  const { user } = useAuth();
+const TechnologyList = ({ mode, reload, searchData, sortMode }) => {
   const [technology, setTechnology] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
+  const [sortName, setSortName] = useState(null);
+  const [sortQuantity, setSortQuantity] = useState(null);
+  const [sortMaintenance, setSortMaintenance] = useState("");
+  const [filterData, setFilterData] = useState([]);
 
-  const checkPermission = (callback) => {
-    const hasAccess =
-      user?.yourRepo?.includes("all") || user?.yourRepo?.includes("technology");
+  useEffect(() => {
+    setLoading(true);
 
-    if (!hasAccess) {
-      toast.error("Không có quyền sử dụng chức năng!");
+    const timer = setTimeout(() => {
+      const fetchTechnology = async () => {
+        try {
+          const res = await axiosClient.get("/repository/material/technology");
+          if (res.data.success) {
+            setTechnology([...res.data.materials]);
+            setFilterData([...res.data.materials]);
+          }
+        } catch (error) {
+          console.error("Lỗi khi tải dữ liệu", error);
+        } finally {
+          setLoading(false);
+        }
+      };
+      fetchTechnology();
+    }, 600);
+
+    return () => clearTimeout(timer);
+  }, [reload]);
+
+  useEffect(() => {
+    const filtered = technology.filter(
+      (item) =>
+        keywords.every((k) => item.name?.toLowerCase().includes(k)) ||
+        keywords.every((k) => item.brand?.toLowerCase().includes(k)) ||
+        keywords.every((k) => item.deviceType?.toLowerCase().includes(k))
+    );
+
+    setFilterData(filtered);
+  }, [searchData, technology]);
+
+  const highlightText = (text, searchData) => {
+    if (!searchData.trim()) return text;
+
+    // Tách nhiều từ khóa: dây điện cadivi → ["dây","điện","cadivi"]
+    const keywords = searchData.toLowerCase().trim().split(/\s+/);
+
+    // Tạo regex highlight nhiều từ cùng lúc (không phân biệt hoa thường)
+    const regex = new RegExp(`(${keywords.join("|")})`, "gi");
+
+    // Tách text, mỗi match sẽ nằm trong array
+    return text.split(regex).map((part, index) => {
+      if (keywords.includes(part.toLowerCase())) {
+        return (
+          <span key={index} className="text-highlightcl font-semibold">
+            {part}
+          </span>
+        );
+      }
+      return part;
+    });
+  };
+
+  const getNextMaintenanceDate = (startDate, months) => {
+    if (!startDate || !months) return null;
+
+    const date = new Date(startDate);
+    date.setMonth(date.getMonth() + months);
+    return date;
+  };
+
+  const getDaysLeft = (targetDate) => {
+    if (!targetDate) return null;
+
+    const today = new Date();
+    const diff = targetDate - today;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString().slice(-2);
+
+    return `${day}/${month}/${year}`;
+  };
+
+  const toggleSortName = () => {
+    setSortQuantity(null);
+    setSortMaintenance(null);
+
+    setSortName((prev) => {
+      if (prev === null) {
+        return "asc";
+      }
+      if (prev === "asc") {
+        return "desc";
+      }
+      return null;
+    });
+  };
+
+  const toggleSortQuantity = () => {
+    setSortName(null);
+    setSortMaintenance(null);
+
+    setSortQuantity((prev) => {
+      if (prev === null) {
+        return "asc";
+      }
+      if (prev === "asc") {
+        return "desc";
+      }
+      return null;
+    });
+  };
+
+  const toggleSortMaintenance = () => {
+    setSortName(null);
+    setSortQuantity(null);
+
+    setSortMaintenance((prev) => {
+      if (!prev) return "asc";
+      if (prev === "asc") return "desc";
+      return null;
+    });
+  };
+
+  const labelTooltipName =
+    sortName === "asc"
+      ? "z → a"
+      : sortName === "desc"
+      ? "Danh sách gốc"
+      : "a → z";
+
+  const labelTooltipQuantity =
+    sortQuantity === "asc"
+      ? "Giảm dần"
+      : sortQuantity === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
+  const labelTooltipMaintenance =
+    sortMaintenance === "asc"
+      ? "Giảm dần"
+      : sortMaintenance === "desc"
+      ? "Danh sách gốc"
+      : "Tăng dần";
+
+  const iconSortName =
+    sortName === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#60a5fa]
+hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortName}
+      />
+    ) : sortName === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#60a5fa]
+hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortName}
+      />
+    ) : (
+      <ArrowDownAZ
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortName}
+      />
+    );
+
+  const iconSortQuantity =
+    sortQuantity === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#60a5fa]
+hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortQuantity}
+      />
+    ) : sortQuantity === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#60a5fa]
+hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortQuantity}
+      />
+    ) : (
+      <ArrowDown01
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortQuantity}
+      />
+    );
+
+  const iconSortMaintenance =
+    sortMaintenance === "asc" ? (
+      <ChevronUp
+        size={18}
+        className="text-[#60a5fa]
+hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortMaintenance}
+      />
+    ) : sortMaintenance === "desc" ? (
+      <ChevronDown
+        size={18}
+        className="text-[#60a5fa]
+hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortMaintenance}
+      />
+    ) : (
+      <ClockArrowDown
+        size={18}
+        className="text-[#a1a1a6] hover:text-[#ffffffcc] no-outline cursor-pointer"
+        onClick={toggleSortMaintenance}
+      />
+    );
+
+  useEffect(() => {
+    const filtered = technology.filter(
+      (item) =>
+        keywords.every((k) => item.name?.toLowerCase().includes(k)) ||
+        keywords.every((k) => item.brand?.toLowerCase().includes(k)) ||
+        keywords.every((k) => item.deviceType?.toLowerCase().includes(k))
+    );
+
+    if (!sortMode) {
+      setSortName(null);
+      setSortQuantity(null);
+      setSortMaintenance(null);
+
+      setFilterData(filtered);
       return;
     }
 
-    callback();
-  };
+    if (!sortName && !sortQuantity && !sortMaintenance) {
+      setFilterData(filtered);
+      return;
+    }
 
-  useEffect(() => {
-    const fetchTechnology = async () => {
-      try {
-        setLoading(true);
-        const res = await axiosClient("/repository/material/technology");
+    const sorted = [...filterData];
+    if (sortName) {
+      sorted.sort((a, b) => {
+        if (sortName === "asc") return a.name.localeCompare(b.name, "vi");
+        if (sortName === "desc") return b.name.localeCompare(a.name, "vi");
+      });
+    }
+    if (sortQuantity) {
+      sorted.sort((a, b) => {
+        if (sortQuantity === "asc") return a.quantity - b.quantity;
+        if (sortQuantity === "desc") return b.quantity - a.quantity;
+      });
+    }
+    if (sortMaintenance) {
+      sorted.sort((a, b) => {
+        if (a.maintenanceCycle == null) return 1;
+        if (b.maintenanceCycle == null) return -1;
 
-        if (res.data.success) {
-          setTechnology(res.data.materials);
-        }
-      } catch (error) {
-        console.error("Lỗi truy cập dữ liệu!", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTechnology();
-  }, []);
+        if (sortMaintenance === "asc")
+          return (
+            (a.maintenanceCycle ?? Infinity) - (b.maintenanceCycle ?? Infinity)
+          );
+        if (sortMaintenance === "desc")
+          return (
+            (b.maintenanceCycle ?? Infinity) - (a.maintenanceCycle ?? Infinity)
+          );
+      });
+    }
+
+    setFilterData(sorted);
+  }, [sortName, sortQuantity, sortMaintenance, sortMode]);
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[400px] gap-4 text-textpri">
-        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
+      <div className="flex flex-col items-center justify-center h-[460px] gap-4 text-textpri">
+        <div
+          className="w-10 h-10 border-4 border-[#60a5fa]
+ border-t-transparent rounded-full animate-spin"
+        ></div>
         <p>Đang tải dữ liệu...</p>
       </div>
     );
@@ -52,84 +304,141 @@ const TechnologyList = () => {
 
   return (
     <div className="w-full">
-      <table className="w-full text-textpri border-collapse">
-        <thead className="sticky top-0 z-10 border-b border-[#fdd700]/60 bg-bgmain">
-          <tr className="text-center text-[14px] font-semibold">
-            <th className="relative py-[5px] w-[3%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              STT
+      <table className="w-full text-[#60a5fa] border-collapse">
+        <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#111111]">
+          <tr className="text-left p-[5px] text-[14px] font-semibold">
+            <th className="text-center p-[5px] w-[3%]">STT</th>
+            <th className="p-[5px] w-[16%]">
+              <motion.div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Tên thiết bị/vật tư</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipName}
+                  >
+                    {iconSortName}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </motion.div>
             </th>
-            <th className="relative w-[12%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Tên thiết bị/vật tư
+            <th className="p-[5px] w-[7%]">
+              <div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Số lượng</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipQuantity}
+                  >
+                    {iconSortQuantity}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
             </th>
-            <th className="relative w-[5%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Số lượng
+            <th className="p-[5px] w-[5%]">Đơn vị</th>
+            <th className="p-[5px] w-[8%]">
+              {" "}
+              <div
+                className={`${
+                  sortMode ? "flex flex-row justify-between items-center" : ""
+                }`}
+              >
+                <p>Hạn bảo trì</p>{" "}
+                {sortMode ? (
+                  <div
+                    data-tooltip-id="SortTip"
+                    data-tooltip-content={labelTooltipMaintenance}
+                  >
+                    {iconSortMaintenance}
+                  </div>
+                ) : (
+                  ""
+                )}
+                <Tooltip id="SortTip"></Tooltip>
+              </div>
             </th>
-            <th className="relative w-[5%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Đơn vị
-            </th>
-            <th className="relative w-[8%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Hạn bảo trì
-            </th>
-            <th className="relative w-[15%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Ngày thêm
-            </th>
-            <th className="relative w-[10   %] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Loại thiết bị
-            </th>
-            <th className="relative w-[15%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Thông số kỹ thuật
-            </th>
-            <th className="relative w-[8%] after:content-[''] after:absolute after:right-0 after:top-1/2 after:-translate-y-1/2 after:h-[60%] after:w-[1px] after:bg-[#caa93e]">
-              Chuẩn mạng
-            </th>
-            <th colSpan={2} className=" w-[5%] ">
-              Lựa chọn
+            <th className="p-[5px] w-[8%]">Ngày thêm </th>
+            <th className="p-[5px] w-[8%] ">Loại thiết bị</th>
+            <th className="p-[5px] w-[8%]">Thương hiệu</th>
+            <th className="p-[5px] w-[8%]">Mức tiêu thụ điện</th>
+            <th colSpan={2} className="text-center w-[5%]">
+              {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
             </th>
           </tr>
         </thead>
 
         <tbody>
-          {technology.map((item, index) => (
-            <tr className="border-b-1 border-gray-500 text-left text-[14px] text-[#e5e5e7] hover:bg-[#1c1c1e]">
-              <td className="border-r-1 border-textsec p-[5px]">{index + 1}</td>
-              <td className="border-r-1 border-textsec p-[5px]">{item.name}</td>
-              <td className="border-r-1 border-textsec p-[5px]">
-                {item.quantity}
-              </td>
-              <td className="border-r-1 border-textsec p-[5px]">{item.unit}</td>
-              <td className="border-r-1 border-textsec p-[5px]">
-                {item.maintenanceCycle}
-              </td>
-              <td className="border-r-1 border-textsec p-[5px]">
-                {item.createdAt}
-              </td>
-              <td className="border-r-1 border-textsec p-[5px]">
-                {item.deviceType}
-              </td>
-              <td className="border-r-1 border-textsec p-[5px]">
-                {item.Specification}
-              </td>
-              <td className="border-r-1 border-textsec p-[5px]">
-                {item.networkInterface}
-              </td>
-              <td className="border-r-1 border-textsec text-center p-[5px]">
-                <button
-                  onClick={() => checkPermission()}
-                  className="changeTool cursor-pointer p-[5px] justify-center text-[#f9d65c] hover:text-[#ffd700]"
-                >
-                  <PencilLine size={15} />
-                </button>
-              </td>
-              <td className="text-center p-[5px]">
-                <button
-                  onClick={() => checkPermission()}
-                  className="cursor-pointer p-[5px] justify-center text-[#ff5555] hover:text-[#ff7676]"
-                >
-                  <Trash2 size={15} />
-                </button>
-              </td>
-            </tr>
-          ))}
+          {filterData.map((item, index) => {
+            return (
+              <tr className=" text-center text-[14px] odd:bg-[#111111] even:bg-[#0d0d0d] hover:bg-[#1a1a1a] text-[#e5e5e7] ">
+                <td className=" p-[5px]">{index + 1}</td>
+                <td className="text-left  p-[5px]">
+                  {highlightText(item.name, searchData)}
+                </td>
+                <td className=" text-left p-[5px]">{item.quantity}</td>
+
+                <td className=" text-left p-[5px]">{item.unit}</td>
+                <td className=" text-left p-[5px]">
+                  {item.maintenanceCycle
+                    ? (() => {
+                        const nextDate = getNextMaintenanceDate(
+                          item.createdAt,
+                          item.maintenanceCycle
+                        );
+                        const daysLeft = getDaysLeft(nextDate);
+
+                        return (
+                          <span
+                            className={`${
+                              daysLeft <= 7 ? "text-red-500" : "text-textpri"
+                            } `}
+                          >
+                            {daysLeft <= 7
+                              ? `Còn ${daysLeft} ngày`
+                              : formatDate(nextDate)}
+                          </span>
+                        );
+                      })()
+                    : "—"}
+                </td>
+                <td className=" text-left p-[5px]">
+                  {formatDate(item.createdAt)}
+                </td>
+                <td className={`text-left p-[5px]`}>
+                  {highlightText(
+                    item.deviceType ? item.deviceType : "—",
+                    searchData
+                  )}
+                </td>
+                <td className={`text-left p-[5px] `}>
+                  {highlightText(item.brand ? item.brand : "—", searchData)}
+                </td>
+                <td className={`text-left p-[5px] `}>
+                  {item.powerConsumption ? item.powerConsumption : "—"}
+                </td>
+                <td className=" text-center p-[5px]">
+                  {mode === "view" ? (
+                    <TechnologyDetail item={item} />
+                  ) : (
+                    <TechnologyEdit item={item} reload={reload} />
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>
