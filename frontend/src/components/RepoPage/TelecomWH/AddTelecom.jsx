@@ -150,7 +150,7 @@ const AddTelecom = ({ onReload }) => {
       <div className="flex flex-row gap-[20px]">
         <div className="flex flex-col gap-[20px] justify-center text-textpri">
           <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#a78bfa]">
+            <div className="text-[#ff3434]">
               <InputField
                 label="Tên vật tư"
                 placeholder="Tên vật tư"
@@ -158,7 +158,7 @@ const AddTelecom = ({ onReload }) => {
                 onChange={setName}
               />
             </div>
-            <div className="text-[#a78bfa]">
+            <div className="text-[#ff3434]">
               <InputField
                 label="Mã vật tư"
                 placeholder="VD: VT001"
@@ -167,7 +167,7 @@ const AddTelecom = ({ onReload }) => {
                 onChange={setMaterialID}
               />
             </div>
-            <div className="text-[#a78bfa]">
+            <div className="text-[#ff3434]">
               <InputField
                 label="Số lượng"
                 placeholder="Số lượng"
@@ -179,7 +179,7 @@ const AddTelecom = ({ onReload }) => {
           </div>
 
           <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#a78bfa]">
+            <div className="text-[#ff3434]">
               <InputField
                 label="Đơn vị"
                 placeholder="VD: cái, mét..."
@@ -293,7 +293,7 @@ const AddTelecom = ({ onReload }) => {
           />
 
           <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#a78bfa]">
+            <div className="text-[#ff3434]">
               <InputField
                 label="Hạn bảo trì"
                 placeholder="VD: 6 tháng,..."
@@ -308,14 +308,14 @@ const AddTelecom = ({ onReload }) => {
       <DialogFooter className="!flex-row !justify-between !items-center mt-5">
         <p className="w-fit text-[22px] font-vegan text-textsec drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
           <span
-            className="text-[#a78bfa]/70 drop-shadow-[0_0_14px_rgba(167,139,250,1)]
+            className="text-[#ff3434]/70 drop-shadow-[0_0_14px_rgba(255,52,52,1)]
 "
           >
             U
           </span>
           neti{" "}
           <span
-            className="text-[#a78bfa]/70 drop-shadow-[0_0_14px_rgba(167,139,250,1)]
+            className="text-[#ff3434]/70 drop-shadow-[0_0_14px_rgba(255,52,52,1)]
 "
           >
             T

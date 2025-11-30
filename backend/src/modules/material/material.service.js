@@ -197,9 +197,18 @@ async function updateMaterial(materialID, body, user) {
     detailUpdated = await SelectedModel.findOne({ materialID });
   }
 
+  const populatedBase = await Material.findOne({ materialID })
+    .populate("updatedBy", "fullName email role")
+    .lean();
+
+  const detailData = await SelectedModel.findOne({ materialID }).lean();
+
   return {
     message: "Cập nhật vật tư thành công!",
-    result: { base: baseUpdated, detail: detailUpdated },
+    result: {
+      base: populatedBase,
+      detail: detailData,
+    },
   };
 }
 

@@ -20,7 +20,7 @@ const automotiveMaterialSchema = new mongoose.Schema(
       default: null,
     }, // Phù hợp dòng xe nào
     lifespan: {
-      type: Number,
+      type: String,
       default: null,
     }, // Tuổi thọ
     material: {

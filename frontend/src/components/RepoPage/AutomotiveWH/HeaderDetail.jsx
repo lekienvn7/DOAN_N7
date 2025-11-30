@@ -146,7 +146,7 @@ const HeaderDetail = ({
   }, []);
 
   return (
-    <div className=" flex flex-col p-[20px] w-[1300px] h-[150px] bg-bgmain border-t-1 border-gray-700">
+    <div className=" flex flex-col p-[20px] w-[calc(100vw-240px)] h-[150px] bg-bgmain border-t-1 border-gray-700">
       <div className="flex flex-col gap-[5px]">
         <AnimatePresence>
           <motion.div

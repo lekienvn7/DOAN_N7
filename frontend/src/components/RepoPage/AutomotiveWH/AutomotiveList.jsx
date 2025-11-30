@@ -51,8 +51,8 @@ const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
     { type: "Electronic & Electrical", name: "Điện" },
     { type: "HVAC", name: "Điều hòa" },
     { type: "Fluids", name: "Chất lỏng" },
-    { type: "Fasteners", name: "Thân vỏ" },
-    { type: "Engine Components", name: "Ốc vít" },
+    { type: "Body & Exterior", name: "Thân vỏ" },
+    { type: "Fasteners", name: "Ốc vít" },
   ];
 
   useEffect(() => {

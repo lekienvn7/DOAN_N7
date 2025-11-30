@@ -34,7 +34,7 @@ const RepoMenu = () => {
     iot: "#5eead4", // Nhúng & IoT
     technology: "#60a5fa", // CNTT
     automotive: "#fb923c", // Công nghệ ô tô
-    telecom: "#a78bfa", // Điện tử viễn thông
+    telecom: "#ff3434", // Điện tử viễn thông
     fashion: "#f472b6", // Thiết kế thời trang
     electric: "#fdd700", // Điện
     chemical: "#c7a7ff", // Hóa chất

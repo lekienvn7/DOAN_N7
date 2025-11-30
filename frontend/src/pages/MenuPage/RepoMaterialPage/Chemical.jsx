@@ -5,7 +5,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const Chemical = () => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col ">
       <AnimatePresence>
         <motion.div
           initial={{ x: 20, opacity: 0 }}

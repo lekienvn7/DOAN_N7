@@ -36,9 +36,6 @@ const AddAutomotive = ({ onReload }) => {
   const isValid =
     name.trim() !== "" &&
     materialID.trim() !== "" &&
-    maintenanceCycle !== "" &&
-    !isNaN(maintenanceCycle) &&
-    Number(maintenanceCycle) >= 0 &&
     quantity !== "" &&
     !isNaN(quantity) &&
     Number(quantity) >= 0 &&
@@ -245,7 +242,6 @@ const AddAutomotive = ({ onReload }) => {
             <InputField
               label="Tuổi thọ linh kiện"
               placeholder="VD: 6 tháng"
-              type="number"
               value={lifespan}
               onChange={setLifespan}
             />

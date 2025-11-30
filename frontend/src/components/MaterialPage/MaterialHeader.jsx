@@ -20,7 +20,7 @@ const MaterialHeader = () => {
   );
 
   return (
-    <div className="sticky bg-bgmain w-[1250px] h-[145px] p-[35px] text-textpri border-t-1 border-gray-700">
+    <div className="sticky bg-bgmain w-[calc(100vw-280px)] h-[145px] p-[35px] text-textpri border-t-1 border-gray-700">
       <div className="flex flex-row justify-between">
         <div className="flex flex-col gap-[20px]">
           <p className="font-bold text-[35px]">

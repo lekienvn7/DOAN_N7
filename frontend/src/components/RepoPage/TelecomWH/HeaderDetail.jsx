@@ -148,7 +148,7 @@ const HeaderDetail = ({
   }, []);
 
   return (
-    <div className=" flex flex-col p-[20px] w-[1300px] h-[150px] bg-bgmain border-t-1 border-gray-700">
+    <div className=" flex flex-col p-[20px] w-[calc(100vw-240px)] h-[150px] bg-bgmain border-t-1 border-gray-700">
       <div className="flex flex-col gap-[5px]">
         <AnimatePresence>
           <motion.div
@@ -163,8 +163,8 @@ const HeaderDetail = ({
             className="flex flex-row justify-between"
           >
             <div className="flex flex-col gap-[5px]">
-              <p className="text-left text-[16px] text-[#a78bfa] font-satoshi ">
-                Kho công nghệ thông tin
+              <p className="text-left text-[16px] text-[#ff3434] font-satoshi ">
+                Kho điện tử viễn thông
               </p>
 
               <p className="text-[30px] text-textpri font-bold">
@@ -183,7 +183,7 @@ const HeaderDetail = ({
                 <DialogHeader>
                   <DialogTitle>
                     Thông tin chi tiết{" "}
-                    <span className="text-[#a78bfa]">
+                    <span className="text-[#ff3434]">
                       kho điện tử viễn thông
                     </span>
                   </DialogTitle>
@@ -227,7 +227,7 @@ const HeaderDetail = ({
                       setOpen(true); // Chỉ mở nếu có quyền
                     }
                   }}
-                  className="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#a78bfa] transition-colors duration-300"
+                  className="pr-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#ff3434] transition-colors duration-300"
                 >
                   Thêm vật tư <Plus size={20} className="text-textpri" />
                 </button>
@@ -237,11 +237,13 @@ const HeaderDetail = ({
                 <DialogHeader>
                   <DialogTitle>
                     Phiếu nhập vật tư{" "}
-                    <span className="text-[#a78bfa]">kho Điện tử viễn thông</span>
+                    <span className="text-[#ff3434]">
+                      kho Điện tử viễn thông
+                    </span>
                   </DialogTitle>
                   <DialogDescription className="text-gray-400">
                     Nhập vật tư vào kho - Những mục được{" "}
-                    <span className="text-[#a78bfa]">tô màu</span> không thể để
+                    <span className="text-[#ff3434]">tô màu</span> không thể để
                     trống!
                   </DialogDescription>
                 </DialogHeader>
@@ -252,7 +254,7 @@ const HeaderDetail = ({
             <div className="border-r h-4 mx-2"></div>
             <button
               onClick={() => checkPermission()}
-              className="pl-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#60a5fa] transition-colors duration-300"
+              className="pl-3 cursor-pointer flex flex-row gap-[10px] hover:text-[#ff3434] transition-colors duration-300"
             >
               Xuất vật tư <Minus size={20} className="text-textpri" />
             </button>
@@ -269,12 +271,12 @@ const HeaderDetail = ({
               >
                 {showSearch ? (
                   <ChevronsRight
-                    className={`searchClose cursor-pointer hover:text-[#916df4] mr-[15px] transition-colors duration-300 text-[#a78bfa] no-outline`}
+                    className={`searchClose cursor-pointer hover:text-[#e02626] mr-[15px] transition-colors duration-300 text-[#ff3434] no-outline`}
                     size={18}
                   />
                 ) : (
                   <Search
-                    className={`searchTool cursor-pointer hover:text-[#a78bfa] mr-[15px] transition-colors duration-300 text-[#A1A1A6] no-outline`}
+                    className={`searchTool cursor-pointer hover:text-[#ff3434] mr-[15px] transition-colors duration-300 text-[#A1A1A6] no-outline`}
                     size={18}
                   />
                 )}
@@ -338,7 +340,7 @@ const HeaderDetail = ({
                 animate={{ y: 0, opacity: 1 }}
                 exit={{ y: -10, opacity: 0 }}
                 transition={{ type: "tween", duration: 0.3 }}
-                className="absolute top-[30px] left-[35px] w-[270px] max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#a78bfa]/50 hover:scrollbar-thumb-[#e8d6ff]/60  bg-[#111111] border border-gray-400 border-t-[#a78bfa]  rounded-lg shadow-xl z-20"
+                className="absolute top-[30px] left-[35px] w-[270px] max-h-[200px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#ff3434]/50 hover:scrollbar-thumb-[#e8d6ff]/60  bg-[#111111] border border-gray-400 border-t-[#a78bfa]  rounded-lg shadow-xl z-20"
               >
                 {history.map((item, index) => (
                   <button
@@ -384,8 +386,8 @@ const HeaderDetail = ({
               >
                 <ArrowDownUp
                   className={`${
-                    sortMode ? "text-[#a78bfa] " : "text-[#A1A1A6] "
-                  } cursor-pointer hover:text-[#916df4] transition-colors duration-300`}
+                    sortMode ? "text-[#e02626] " : "text-[#A1A1A6] "
+                  } cursor-pointer hover:text-[#ff3434] transition-colors duration-300`}
                   size={18}
                 />
               </button>
@@ -399,7 +401,7 @@ const HeaderDetail = ({
                 className="exportTool"
               >
                 <Download
-                  className="text-[#A1A1A6] cursor-pointer hover:text-[#916df4] transition-colors duration-300"
+                  className="text-[#A1A1A6] cursor-pointer hover:text-[#e02626] transition-colors duration-300"
                   size={18}
                 />
               </button>
@@ -416,7 +418,7 @@ const HeaderDetail = ({
                 className="refreshTool"
               >
                 <RefreshCcw
-                  className="text-[#A1A1A6] cursor-pointer hover:text-[#916df4] transition-colors duration-300"
+                  className="text-[#A1A1A6] cursor-pointer hover:text-[#e02626] transition-colors duration-300"
                   size={18}
                 />
               </button>
@@ -432,7 +434,7 @@ const HeaderDetail = ({
                   setMode((prev) => (prev === "view" ? "edit" : "view"));
                 }
               }}
-              className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#a78bfa] transition-colors duration-300 cursor-pointer ml-[15px]"
+              className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#ff3434] transition-colors duration-300 cursor-pointer ml-[15px]"
             >
               {mode === "view" ? `Chỉnh sửa` : `Chi tiết`}
               {mode === "view" ? (

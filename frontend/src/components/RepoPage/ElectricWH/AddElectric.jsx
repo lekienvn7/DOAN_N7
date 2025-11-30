@@ -257,7 +257,7 @@ const AddElectric = ({ onReload }) => {
               onChange={setCurrent}
             />
             <InputField
-              label="Tần số (Hz)"
+              label="Tần số"
               placeholder="VD: 60Hz"
               type="number"
               value={frequency}
@@ -265,7 +265,7 @@ const AddElectric = ({ onReload }) => {
             />
 
             <InputField
-              label="Điện trở (Ω)"
+              label="Điện trở"
               placeholder="VD: 200Ω"
               type="number"
               value={resistance}

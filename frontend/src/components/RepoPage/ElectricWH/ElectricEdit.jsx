@@ -41,6 +41,21 @@ const ElectricEdit = ({ item, onReload }) => {
   );
   const [operatingTemp, setOperatingTemp] = useState(item.operatingTemp || "");
 
+  const originalDescription = item.description || "";
+  const originalVoltageRange = item.voltageRange || "";
+  const originalPower = item.power || "";
+  const originalMaterialInsulation = item.materialInsulation || "";
+  const originalCurrent = item.current || "";
+  const originalFrequency = item.frequency || "";
+  const originalResistance = item.resistance || "";
+  const originalPhaseType = item.phaseType || "";
+  const originalConductorMaterial = item.conductorMaterial || "";
+  const originalInsulationMaterial = item.insulationMaterial || "";
+  const originalFireResistance = item.fireResistance || "";
+  const originalCableDiameter = item.cableDiameter || "";
+  const originalWaterproofLevel = item.waterproofLevel || "";
+  const originalOperatingTemp = item.operatingTemp || "";
+
   const [loading, setLoading] = useState(false);
 
   // Đồng bộ lại state mỗi khi đổi vật tư
@@ -111,44 +126,120 @@ const ElectricEdit = ({ item, onReload }) => {
         </button>
       </DialogTrigger>
 
-      <DialogContent className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] ">
+      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()} className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] ">
         <DialogHeader>
-          <DialogTitle>
-            Chỉnh sửa vật tư <span className="text-[#fdd700]">{item.name}</span>{" "}
-            {"-"}{" "}
-            {item.updatedBy
-              ? `Đã chỉnh sửa bởi ${item.updatedBy.fullName}`
-              : "Chưa chỉnh sửa"}
-          </DialogTitle>
+          <DialogTitle>Chỉnh sửa vật tư</DialogTitle>
+          <DialogDescription>
+            <span className="text-[#fdd700]">{item.name}</span>
+          </DialogDescription>
         </DialogHeader>
 
         <div className="flex flex-col gap-[15px]">
           <div className="flex flex-col gap-[5px] text-left">
-            <p className="ml-[10px]">Ghi chú</p>
+            <p
+              className={`ml-[10px] ${
+                description == originalDescription
+                  ? "text-textsec"
+                  : "text-[#fdd700]"
+              }`}
+            >
+              Ghi chú
+            </p>
             <input
               type="text"
               placeholder="Ghi chú thêm..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               className={`w-[420px] p-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#5E5E60] rounded-[12px]
-                   focus:outline-none focus:ring-2 focus:ring-blue-500
+                   focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                     description == originalDescription
+                       ? "text-textsec"
+                       : "text-white"
+                   }
+    ${
+      description == originalDescription ? "border-textsec" : "border-[#ffd700]"
+    }
                    placeholder:text-gray-400 transition-all duration-200`}
             />
           </div>
-          <div className="flex flex-row gap-[20px]">
+          <div className={`flex flex-row gap-[20px] `}>
             <InputField
               label="Công suất định mức"
               placeholder="VD: 10W"
+              recent={power}
+              original={originalPower}
               value={power}
               onChange={setPower}
             />
 
             <InputField
-            label="Công suất định mức"
-            placeholder="VD: 10W"
-            value={power}
-            onChange={setPower}
-          />
+              label="Điện áp"
+              placeholder="VD: 20A"
+              value={voltageRange}
+              recent={voltageRange}
+              original={originalVoltageRange}
+              onChange={setVoltageRange}
+            />
+          </div>
+
+          <div className={`flex flex-row gap-[20px] `}>
+            <InputField
+              label="Dòng điện định mức"
+              placeholder="VD: 10W"
+              value={current}
+              recent={current}
+              original={originalCurrent}
+              onChange={setCurrent}
+            />
+
+            <InputField
+              label="Tần số"
+              placeholder="VD: 60Hz"
+              value={frequency}
+              recent={frequency}
+              original={originalFrequency}
+              onChange={setFrequency}
+            />
+          </div>
+
+          <div className={`flex flex-row gap-[20px] `}>
+            <InputField
+              label="Điện trở"
+              placeholder="VD: 200Ω"
+              value={resistance}
+              recent={resistance}
+              original={originalResistance}
+              onChange={setResistance}
+            />
+
+            <InputField
+              label="Vật liệu lõi"
+              placeholder="VD: lõi đồng, nhôm,..."
+              value={conductorMaterial}
+              recent={conductorMaterial}
+              original={originalConductorMaterial}
+              onChange={setConductorMaterial}
+            />
+          </div>
+
+          <div className={`flex flex-row gap-[20px] `}>
+            <InputField
+              label="Lớp bọc ngoài"
+              placeholder="VD: PVC, XLPE,..."
+              value={insulationMaterial}
+              recent={insulationMaterial}
+              original={originalInsulationMaterial}
+              onChange={setInsulationMaterial}
+            />
+
+            <InputField
+              label="Đường kính dây cáp"
+              placeholder="VD: 2.5mm²"
+              value={cableDiameter}
+              recent={cableDiameter}
+              original={originalCableDiameter}
+              onChange={setCableDiameter}
+            />
           </div>
         </div>
 
@@ -179,17 +270,29 @@ const InputField = ({
   placeholder,
   value,
   onChange,
+  recent,
+  original,
   width = "200px",
 }) => (
   <div className="flex flex-col gap-[5px] items-left">
-    <p className="ml-[10px]">{label}:</p>
+    <p
+      className={`ml-[10px] ${
+        recent == original ? "text-textsec" : "text-[#ffd700]"
+      }`}
+    >
+      {label}:
+    </p>
     <input
-      placeholder={placeholder}
+      placeholder={value ? value : "—"}
       value={value}
       onChange={(e) => onChange(e.target.value)}
       className={`w-[${width}] p-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#5E5E60] rounded-[12px]
                    focus:outline-none focus:ring-2 focus:ring-blue-500
-                   placeholder:text-gray-400 transition-all duration-200`}
+                   placeholder:text-gray-400 transition-all duration-200  ${
+                     recent == original ? "text-textsec" : "text-white"
+                   }
+    ${recent == original ? "border-textsec" : "border-[#ffd700]"}
+    `}
     />
   </div>
 );

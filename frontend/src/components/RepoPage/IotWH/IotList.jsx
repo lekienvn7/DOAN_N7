@@ -319,8 +319,8 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
       <table className="w-full text-[#5eead4] border-collapse">
         <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#081f1c]">
           <tr className="text-left p-[5px] text-[14px] font-semibold">
-            <th className="text-center p-[5px] w-[3%]">STT</th>
-            <th className="p-[5px] w-[18%]">
+            <th className="text-center p-[5px] w-[2%]">STT</th>
+            <th className="p-[5px] w-[20%]">
               <motion.div
                 className={`${
                   sortMode ? "flex flex-row justify-between items-center" : ""
@@ -360,11 +360,11 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
                 <Tooltip id="SortTip"></Tooltip>
               </div>
             </th>
-            <th className="p-[5px] w-[3%]">Đơn vị</th>
+            <th className="p-[5px] w-[5%]">Đơn vị</th>
             <th className="p-[5px] w-[8%]">Giao thức kết nối</th>
             <th className="p-[5px] w-[5%]">Hạn bảo trì</th>
-            <th className="p-[5px] w-[6%] ">Ngày thêm</th>
-            <th className="p-[5px] w-[6%]">Loại cảm biến</th>
+            <th className="p-[5px] w-[5%] ">Ngày thêm</th>
+            <th className="p-[5px] w-[10%]">Loại cảm biến</th>
             <th className="p-[5px] w-[10%]">
               <div
                 className={`${
@@ -385,7 +385,7 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
                 <Tooltip id="SortTip"></Tooltip>
               </div>
             </th>
-            <th colSpan={2} className="text-center w-[3%]">
+            <th colSpan={2} className="text-center w-[5%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
             </th>
           </tr>

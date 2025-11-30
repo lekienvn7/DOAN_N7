@@ -20,7 +20,7 @@ const TelecomDetail = ({ item }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="cursor-pointer p-[5px] justify-center text-[#a78bfa] hover:text-[#916df4]">
+        <button className="cursor-pointer p-[5px] justify-center text-[#ff3434] hover:text-[#e02626]">
           <ReceiptText size={15} />
         </button>
       </DialogTrigger>
@@ -28,7 +28,7 @@ const TelecomDetail = ({ item }) => {
         <DialogHeader>
           <DialogTitle>
             {" "}
-            <span className="text-[#a78bfa] font-bold text-[24px]">
+            <span className="text-[#ff3434] font-bold text-[24px]">
               {" "}
               {item.name}
             </span>
@@ -40,7 +40,7 @@ const TelecomDetail = ({ item }) => {
                 <Info
                   onClick={() => setShowInfo((prev) => !prev)}
                   size={14}
-                  className="info ml-[8px] mt-[2px] cursor-pointer hover:text-[#916df4] outline-none"
+                  className="info ml-[8px] mt-[2px] cursor-pointer hover:text-[#ff3434] outline-none"
                 />{" "}
                 <motion.span
                   initial={{ width: 0, opacity: 0 }}
@@ -74,7 +74,7 @@ const TelecomDetail = ({ item }) => {
         <>
           <div className="flex flex-row gap-[25px]">
             <div className="flex flex-col gap-[25px]">
-              <div className="w-[300px] h-[300px] border-[1px] border-[#a78bfa] rounded-[12px]">
+              <div className="w-[300px] h-[300px] border-[1px] border-[#ff3434] rounded-[12px]">
                 <img
                   src={cadivi}
                   alt="day-dien-2x2.5-cadivi"

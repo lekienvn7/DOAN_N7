@@ -52,8 +52,8 @@ const ChemicalDetail = ({ item }) => {
                   className="w-[250px] h-[250px] rounded-[12px] "
                 />
               </div>
-              <p className="ml-[10px] text-textsec font-inter text-left ">
-                • {item.safetyNote ? item.safetyNote : "—"}
+              <p className="ml-[10px] max-w-[250px] text-textsec font-inter text-left ">
+                <span className="text-[#c7a7ff]">HDAT: </span>{item.safetyNote ? item.safetyNote : "—"}
               </p>
             </div>
 

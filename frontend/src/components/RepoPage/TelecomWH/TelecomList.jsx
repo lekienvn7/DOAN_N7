@@ -168,14 +168,14 @@ const TelecomList = ({ mode, reload, searchData, sortMode }) => {
     sortName === "asc" ? (
       <ChevronUp
         size={18}
-        className="text-[#a78bfa]
+        className="text-[#ff3434]
 hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortName}
       />
     ) : sortName === "desc" ? (
       <ChevronDown
         size={18}
-        className="text-[#a78bfa]
+        className="text-[#ff3434]
 hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortName}
       />
@@ -191,14 +191,14 @@ hover:text-[#ffffffcc] no-outline cursor-pointer"
     sortQuantity === "asc" ? (
       <ChevronUp
         size={18}
-        className="text-[#a78bfa]
+        className="text-[#ff3434]
 hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortQuantity}
       />
     ) : sortQuantity === "desc" ? (
       <ChevronDown
         size={18}
-        className="text-[#a78bfa]
+        className="text-[#ff3434]
 hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortQuantity}
       />
@@ -214,14 +214,14 @@ hover:text-[#ffffffcc] no-outline cursor-pointer"
     sortMaintenance === "asc" ? (
       <ChevronUp
         size={18}
-        className="text-[#a78bfa]
+        className="text-[#ff3434]
 hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortMaintenance}
       />
     ) : sortMaintenance === "desc" ? (
       <ChevronDown
         size={18}
-        className="text-[#a78bfa]
+        className="text-[#ff3434]
 hover:text-[#ffffffcc] no-outline cursor-pointer"
         onClick={toggleSortMaintenance}
       />
@@ -288,7 +288,7 @@ hover:text-[#ffffffcc] no-outline cursor-pointer"
     return (
       <div className="flex flex-col items-center justify-center h-[460px] gap-4 text-textpri">
         <div
-          className="w-10 h-10 border-4 border-[#a78bfa]
+          className="w-10 h-10 border-4 border-[#ff3434]
  border-t-transparent rounded-full animate-spin"
         ></div>
         <p>Đang tải dữ liệu...</p>
@@ -298,8 +298,8 @@ hover:text-[#ffffffcc] no-outline cursor-pointer"
 
   return (
     <div className="w-full">
-      <table className="w-full text-[#a78bfa] border-collapse">
-        <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#111111]">
+      <table className="w-full text-[#ff3434] border-collapse">
+        <thead className="sticky top-0 z-10 border-b border-gray-700 bg-[#150404]">
           <tr className="text-left p-[5px] text-[14px] font-semibold">
             <th className="text-center p-[5px] w-[3%]">STT</th>
             <th className="p-[5px] w-[16%]">

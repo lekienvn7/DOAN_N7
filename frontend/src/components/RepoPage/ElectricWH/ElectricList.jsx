@@ -492,13 +492,13 @@ const ElectricList = ({ mode, reload, searchData, sortMode, onReload }) => {
                 <Tooltip id="SortTip"></Tooltip>
               </div>
             </th>
-            <th className="p-[5px] w-[6%]">
+            <th className="p-[5px] w-[8%]">
               <div
                 className={`${
                   sortMode ? "flex flex-row justify-between items-center" : ""
                 }`}
               >
-                <p>Cường độ</p>{" "}
+                <p>Dòng điện đ.mức</p>{" "}
                 {sortMode ? (
                   <div
                     data-tooltip-id="SortTip"

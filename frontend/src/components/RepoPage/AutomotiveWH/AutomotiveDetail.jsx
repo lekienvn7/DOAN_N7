@@ -17,6 +17,28 @@ const AutomotiveDetail = ({ item }) => {
   if (!item) return null;
   const [showInfo, setShowInfo] = useState(null);
 
+  const tempList = [
+    { type: "Low", name: "Mức thấp (0°C → 70°C)" },
+    { type: "Medium", name: "Mức trung bình (-20°C → 120°C)" },
+    { type: "High", name: "Mức cao (-40°C → 180°C)" },
+    { type: "Extreme", name: "Mức rất cao (-50°C → 300°C)" },
+    { type: "Ultra", name: "Mức siêu cao (500°C → 800°C)" },
+  ];
+
+  const tempColor = (item) => {
+    if (item.heatResistance === "Low") {
+      return "text-[#22c55e]";
+    } else if (item.heatResistance === "Medium") {
+      return "text-[#eab308]";
+    } else if (item.heatResistance === "High") {
+      return "text-[#fb923c]";
+    } else if (item.heatResistance === "Extreme") {
+      return "text-[#f97316]";
+    } else {
+      return "text-[#ef4444]";
+    }
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -92,7 +114,7 @@ const AutomotiveDetail = ({ item }) => {
             >
               <ul className="flex flex-col gap-[10px] ">
                 <div className="flex flex-row gap-[25px]">
-                  <div className="bg-[#111111] w-[300px] p-5 rounded-[12px] border border-gray-400">
+                  <div className="bg-[#111111] w-[350px] p-5 rounded-[12px] border border-gray-400">
                     <h2 className="text-[18px] font-semibold mb-3">
                       Thông tin chung
                     </h2>
@@ -124,16 +146,22 @@ const AutomotiveDetail = ({ item }) => {
                     </div>
                   </div>
 
-                  <div className="bg-[#111111] w-[300px] p-5 rounded-[12px] border border-gray-400">
+                  <div className="bg-[#111111] w-[350px] p-5 rounded-[12px] border border-gray-400">
                     <h2 className="text-[18px] font-semibold mb-3">
                       Thông số kỹ thuật
                     </h2>
                     <div className="flex flex-col gap-[10px] text-[14px] border-t border-gray-400">
-                      <li className="mt-3">
+                      <li className={`mt-3 ${tempColor(item)}`}>
                         <span className="text-[#60A5FA] font-semibold">
                           Mức chịu nhiệt:
                         </span>{" "}
-                        {item.heatResistance ? `${item.heatResistance}` : "—"}
+                        {item.heatResistance
+                          ? `${
+                              tempList.find(
+                                (prev) => prev.type === item.heatResistance
+                              )?.name
+                            }`
+                          : "—"}
                       </li>
                       <li>
                         <span className="text-[#60A5FA] font-semibold">
@@ -151,9 +179,7 @@ const AutomotiveDetail = ({ item }) => {
                         <span className="text-[#60A5FA] font-semibold">
                           Tuổi thọ linh kiện:
                         </span>{" "}
-                        <span>
-                          {item.lifespan ? `${item.lifespan} tháng` : "—"}
-                        </span>
+                        <span>{item.lifespan ? `${item.lifespan}` : "—"}</span>
                       </li>
                     </div>
                   </div>
