@@ -78,7 +78,16 @@ const ElectricEdit = ({ item, onReload }) => {
     }
   }, [item]);
 
-  const isValid = item && item.materialID;
+  const isValid =
+    description != originalDescription ||
+    power != originalPower ||
+    voltageRange != originalVoltageRange ||
+    current != originalCurrent ||
+    frequency != originalFrequency ||
+    resistance != originalResistance ||
+    conductorMaterial != originalConductorMaterial ||
+    insulationMaterial != originalInsulationMaterial ||
+    cableDiameter != originalCableDiameter;
 
   const handleChange = async () => {
     if (!isValid) {
@@ -107,7 +116,7 @@ const ElectricEdit = ({ item, onReload }) => {
       const res = await axiosClient.put(`/material/${item.materialID}`, body);
 
       if (res.data.success) {
-        toast.success("Đã cập nhật vật tư!");
+        toast.success(`Đã cập nhật vật tư ${item.materialID}!`);
         setTimeout(() => onReload(), 500);
       }
     } catch (error) {
@@ -126,7 +135,10 @@ const ElectricEdit = ({ item, onReload }) => {
         </button>
       </DialogTrigger>
 
-      <DialogContent onOpenAutoFocus={(e) => e.preventDefault()} className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] ">
+      <DialogContent
+        onOpenAutoFocus={(e) => e.preventDefault()}
+        className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] "
+      >
         <DialogHeader>
           <DialogTitle>Chỉnh sửa vật tư</DialogTitle>
           <DialogDescription>
@@ -255,7 +267,11 @@ const ElectricEdit = ({ item, onReload }) => {
             onClick={() => {
               handleChange();
             }}
-            className="bg-[#ffd700] text-black px-4 py-2 rounded-[12px] cursor-pointer hover:bg-[#faa900] transition-all duration-200"
+            className={`${
+              isValid
+                ? "bg-[#ffd700] text-black px-4 py-2 rounded-[12px] cursor-pointer hover:bg-[#faa900] transition-all duration-200"
+                : "bg-gray-700 text-textsec px-4 py-2 rounded-[12px] cursor-not-allowed"
+            }`}
           >
             Sửa vật tư
           </button>

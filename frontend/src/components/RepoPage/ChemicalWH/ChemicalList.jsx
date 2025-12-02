@@ -552,8 +552,8 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
                 <Tooltip id="SortTip"></Tooltip>
               </div>
             </th>
-            <th className="p-[5px] w-[6%]">Độc tính</th>
-            <th colSpan={2} className="text-center w-[3%]">
+            <th className="p-[5px] w-[5%]">Độc tính</th>
+            <th colSpan={2} className="text-center w-[5%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
             </th>
           </tr>
