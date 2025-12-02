@@ -92,7 +92,7 @@ const TelecomDetail = ({ item }) => {
             >
               <ul className="flex flex-col gap-[10px] ">
                 <div className="flex flex-row gap-[25px]">
-                  <div className="bg-[#111111] w-[400px] p-5 rounded-[12px] border border-gray-400">
+                  <div className="bg-[#111111] w-[300px] p-5 rounded-[12px] border border-gray-400">
                     <h2 className="text-[18px] font-semibold mb-3">
                       Thông tin chung
                     </h2>
@@ -153,7 +153,7 @@ const TelecomDetail = ({ item }) => {
                     </div>
                   </div>
 
-                  <div className="bg-[#111111] w-[400px] p-5 rounded-[12px] border border-gray-400">
+                  <div className="bg-[#111111] w-[300px] p-5 rounded-[12px] border border-gray-400">
                     <h2 className="text-[18px] font-semibold mb-3">
                       Thông số kỹ thuật
                     </h2>

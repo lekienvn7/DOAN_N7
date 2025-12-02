@@ -315,12 +315,20 @@ const AddAutomotive = ({ onReload }) => {
           </div>
 
           <div className="flex flex-row gap-[20px] items-center">
-            <InputField
-              label="Tiêu chuẩn chất lỏng"
-              placeholder="VD: SAE 0W-20,..."
-              value={fluidSpec}
-              onChange={setFluidSpec}
-            />
+            <div className="flex flex-col gap-[5px]">
+              <p>Tiêu chuẩn chất lỏng</p>
+              <input
+                value={fluidSpec}
+                placeholder="VD: SAW-01,..."
+                onChange={(e) => setFluidSpec(e.target.value)}
+                disabled={partType !== "Fluids"}
+                className={` ${
+                  partType !== "Fluids"
+                    ? "w-[200px] px-[10px] py-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200 opacity-40 cursor-not-allowed"
+                    : "w-[200px] px-[10px] py-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200 opacity-100"
+                }`}
+              />
+            </div>
             <InputField
               label="Chất liệu"
               placeholder="VD: nhựa, thép,..."

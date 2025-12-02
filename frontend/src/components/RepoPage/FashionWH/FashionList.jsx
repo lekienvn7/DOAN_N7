@@ -14,7 +14,7 @@ import { Tooltip } from "react-tooltip";
 import FashionDetail from "./FashionDetail";
 import FashionEdit from "./FashionEdit";
 
-const FashionList = ({ mode, reload, searchData, sortMode }) => {
+const FashionList = ({ mode, reload, searchData, sortMode, onReload }) => {
   const [fashion, setFashion] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
@@ -371,7 +371,7 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
                 <Tooltip id="SortTip"></Tooltip>
               </div>
             </th>
-            <th colSpan={2} className="text-center w-[3%]">
+            <th colSpan={2} className="text-center w-[5%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
             </th>
           </tr>
@@ -433,7 +433,7 @@ const FashionList = ({ mode, reload, searchData, sortMode }) => {
                   {mode === "view" ? (
                     <FashionDetail item={item} />
                   ) : (
-                    <FashionEdit item={item} reload={reload} />
+                    <FashionEdit item={item} onReload={onReload} />
                   )}
                 </td>
               </tr>

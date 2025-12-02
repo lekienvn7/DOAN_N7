@@ -2,7 +2,7 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import TechnologyList from "./TechnologyList";
 
-const RepoDetail = ({ mode, reload, searchData, sortMode }) => {
+const RepoDetail = ({ mode, reload, searchData, sortMode, onReload }) => {
   return (
     <AnimatePresence>
       <motion.div
@@ -20,6 +20,7 @@ const RepoDetail = ({ mode, reload, searchData, sortMode }) => {
           reload={reload}
           searchData={searchData}
           sortMode={sortMode}
+          onReload={onReload}
         />
       </motion.div>
     </AnimatePresence>

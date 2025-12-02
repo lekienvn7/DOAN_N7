@@ -373,7 +373,7 @@ const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
             <th className="p-[5px] w-[8%] ">Loại linh kiện</th>
             <th className="p-[5px] w-[6%]">Dòng xe</th>
             <th className="p-[5px] w-[6%]">Hãng sản xuất</th>
-            <th colSpan={2} className="text-center w-[3%]">
+            <th colSpan={2} className="text-center w-[5%]">
               {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
             </th>
           </tr>

@@ -14,7 +14,7 @@ import { Tooltip } from "react-tooltip";
 import TelecomDetail from "./TelecomDetail";
 import TelecomEdit from "./TelecomEdit";
 
-const TelecomList = ({ mode, reload, searchData, sortMode }) => {
+const TelecomList = ({ mode, reload, searchData, onReload, sortMode }) => {
   const [telecom, setTelecom] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
@@ -48,7 +48,11 @@ const TelecomList = ({ mode, reload, searchData, sortMode }) => {
 
   useEffect(() => {
     const filtered = telecom.filter((item) =>
-      keywords.every((k) => item.name?.toLowerCase().includes(k))
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.signalType?.toLowerCase().includes(k)
+      )
     );
 
     setFilterData(filtered);
@@ -235,7 +239,11 @@ hover:text-[#ffffffcc] no-outline cursor-pointer"
 
   useEffect(() => {
     const filtered = telecom.filter((item) =>
-      keywords.every((k) => item.name?.toLowerCase().includes(k))
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.signalType?.toLowerCase().includes(k)
+      )
     );
 
     if (!sortMode) {
@@ -427,7 +435,7 @@ hover:text-[#ffffffcc] no-outline cursor-pointer"
                   {mode === "view" ? (
                     <TelecomDetail item={item} />
                   ) : (
-                    <TelecomEdit item={item} reload={reload} />
+                    <TelecomEdit item={item} onReload={onReload} />
                   )}
                 </td>
               </tr>

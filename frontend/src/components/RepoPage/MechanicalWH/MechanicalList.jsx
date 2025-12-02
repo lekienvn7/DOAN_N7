@@ -14,7 +14,7 @@ import { Tooltip } from "react-tooltip";
 import MechanicalDetail from "./MechanicalDetail";
 import MechanicalEdit from "./MechanicalEdit";
 
-const MechanicalList = ({ mode, reload, searchData, sortMode }) => {
+const MechanicalList = ({ mode, reload, onReload, searchData, sortMode }) => {
   const [mechanical, setMechanical] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
@@ -375,7 +375,7 @@ const MechanicalList = ({ mode, reload, searchData, sortMode }) => {
                   {mode === "view" ? (
                     <MechanicalDetail item={item} />
                   ) : (
-                    <MechanicalEdit item={item} reload={reload} />
+                    <MechanicalEdit item={item} onReload={onReload} />
                   )}
                 </td>
               </tr>

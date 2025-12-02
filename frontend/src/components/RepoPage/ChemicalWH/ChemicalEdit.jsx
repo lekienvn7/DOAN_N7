@@ -104,12 +104,16 @@ const ChemicalEdit = ({ item, onReload }) => {
 
       <DialogContent
         onOpenAutoFocus={(e) => e.preventDefault()}
-        className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] "
+        className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit  h-auto max-h-fit rounded-[12px] border-none text-white p-[25px] "
       >
         <DialogHeader>
           <DialogTitle>Chỉnh sửa vật tư</DialogTitle>
           <DialogDescription>
-            <span className="text-[#fdd700]">{item.name}</span>
+            <div className="w-[420px]">
+              <span className="text-[#c7a7ff] text-[25px] font-semibold">
+                {item.name}
+              </span>
+            </div>
           </DialogDescription>
         </DialogHeader>
 
@@ -119,7 +123,7 @@ const ChemicalEdit = ({ item, onReload }) => {
               className={`ml-[10px] ${
                 description == originalDescription
                   ? "text-textsec"
-                  : "text-[#fdd700]"
+                  : "text-[#c7a7ff]"
               }`}
             >
               Ghi chú
@@ -136,7 +140,7 @@ const ChemicalEdit = ({ item, onReload }) => {
                        : "text-white"
                    }
     ${
-      description == originalDescription ? "border-textsec" : "border-[#ffd700]"
+      description == originalDescription ? "border-textsec" : "border-[#c7a7ff]"
     }
                    placeholder:text-gray-400 transition-all duration-200`}
             />
@@ -147,7 +151,7 @@ const ChemicalEdit = ({ item, onReload }) => {
               className={`ml-[10px] ${
                 safetyNote == originalSafetyNote
                   ? "text-textsec"
-                  : "text-[#fdd700]"
+                  : "text-[#c7a7ff]"
               }`}
             >
               Hướng dẫn an toàn
@@ -164,7 +168,7 @@ const ChemicalEdit = ({ item, onReload }) => {
                        ? "text-textsec"
                        : "text-white"
                    }
-    ${safetyNote == originalSafetyNote ? "border-textsec" : "border-[#ffd700]"}
+    ${safetyNote == originalSafetyNote ? "border-textsec" : "border-[#c7a7ff]"}
                    placeholder:text-gray-400 transition-all duration-200`}
             />
           </div>
@@ -177,6 +181,55 @@ const ChemicalEdit = ({ item, onReload }) => {
               original={originalChemicalFormula}
               value={chemicalFormula}
               onChange={setChemicalFormula}
+            />
+
+            <InputField
+              label="Nồng độ"
+              placeholder="VD: 36%"
+              recent={concentration}
+              original={originalConcentration}
+              value={concentration}
+              onChange={setConcentration}
+            />
+          </div>
+
+          <div className={`flex flex-row gap-[20px] `}>
+            <InputField
+              label="Điểm sôi"
+              placeholder="VD: 50°C"
+              recent={boilingPoint}
+              original={originalBoilingPoint}
+              value={boilingPoint}
+              onChange={setBoilingPoint}
+            />
+
+            <InputField
+              label="Điểm nóng chảy"
+              placeholder="VD: 250°C"
+              recent={meltingPoint}
+              original={originalMeltingPoint}
+              value={meltingPoint}
+              onChange={setMeltingPoint}
+            />
+          </div>
+
+          <div className={`flex flex-row gap-[20px] `}>
+            <InputField
+              label="Khối lượng mol"
+              placeholder="VD: 58 g/mol"
+              recent={molarMass}
+              original={originalMolarMass}
+              value={molarMass}
+              onChange={setMolarMass}
+            />
+
+            <InputField
+              label="Độ pH"
+              placeholder="VD: 250°C"
+              recent={phLevel}
+              original={originalPhLevel}
+              value={phLevel}
+              onChange={setPhLevel}
             />
           </div>
         </div>
@@ -195,7 +248,7 @@ const ChemicalEdit = ({ item, onReload }) => {
             }}
             className={`${
               isValid
-                ? "bg-[#ffd700] text-black px-4 py-2 rounded-[12px] cursor-pointer hover:bg-[#faa900] transition-all duration-200"
+                ? "bg-[#c7a7ff] text-black px-4 py-2 rounded-[12px] cursor-pointer hover:bg-[#e8d6ff] transition-all duration-200"
                 : "bg-gray-700 text-textsec px-4 py-2 rounded-[12px] cursor-not-allowed"
             }`}
           >
@@ -219,7 +272,7 @@ const InputField = ({
   <div className="flex flex-col gap-[5px] items-left">
     <p
       className={`ml-[10px] ${
-        recent == original ? "text-textsec" : "text-[#ffd700]"
+        recent == original ? "text-textsec" : "text-[#c7a7ff]"
       }`}
     >
       {label}:
@@ -233,7 +286,7 @@ const InputField = ({
                    placeholder:text-gray-400 transition-all duration-200  ${
                      recent == original ? "text-textsec" : "text-white"
                    }
-    ${recent == original ? "border-textsec" : "border-[#ffd700]"}
+    ${recent == original ? "border-textsec" : "border-[#c7a7ff]"}
     `}
     />
   </div>

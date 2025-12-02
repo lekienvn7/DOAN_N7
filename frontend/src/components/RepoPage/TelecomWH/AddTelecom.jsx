@@ -264,7 +264,7 @@ const AddTelecom = ({ onReload }) => {
 
             <InputField
               label="Kiểu điều chế"
-              placeholder="VD:QAM, OFDM,..."
+              placeholder="VD: QAM, OFDM,..."
               value={modulationType}
               onChange={setModulationType}
             />

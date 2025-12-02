@@ -32,6 +32,7 @@ const IotWH = () => {
           reload={reload}
           searchData={searchData}
           sortMode={sortMode}
+          onReload={reloadList}
         />
       </div>
     </div>

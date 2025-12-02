@@ -137,12 +137,16 @@ const ElectricEdit = ({ item, onReload }) => {
 
       <DialogContent
         onOpenAutoFocus={(e) => e.preventDefault()}
-        className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit  h-auto max-h-fit rounded-[12px] border-none whitespace-nowrap text-white p-[25px] "
+        className="bg-[#1a1a1a] !max-w-none w-auto max-w-fit  h-auto max-h-fit rounded-[12px] border-none text-white p-[25px] "
       >
         <DialogHeader>
           <DialogTitle>Chỉnh sửa vật tư</DialogTitle>
           <DialogDescription>
-            <span className="text-[#fdd700]">{item.name}</span>
+            <div className="w-[420px]">
+              <span className=" text-[#fdd700] text-[25px] font-semibold">
+                {item.name}
+              </span>
+            </div>
           </DialogDescription>
         </DialogHeader>
 

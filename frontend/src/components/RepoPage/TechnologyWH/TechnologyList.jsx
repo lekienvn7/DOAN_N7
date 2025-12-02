@@ -14,7 +14,7 @@ import { Tooltip } from "react-tooltip";
 import TechnologyDetail from "./TechnologyDetail";
 import TechnologyEdit from "./TechnologyEdit";
 
-const TechnologyList = ({ mode, reload, searchData, sortMode }) => {
+const TechnologyList = ({ mode, reload, searchData, sortMode, onReload }) => {
   const [technology, setTechnology] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
@@ -47,11 +47,13 @@ const TechnologyList = ({ mode, reload, searchData, sortMode }) => {
   }, [reload]);
 
   useEffect(() => {
-    const filtered = technology.filter(
-      (item) =>
-        keywords.every((k) => item.name?.toLowerCase().includes(k)) ||
-        keywords.every((k) => item.brand?.toLowerCase().includes(k)) ||
-        keywords.every((k) => item.deviceType?.toLowerCase().includes(k))
+    const filtered = technology.filter((item) =>
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.brand?.toLowerCase().includes(k) ||
+          item.deviceType?.toLowerCase().includes(k)
+      )
     );
 
     setFilterData(filtered);
@@ -237,11 +239,13 @@ hover:text-[#ffffffcc] no-outline cursor-pointer"
     );
 
   useEffect(() => {
-    const filtered = technology.filter(
-      (item) =>
-        keywords.every((k) => item.name?.toLowerCase().includes(k)) ||
-        keywords.every((k) => item.brand?.toLowerCase().includes(k)) ||
-        keywords.every((k) => item.deviceType?.toLowerCase().includes(k))
+    const filtered = technology.filter((item) =>
+      keywords.every(
+        (k) =>
+          item.name?.toLowerCase().includes(k) ||
+          item.brand?.toLowerCase().includes(k) ||
+          item.deviceType?.toLowerCase().includes(k)
+      )
     );
 
     if (!sortMode) {
@@ -433,7 +437,7 @@ hover:text-[#ffffffcc] no-outline cursor-pointer"
                   {mode === "view" ? (
                     <TechnologyDetail item={item} />
                   ) : (
-                    <TechnologyEdit item={item} reload={reload} />
+                    <TechnologyEdit item={item} onReload={onReload} />
                   )}
                 </td>
               </tr>

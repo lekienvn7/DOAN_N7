@@ -14,7 +14,7 @@ import { Tooltip } from "react-tooltip";
 import IotDetail from "./IotDetail";
 import IotEdit from "./IotEdit";
 
-const IotList = ({ mode, reload, searchData, sortMode }) => {
+const IotList = ({ mode, reload, searchData, sortMode, onReload }) => {
   const [iot, setIot] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
@@ -466,7 +466,7 @@ const IotList = ({ mode, reload, searchData, sortMode }) => {
                   {mode === "view" ? (
                     <IotDetail item={item} />
                   ) : (
-                    <IotEdit item={item} reload={reload} />
+                    <IotEdit item={item} onReload={onReload} />
                   )}
                 </td>
               </tr>

@@ -14,7 +14,7 @@ import { Tooltip } from "react-tooltip";
 import ChemicalDetail from "./ChemicalDetail";
 import ChemicalEdit from "./ChemicalEdit";
 
-const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
+const ChemicalList = ({ mode, reload, searchData, onReload, sortMode }) => {
   const [chemical, setChemical] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
@@ -651,7 +651,7 @@ const ChemicalList = ({ mode, reload, searchData, sortMode }) => {
                   {mode === "view" ? (
                     <ChemicalDetail item={item} />
                   ) : (
-                    <ChemicalEdit item={item} reload={reload} />
+                    <ChemicalEdit item={item} onReload={onReload} />
                   )}
                 </td>
               </tr>
