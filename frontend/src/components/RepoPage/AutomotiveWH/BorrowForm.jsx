@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from "framer-motion";
 
 const BorrowForm = ({ borrowList, onUpdateQuantity }) => {
   const [qtyMap, setQtyMap] = useState({}); // mỗi item 1 quantity riêng
+  const [notice, setNotice] = useState("");
 
   const handleChange = (id, max, val) => {
     const value = Math.min(Number(val), max); // chặn vượt số lượng
@@ -32,9 +33,9 @@ const BorrowForm = ({ borrowList, onUpdateQuantity }) => {
 
   return (
     <AnimatePresence>
-      <div className="flex flex-col gap-[35px] p-[15px] w-[240px]">
+      <div className="flex flex-col gap-[35px] p-[15px] w-[240px] bg-bgmain border-t-1 border-r-1  border-gray-700">
         <div className="flex flex-col gap-[5px]">
-          <h2 className="text-center text-[18px] font-bold">
+          <h2 className="text-center text-[20px] font-bold">
             Phiếu mượn vật tư
           </h2>
           <p className="text-[12px] text-textsec">
@@ -43,7 +44,7 @@ const BorrowForm = ({ borrowList, onUpdateQuantity }) => {
           </p>
         </div>
 
-        <div className="max-h-[400px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60">
+        <div className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60">
           <table>
             <thead className="border-b border-gray-700 bg-[#1a0f08]">
               <tr className="text-left text-[#fb923c] p-[10px]">
@@ -70,7 +71,7 @@ const BorrowForm = ({ borrowList, onUpdateQuantity }) => {
                         onChange={(e) =>
                           handleChange(item._id, item.quantity, e.target.value)
                         }
-                        className="no-arrows w-[40px] px-[10px] bg-[#222] rounded-[12px]"
+                        className="no-arrows w-[40px] px-[10px] bg-[#222] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#fb923c]"
                       />
                       / {item.quantity}
                     </div>
@@ -80,7 +81,26 @@ const BorrowForm = ({ borrowList, onUpdateQuantity }) => {
             </tbody>
           </table>
         </div>
-        <button disabled={!isValid()} className={` rounded-[12px] p-[10px] w-[200px] ${!isValid() ? "bg-textsec cursor-not-allowed": "bg-highlightcl cursor-pointer hover:bg-[#60a5fa]"}`}>
+
+        <div className="flex flex-col gap-[5px]">
+          <p className="ml-[5px]">Ghi chú</p>
+          <input
+            type="text"
+            value={notice}
+            placeholder="Ghi chú..."
+            onChange={(e) => setNotice(e.target.value)}
+            className="w-[200px] px-[10px] py-[5px] bg-[#222] placeholder:text-gray-400 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#fb923c]"
+          />
+        </div>
+
+        <button
+          disabled={!isValid()}
+          className={` rounded-[12px] p-[10px] w-[200px] ${
+            !isValid()
+              ? "bg-textsec cursor-not-allowed"
+              : "bg-highlightcl cursor-pointer hover:bg-[#60a5fa]"
+          }`}
+        >
           Gửi phiếu mượn
         </button>
       </div>
