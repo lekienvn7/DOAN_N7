@@ -15,13 +15,15 @@ const ChangePasswordBox = ({ user, navigate }) => {
       toast.error("Vui lòng nhập đầy đủ thông tin!");
       return;
     }
+
     if (newPass === oldPass) {
       toast.error("Mật khẩu mới phải khác mật khẩu cũ!");
       return;
     }
+
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
 
-    if (newPass.length < 8 || !passwordRegex.test(newPass)) {
+    if (!passwordRegex.test(newPass)) {
       toast.error("Mật khẩu tối thiểu 8 ký tự, bao gồm chữ hoa, số và ký tự!");
       return;
     }
@@ -31,22 +33,17 @@ const ChangePasswordBox = ({ user, navigate }) => {
       return;
     }
 
-    const token = localStorage.getItem("token");
-
     try {
       setLoading(true);
 
-      // gọi API đổi mật khẩu
+      const token = localStorage.getItem("token");
+
+      // 1. Đổi mật khẩu
       const { data } = await axiosClient.put(
         `/user/change-pass/${user.userID}`,
+        { oldPass, newPass },
         {
-          oldPass,
-          newPass,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -57,31 +54,26 @@ const ChangePasswordBox = ({ user, navigate }) => {
 
       toast.success("Đổi mật khẩu thành công!");
 
-      // Đăng nhập lại ngay sau khi đổi mật khẩu
+      // 2. Login lại bằng pass mới
       const res = await axiosClient.post("/login", {
         username: user.username,
-        password: newPass, // Đăng nhập với mật khẩu mới
+        password: newPass,
       });
 
-      if (res.data.success) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-
-        console.log("Token:", localStorage.getItem("token"));
-        console.log("User:", localStorage.getItem("user"));
-
-        toast.success("Đăng nhập lại thành công!");
-        setTimeout(() => {
-          navigate("/login");
-          setTimeout(() => {
-            window.location.reload();
-          }, 1);
-        }, 800);
-      } else {
+      if (!res.data.success) {
         toast.error("Đăng nhập thất bại!");
+        return;
       }
+
+      // 3. Lưu token
+      localStorage.setItem("token", res.data.token);
+      localStorage.setItem("user", JSON.stringify(res.data.user));
+
+      toast.success("Đăng nhập lại thành công!");
+
+      // 4. Điều hướng đúng (dashboard)
+      navigate("/");
     } catch (error) {
-      console.error("Lỗi:", error);
       const msg =
         error.response?.data?.message || "Không thể kết nối đến server!";
       toast.error(msg);

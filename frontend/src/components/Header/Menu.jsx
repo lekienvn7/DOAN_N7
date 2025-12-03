@@ -33,12 +33,21 @@ const Menu = () => {
     { name: "Thông tin tài khoản", path: "/user", key: "5" },
   ];
 
+  const lecturerMenuItems = [
+    { name: "Trang chủ", path: "/home", key: "1" },
+    { name: "Kho vật tư", path: "/repository/electric", key: "2" },
+    { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
+    { name: "Báo cáo", path: "/report", key: "4" },
+    { name: "Thông tin tài khoản", path: "/user", key: "5" },
+  ];
+
   // Chọn menu theo role
   const activeMenu = useMemo(() => {
     if (!user) return menuItems;
     if (user.roleID === "ADMINISTRATOR") return adMenuItems;
     if (["WH MANAGER", "MT MANAGER"].includes(user.roleID))
       return managerMenuItems;
+    if (user.roleID === "LECTURER") return lecturerMenuItems;
     return menuItems;
   }, [user]);
 

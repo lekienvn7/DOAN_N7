@@ -13,8 +13,26 @@ import { toast } from "sonner";
 import { Tooltip } from "react-tooltip";
 import AutomotiveDetail from "./AutomotiveDetail";
 import AutomotiveEdit from "./AutomotiveEdit";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@/components/ui/dialog";
 
-const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
+const AutomotiveList = ({
+  mode,
+  onReload,
+  searchData,
+  reload,
+  isLecturer,
+  sortMode,
+  onSelectChange,
+}) => {
   const [automotive, setAutomotive] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
@@ -22,6 +40,8 @@ const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
   const [sortQuantity, setSortQuantity] = useState(null);
   const [sortMaintenance, setSortMaintenance] = useState(null);
   const [filterData, setFilterData] = useState([]);
+
+  const [selectedItems, setSelectedItems] = useState({});
 
   useEffect(() => {
     setLoading(true);
@@ -45,6 +65,19 @@ const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
 
     return () => clearTimeout(timer);
   }, [reload]);
+
+  const handleSelect = (item, checked) => {
+    setSelectedItems((prev) => ({
+      ...prev,
+      [item._id]: {
+        ...prev[item._id],
+        checked,
+        quantity: checked ? prev[item._id]?.quantity || 1 : 0,
+        itemData: item,
+      },
+    }));
+    onSelectChange(item, checked ? selectedItems[item._id]?.quantity || 1 : 0);
+  };
 
   const partTypeList = [
     { type: "Engine Components", name: "Động cơ" },
@@ -374,7 +407,9 @@ const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
             <th className="p-[5px] w-[6%]">Dòng xe</th>
             <th className="p-[5px] w-[6%]">Hãng sản xuất</th>
             <th colSpan={2} className="text-center w-[5%]">
-              {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
+              {mode === "view"
+                ? "Chi tiết"
+                : `${isLecturer ? "Lựa chọn" : " Chỉnh sửa"}`}
             </th>
           </tr>
         </thead>
@@ -437,8 +472,15 @@ const AutomotiveList = ({ mode, reload, searchData, sortMode }) => {
               <td className=" text-center p-[5px]">
                 {mode === "view" ? (
                   <AutomotiveDetail item={item} />
+                ) : isLecturer ? (
+                  <input
+                    type="checkbox"
+                    checked={selectedItems[item._id]?.checked || false}
+                    onChange={(e) => handleSelect(item, e.target.checked)}
+                    className="w-[18px] h-[18px] cursor-pointer"
+                  />
                 ) : (
-                  <AutomotiveEdit item={item} reload={reload} />
+                  <AutomotiveEdit item={item} onReload={onReload} />
                 )}
               </td>
             </tr>

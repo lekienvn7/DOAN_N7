@@ -10,7 +10,7 @@ const roleSchema = new mongoose.Schema(
     },
     roleName: {
       type: String,
-      enum: ["Quản lý tổng", "Quản lý kho", "Quản lý bảo trì"],
+      enum: ["Quản lý tổng", "Quản lý kho", "Quản lý bảo trì", "Giảng viên"],
       required: true,
       unique: true,
       trim: true,

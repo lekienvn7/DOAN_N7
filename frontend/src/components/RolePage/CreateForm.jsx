@@ -99,6 +99,7 @@ const CreateForm = () => {
           <option value="ADMINISTRATOR">Quản lý tổng</option>
           <option value="WH MANAGER">Quản lý kho</option>
           <option value="MT MANAGER">Quản lý bảo trì</option>
+          <option value="LECTURER">Giảng viên</option>
         </select>
 
         <select

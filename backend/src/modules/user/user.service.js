@@ -72,7 +72,6 @@ async function addUser(data) {
 async function changePassword(userID, data) {
   const { oldPass, newPass } = data;
 
-  // Lấy id từ URL (params)
   const user = await User.findOne({ userID }).select("+password");
   if (!user) {
     const error = new Error("Không tìm thấy tài khoản!");
@@ -80,7 +79,6 @@ async function changePassword(userID, data) {
     throw error;
   }
 
-  // So sánh mật khẩu cũ
   const isMatch = await bcrypt.compare(oldPass, user.password);
   if (!isMatch) {
     const error = new Error("Mật khẩu cũ không chính xác!");
@@ -88,14 +86,15 @@ async function changePassword(userID, data) {
     throw error;
   }
 
-  // Hash mật khẩu mới
-  const hashed = await bcrypt.hash(newPass, 10);
-  user.password = hashed;
+  user.password = newPass;
+
   user.mustChangePassword = false;
+
   await user.save();
 
   return { message: "Đổi mật khẩu thành công!" };
 }
+
 
 async function updateUser(userID, data) {
   const { fullName, yourRepo, role, email, phone } = data;

@@ -37,6 +37,7 @@ const HeaderDetail = ({
   setSearchData,
   sortMode,
   setSortMode,
+  isLecturer,
 }) => {
   const [open, setOpen] = useState(false);
   const [repository, setRepository] = useState("");
@@ -423,14 +424,13 @@ const HeaderDetail = ({
             <div className="border-r h-5 mx-2 text-textsec "></div>
             <button
               onClick={(e) => {
-                e.preventDefault(); // Ngăn Radix mở tự động
-                if (checkPermission()) {
-                  setMode((prev) => (prev === "view" ? "edit" : "view"));
-                }
+                setMode((prev) => (prev === "view" ? "edit" : "view"));
               }}
               className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#fca86b] transition-colors duration-300 cursor-pointer ml-[15px]"
             >
-              {mode === "view" ? `Chỉnh sửa` : `Chi tiết`}
+              {mode === "view"
+                ? `Chỉnh sửa`
+                : `${isLecturer ? "Chọn" : "Chi tiết"}`}
               {mode === "view" ? (
                 <TrendingUp size={18} />
               ) : (

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import logoUneti from "../../assets/images/logo.png";
 
 const HeaderLogo = () => {
   const [roleID, setRoleID] = useState(null);
@@ -51,7 +52,7 @@ const HeaderLogo = () => {
       <Link
         to="/home"
         className="header__logo font-qurova no-underline
-        text-[#FFFFFF] text-[20px] font-bold hover:text-[#E5E5E7]"
+          text-[#FFFFFF] text-[20px] font-bold hover:text-[#E5E5E7]"
       >
         {logoContent}
       </Link>

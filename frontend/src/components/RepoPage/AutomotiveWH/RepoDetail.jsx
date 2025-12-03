@@ -2,7 +2,14 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import AutomotiveList from "./AutomotiveList";
 
-const RepoDetail = ({ mode, reload, searchData, sortMode }) => {
+const RepoDetail = ({
+  mode,
+  reload,
+  searchData,
+  sortMode,
+  isLecturer,
+  onSelectChange,
+}) => {
   return (
     <AnimatePresence>
       <motion.div
@@ -20,6 +27,8 @@ const RepoDetail = ({ mode, reload, searchData, sortMode }) => {
           reload={reload}
           searchData={searchData}
           sortMode={sortMode}
+          isLecturer={isLecturer}
+          onSelectChange={onSelectChange}
         />
       </motion.div>
     </AnimatePresence>

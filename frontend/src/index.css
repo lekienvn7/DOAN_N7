@@ -29,6 +29,16 @@
   background: transparent; /* nền rãnh scrollbar */
 }
 
+.no-arrows::-webkit-outer-spin-button,
+.no-arrows::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-arrows {
+  -moz-appearance: textfield;
+}
+
 @font-face {
   font-family: "Satoshi";
   src: url("./assets/fonts/MJ Satoshi/MJ\ Satoshi-Regular.otf")

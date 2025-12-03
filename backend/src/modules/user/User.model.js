@@ -55,17 +55,7 @@ const userSchema = new mongoose.Schema(
 
     yourRepo: {
       type: String,
-      enum: [
-        "all",
-        "chemical",
-        "automotive",
-        "electric",
-        "fashion",
-        "iot",
-        "mechanical",
-        "technology",
-        "telecom",
-      ],
+      default: null,
       trim: true,
     },
   },

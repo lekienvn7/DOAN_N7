@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import logoUneti from "../../assets/images/uneti_logo.png";
+import logoUneti from "../../assets/images/logo.png";
 import { useNavigate } from "react-router-dom";
 import axiosClient from "@/api/axiosClient";
 import ChangePassBox from "./ChangePassBox";
