@@ -3,17 +3,14 @@ import Role from "../role/Role.model.js";
 import bcrypt from "bcryptjs";
 
 async function getAllUsers() {
-  const users = await User.find()
-    .populate({
-      path: "role",
-      select: "roleID roleName yourRepo roleType permission -_id",
-      populate: {
-        path: "permission",
-        select: "permissionDescription -_id",
-      },
-    })
-    .select("-_id");
-
+  const users = await User.find().populate({
+    path: "role",
+    select: "roleID roleName yourRepo roleType permission -_id",
+    populate: {
+      path: "permission",
+      select: "permissionDescription -_id",
+    },
+  });
   return users;
 }
 
@@ -94,7 +91,6 @@ async function changePassword(userID, data) {
 
   return { message: "Đổi mật khẩu thành công!" };
 }
-
 
 async function updateUser(userID, data) {
   const { fullName, yourRepo, role, email, phone } = data;

@@ -66,6 +66,7 @@ async function login(data) {
     token,
     refreshToken,
     userInfo: {
+      id: user._id,
       userID: user.userID,
       username: user.username,
       fullName: user.fullName,

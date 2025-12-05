@@ -8,11 +8,14 @@ import repoRoutes from "./modules/repository/repository.routes.js";
 import transactionRoutes from "./modules/transaction/transaction.routes.js";
 import maintenanceRoutes from "./modules/maintenance/maintenance.routes.js";
 import exportExcel from "./modules/exportExcel/exportExcel.routes.js";
+import borrowRequestRoutes from "./modules/borrowRequest/borrowRequest.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import http from "http";
+import { initSocket } from "./utils/socket.js";
 
 dotenv.config();
 
@@ -23,10 +26,13 @@ const app = express();
 app.use(
   cors({
     origin: "http://localhost:5173",
-    methods: ["GET", "POST", "PUT", "DELETE"],
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
 );
+
+const server = http.createServer(app);
+initSocket(server);
 
 app.use(express.json());
 app.use(cookieParser());
@@ -46,12 +52,15 @@ app.use("/api/repository", repoRoutes);
 app.use("/api/transaction", transactionRoutes);
 
 app.use("/api/maintenance", maintenanceRoutes);
+
 app.use("/api/export", exportExcel);
 
 app.use("/api/login", authRoutes);
 
+app.use("/api/borrow-requests", borrowRequestRoutes);
+
 connectDB().then(() => {
-  app.listen(PORT, () => {
+  server.listen(PORT, () => {
     console.log(`Bắt đầu ở cổng ${PORT}`);
   });
 });

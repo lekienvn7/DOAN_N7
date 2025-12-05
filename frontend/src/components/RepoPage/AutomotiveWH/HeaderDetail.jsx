@@ -8,13 +8,14 @@ import {
   Minus,
   Search,
   RefreshCcw,
-  TrendingUpDown,
   ChevronsRight,
-  TrendingUp,
   ToolCase,
+  ListCollapse,
+  PencilRuler,
   ArrowDownUp,
   Download,
   History,
+  SquareMousePointer,
   X,
 } from "lucide-react";
 import { useAuth } from "@/context/authContext";
@@ -426,15 +427,19 @@ const HeaderDetail = ({
               onClick={(e) => {
                 setMode((prev) => (prev === "view" ? "edit" : "view"));
               }}
-              className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#fca86b] transition-colors duration-300 cursor-pointer ml-[15px]"
+              className="text-[14px] ml-[5px] flex flex-row gap-[10px] items-center hover:text-[#fca86b] transition-colors duration-300 cursor-pointer ml-[15px]"
             >
               {mode === "view"
-                ? `Chỉnh sửa`
-                : `${isLecturer ? "Chọn" : "Chi tiết"}`}
+                ? `${isLecturer ? "Lựa chọn" : "Chỉnh sửa"}`
+                : `Chi tiết`}
               {mode === "view" ? (
-                <TrendingUp size={18} />
+                isLecturer ? (
+                  <SquareMousePointer size={18} />
+                ) : (
+                  <PencilRuler size={18} />
+                )
               ) : (
-                <TrendingUpDown size={18} />
+                <ListCollapse size={18} />
               )}
             </button>
           </div>

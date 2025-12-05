@@ -13,16 +13,6 @@ import { toast } from "sonner";
 import { Tooltip } from "react-tooltip";
 import AutomotiveDetail from "./AutomotiveDetail";
 import AutomotiveEdit from "./AutomotiveEdit";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-  DialogClose,
-} from "@/components/ui/dialog";
 
 const AutomotiveList = ({
   mode,

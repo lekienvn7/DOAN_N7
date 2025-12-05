@@ -13,6 +13,7 @@ const AutoWH = () => {
   const [sortMode, setSortMode] = useState(false);
   const [borrowList, setBorrowList] = useState([]);
   const [borrowQty, setBorrowQty] = useState("");
+  const [repoId] = useState("690981405de9a612110089dd");
 
   const handleBorrowSelect = (item, quantity) => {
     setBorrowList((prev) => {
@@ -20,11 +21,14 @@ const AutoWH = () => {
 
       const exists = prev.find((i) => i._id === item._id);
       if (exists)
-        return prev.map((i) => (i._id === item._id ? { ...i, quantity } : i));
+        return prev.map((i) =>
+          i._id === item._id ? { ...i, borrowQty: quantity } : i
+        );
 
       return [...prev, { ...item, borrowQty: quantity }];
     });
   };
+
 
   const handleUpdateQuantity = (id, qty) => {
     setBorrowList((prev) =>
@@ -48,6 +52,7 @@ const AutoWH = () => {
           onUpdateQuantity={handleUpdateQuantity}
           borrowQty={borrowQty}
           setBorrowQty={setBorrowQty}
+          repositoryId={repoId}
         />
       ) : (
         <AutomotiveUtilities />

@@ -56,7 +56,7 @@ const AddAutomotive = ({ onReload }) => {
     try {
       setLoading(true);
       const res = await axiosClient.post("/material", {
-        name: name,
+        name,
         maintenanceCycle,
         quantity,
         unit,
@@ -72,9 +72,9 @@ const AddAutomotive = ({ onReload }) => {
         heatResistance,
         fluidSpec,
 
-        type: "automotive", // cố định là “electric”
-        createdBy, // lấy id người nhập từ context
-        status: "Trong kho", // mặc định “Trong kho”
+        type: "automotive",
+        createdBy,
+        status: "Trong kho",
       });
 
       if (res.data.success) {
@@ -96,7 +96,7 @@ const AddAutomotive = ({ onReload }) => {
         setHeatResistance("");
         setFluidSpec("");
 
-        const materialID = res.data.data.materialID; // lấy ID vừa tạo
+        const materialID = res.data.data.materialID; 
 
         // Sau 3 giây tự thêm vào kho điện
         setTimeout(async () => {

@@ -35,10 +35,6 @@ const TransactionSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
-    date: {
-      type: Date,
-      default: Date.now,
-    },
   },
   { timestamps: true }
 );

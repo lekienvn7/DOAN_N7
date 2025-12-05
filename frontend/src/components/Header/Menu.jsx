@@ -36,9 +36,8 @@ const Menu = () => {
   const lecturerMenuItems = [
     { name: "Trang chủ", path: "/home", key: "1" },
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
-    { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
-    { name: "Báo cáo", path: "/report", key: "4" },
-    { name: "Thông tin tài khoản", path: "/user", key: "5" },
+    { name: "Tin nhắn", path: "/notice", key: "3" },
+    { name: "Thông tin tài khoản", path: "/user", key: "4" },
   ];
 
   // Chọn menu theo role
@@ -82,7 +81,7 @@ const Menu = () => {
         <li key={item.path}>
           <Link
             to={item.path}
-            className={`relative pb-4 text-[15px]
+            className={`relative pb-5 text-[15px]
               after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full 
               after:scale-x-0 after:bg-textsec after:transition-transform after:duration-300 
               hover:after:scale-x-100
