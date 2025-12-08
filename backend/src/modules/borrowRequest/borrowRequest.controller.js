@@ -27,9 +27,7 @@ export async function createBorrowRequest(req, res) {
 }
 
 export async function getPendingRequests(req, res) {
-  const { repoID } = req.params;
-
-  const list = await borrowRequestService.getPendingRequests(repoID);
+  const list = await borrowRequestService.getPendingRequests();
   res.json(list);
 }
 

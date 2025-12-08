@@ -21,9 +21,8 @@ async function createBorrowRequest({
   return br;
 }
 
-async function getPendingRequests(repoId) {
+async function getPendingRequests() {
   return BorrowRequest.find({
-    repository: repoId,
     status: "pending",
   })
     .populate("teacher", "fullName userID -_id")

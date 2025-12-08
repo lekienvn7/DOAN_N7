@@ -36,7 +36,6 @@ import {
   DialogDescription,
 } from "../../ui/dialog.jsx";
 
-
 const HeaderDetail = ({
   mode,
   setMode,
@@ -55,6 +54,7 @@ const HeaderDetail = ({
   const [showHistory, setShowHistory] = useState(false);
   const searchRef = useRef(null);
   const historyRef = useRef(null);
+  const [highlight, setHighlight] = useState(false);
 
   const checkPermission = () => {
     const hasAccess =
@@ -137,6 +137,10 @@ const HeaderDetail = ({
     }
   };
 
+  const handleBellChange = (count) => {
+    setHighlight(count > 0);
+  };
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (
@@ -180,17 +184,20 @@ const HeaderDetail = ({
             </div>
 
             <div className="flex flex-row gap-[10px] items-center">
-              
               <Dialog>
                 <DialogTrigger asChild>
                   <div className="w-[40px] h-[40px] rounded-full  flex items-center justify-center">
                     <Bell
                       onClick={() => checkPermission()}
-                      className="text-textpri hover:text-[#fb923c] hover:scale-[1.05] transition-all duration-100 cursor-pointer"
+                      className={`${
+                        highlight
+                          ? "bg-[#fb923c] text-[#fb923c]"
+                          : "text-textpri"
+                      } hover:text-[#fb923c] hover:scale-[1.05] active:scale-[0.95] transition-all duration-100 cursor-pointer`}
                     />
                   </div>
                 </DialogTrigger>
-                <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white ">
+                <DialogContent className="bg-[#1a1a1a] rounded-[12px] !max-w-none w-[500px] items-center border-none text-white ">
                   <DialogHeader>
                     <DialogTitle className="text-[20px]">
                       Danh Sách Phiếu Mượn Chờ Duyệt
@@ -200,7 +207,7 @@ const HeaderDetail = ({
                     </DialogDescription>
                   </DialogHeader>
 
-                  <BorrowList />
+                  <BorrowList onBellChange={handleBellChange} />
                 </DialogContent>
               </Dialog>
 
@@ -264,7 +271,7 @@ const HeaderDetail = ({
                 </button>
               </DialogTrigger>
 
-              <DialogContent className="bg-[#1a1a1a] !max-w-none rounded-[12px] p-[25px] w-fit border-none text-white">
+              <DialogContent className="bg-[#1a1a1a]  !max-w-none rounded-[12px] p-[25px] w-fit border-none text-white">
                 <DialogHeader>
                   <DialogTitle>
                     Phiếu nhập vật tư{" "}

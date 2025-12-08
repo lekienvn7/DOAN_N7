@@ -4,15 +4,18 @@ import {
   approveBorrowRequest,
   getPendingRequests,
   getMyBorrowing,
+  rejectBorrowRequest,
 } from "./borrowRequest.controller.js";
 
 const router = express.Router();
 
 router.post("/", createBorrowRequest);
 
-router.get("/pending/:repoID", getPendingRequests);
+router.get("/pending/", getPendingRequests);
 
 router.patch("/:id/approve", approveBorrowRequest);
+
+router.patch("/:id/reject", rejectBorrowRequest);
 
 router.get("/my-borrowing", getMyBorrowing);
 
