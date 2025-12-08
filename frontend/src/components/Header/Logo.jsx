@@ -30,13 +30,13 @@ const HeaderLogo = () => {
   } else if (roleID === "WH MANAGER") {
     logoContent = (
       <p className="font-qurova font-bold text-[#0a84ff]">
-        WH<span className="text-[#ffffff]">Manager</span>
+        WareHouse<span className="text-[#ffffff]">Manager</span>
       </p>
     );
   } else if (roleID === "MT MANAGER") {
     logoContent = (
       <p className="font-qurova font-bold text-[#0a84ff]">
-        MT<span className="text-[#ffffff]">MANAGER</span>
+        MainTenance<span className="text-[#ffffff]">MANAGER</span>
       </p>
     );
   } else {

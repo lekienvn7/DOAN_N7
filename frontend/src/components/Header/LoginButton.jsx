@@ -38,14 +38,14 @@ const SearchBox = () => {
         <button
           onClick={handleLogout}
           className="
-        group flex items-center gap-0 overflow-hidden whitespace-nowrap
+        group flex items-center text-center w-[130px] gap-2 overflow-hidden whitespace-nowrap
         rounded-md  text-[#ffffff] font-bold px-3 py-2 
-       transition-all duration-300 hover:gap-2 cursor-pointer"
+       transition-all duration-300 cursor-pointer"
         >
-          <LogIn className="size-5 group-hover:color-[]" strokeWidth={3} />
+          <LogIn className="size-5 group-hover:color-[] text-textsec group-hover:text-textpri" strokeWidth={3} />
           <span
             className="
-              max-w-0 opacity-0 overflow-hidden
+              max-w-[0] opacity-0 overflow-hidden
               transition-all duration-300 group-hover:max-w-[100px] group-hover:opacity-100"
           >
             Đăng xuất
@@ -55,12 +55,12 @@ const SearchBox = () => {
         <button
           onClick={handleLogin}
           className="
-                group flex items-center gap-0 overflow-hidden whitespace-nowrap
+                group flex items-center gap-0 w-[135px] overflow-hidden whitespace-nowrap
                 rounded-md  text-[#ffffff] font-bold px-3 py-2 
                 transition-all duration-500 ease-out hover:gap-2 cursor-pointer
                 "
         >
-          <LogIn className="size-5 group-hover:color-[]" strokeWidth={3} />
+          <LogIn className="size-5 group-hover:color-[] text-textsec group-hover:text-textpri" strokeWidth={3} />
           <span
             className="
       max-w-0 opacity-0 overflow-hidden

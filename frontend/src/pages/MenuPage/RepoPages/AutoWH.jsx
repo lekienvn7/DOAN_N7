@@ -4,7 +4,7 @@ import { useAuth } from "@/context/authContext";
 import AutomotiveUtilities from "@/components/RepoPage/AutomotiveWH/AutomotiveUtilities";
 import HeaderDetail from "@/components/RepoPage/AutomotiveWH/HeaderDetail";
 import RepoDetail from "@/components/RepoPage/AutomotiveWH/RepoDetail";
-import BorrowForm from "@/components/RepoPage/AutomotiveWH/BorrowForm";
+import BorrowForm from "@/components/RepoPage/AutomotiveWH/LecturePage/BorrowForm";
 
 const AutoWH = () => {
   const [mode, setMode] = useState("view");

@@ -2,7 +2,14 @@ import React, { useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { Tooltip } from "react-tooltip";
+import { useAuth } from "@/context/authContext";
+import { toast } from "sonner";
+
+import axiosClient from "@/api/axiosClient";
+
 import AddAutomotive from "./AddAutomotive";
+import BorrowList from "./ManagerPage/BorrowList";
+
 import {
   Plus,
   Minus,
@@ -12,14 +19,14 @@ import {
   ToolCase,
   ListCollapse,
   PencilRuler,
+  Bell,
   ArrowDownUp,
   Download,
   History,
   SquareMousePointer,
   X,
 } from "lucide-react";
-import { useAuth } from "@/context/authContext";
-import { toast } from "sonner";
+
 import {
   Dialog,
   DialogTrigger,
@@ -28,7 +35,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from "../../ui/dialog.jsx";
-import axiosClient from "@/api/axiosClient";
+
 
 const HeaderDetail = ({
   mode,
@@ -172,45 +179,71 @@ const HeaderDetail = ({
               </p>
             </div>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="h-[40px] p-[15px] bg-highlightcl rounded-[12px] items-center font-bold flex flex-row gap-[10px] cursor-pointer hover:bg-[#2563eb]">
-                  <ToolCase /> Thông tin
-                </button>
-              </DialogTrigger>
+            <div className="flex flex-row gap-[10px] items-center">
+              
+              <Dialog>
+                <DialogTrigger asChild>
+                  <div className="w-[40px] h-[40px] rounded-full  flex items-center justify-center">
+                    <Bell
+                      onClick={() => checkPermission()}
+                      className="text-textpri hover:text-[#fb923c] hover:scale-[1.05] transition-all duration-100 cursor-pointer"
+                    />
+                  </div>
+                </DialogTrigger>
+                <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white ">
+                  <DialogHeader>
+                    <DialogTitle className="text-[20px]">
+                      Danh Sách Phiếu Mượn Chờ Duyệt
+                    </DialogTitle>
+                    <DialogDescription className={`text-textsec`}>
+                      Duyệt phiếu mượn để chuyển vật tư cho giáo viên
+                    </DialogDescription>
+                  </DialogHeader>
 
-              <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white ">
-                <DialogHeader>
-                  <DialogTitle>
-                    Thông tin chi tiết{" "}
-                    <span className="text-[#fb923c]">kho công nghệ ô tô</span>
-                  </DialogTitle>
-                </DialogHeader>
-                <ul className="mt-[20px] flex flex-col gap-[5px]">
-                  <li>
-                    <span className="text-[#60A5FA] font-semibold">
-                      Vị trí:
-                    </span>{" "}
-                    {repository.location}
-                  </li>
-                  <li>
-                    <span className="text-[#60A5FA] font-semibold">
-                      {" "}
-                      Quản lý phụ trách:
-                    </span>{" "}
-                    {repository?.manager?.fullName || "Chưa có quản lý"}
-                    {" - "}
-                    {repository?.manager?.email || "—"}
-                  </li>
-                  <li>
-                    <span className="text-[#60A5FA] font-semibold">
-                      Tạo vào:
-                    </span>{" "}
-                    {formatDate(repository.createdAt)}
-                  </li>
-                </ul>
-              </DialogContent>
-            </Dialog>
+                  <BorrowList />
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="h-[40px] p-[15px] bg-highlightcl rounded-[12px] items-center font-bold flex flex-row gap-[10px] cursor-pointer hover:bg-[#2563eb]">
+                    <ToolCase /> Thông tin
+                  </button>
+                </DialogTrigger>
+
+                <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white ">
+                  <DialogHeader>
+                    <DialogTitle>
+                      Thông tin chi tiết{" "}
+                      <span className="text-[#fb923c]">kho công nghệ ô tô</span>
+                    </DialogTitle>
+                  </DialogHeader>
+                  <ul className="mt-[20px] flex flex-col gap-[5px]">
+                    <li>
+                      <span className="text-[#60A5FA] font-semibold">
+                        Vị trí:
+                      </span>{" "}
+                      {repository.location}
+                    </li>
+                    <li>
+                      <span className="text-[#60A5FA] font-semibold">
+                        {" "}
+                        Quản lý phụ trách:
+                      </span>{" "}
+                      {repository?.manager?.fullName || "Chưa có quản lý"}
+                      {" - "}
+                      {repository?.manager?.email || "—"}
+                    </li>
+                    <li>
+                      <span className="text-[#60A5FA] font-semibold">
+                        Tạo vào:
+                      </span>{" "}
+                      {formatDate(repository.createdAt)}
+                    </li>
+                  </ul>
+                </DialogContent>
+              </Dialog>
+            </div>
           </motion.div>
         </AnimatePresence>
 

@@ -93,9 +93,23 @@ async function approveBorrowRequest({ id, managerId }) {
   }
 }
 
+async function rejectBorrowRequest({ id, managerId }) {
+  const br = await BorrowRequest.findById(id);
+  if (!br) throw new Error("Không tìm thấy phiếu mượn");
+  if (br.status !== "pending") throw new Error("Phiếu đã xử lý");
+
+  br.status = "rejected";
+  br.rejectedBy = managerId;
+  br.rejectedAt = new Date();
+  await br.save();
+
+  return br;
+}
+
 export default {
   createBorrowRequest,
   approveBorrowRequest,
   getMyBorrowing,
   getPendingRequests,
+  rejectBorrowRequest,
 };

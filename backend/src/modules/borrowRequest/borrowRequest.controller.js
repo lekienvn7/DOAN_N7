@@ -55,11 +55,31 @@ export async function approveBorrowRequest(req, res) {
 }
 
 export async function getMyBorrowing(req, res) {
-  const teacherId = req.body.userID; 
+  const teacherId = req.body.userID;
 
   if (!teacherId) {
     return res.status(400).json({ message: "Không thấy userID" });
   }
   const list = await borrowRequestService.getMyBorrowing(teacherId);
   res.json(list);
+}
+
+export async function rejectBorrowRequest(req, res) {
+  try {
+    const { id } = req.params;
+    const managerId = req.user._id;
+
+    const br = await borrowRequestService.rejectBorrowRequest({
+      id,
+      managerId,
+    });
+
+    const io = getIO();
+    io.to(`user:${br.teacher}`).emit("borrowRequest:rejected", br);
+    io.to(`repo:${br.repository}:manager`).emit("borrowRequest:rejected", br);
+
+    res.json(br);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
 }
