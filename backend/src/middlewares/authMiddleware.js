@@ -4,39 +4,41 @@ import Repository from "../modules/repository/Repository.model.js";
 import User from "../modules/user/User.model.js";
 
 // Middleware xác thực token
-export const verifyToken = async (req, res, next) => {
+// src/middleware/auth.middleware.js
+
+export function verifyToken(req, res, next) {
   try {
-    // Lấy token từ header Authorization
     const authHeader = req.headers["authorization"];
-    const token = authHeader && authHeader.split(" ")[1];
 
-    if (!token) {
-      return res
-        .status(401)
-        .json({ message: "Không có token, từ chối truy cập!" });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "Thiếu token truy cập!" });
     }
 
-    // Giải mã access token
+    const token = authHeader.split(" ")[1];
+
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded; // gán user info vào request để route sau dùng
 
-    // Kiểm tra refresh token trong Session (đoạn bạn hỏi nè)
-    const refreshToken = req.cookies?.refreshToken;
-    if (refreshToken) {
-      const session = await Session.findOne({ refreshToken });
-      if (!session || session.expiresAt < new Date()) {
-        return res.status(401).json({ message: "Phiên đăng nhập đã hết hạn!" });
-      }
-    }
+    // Gắn user vào req để dùng sau
+    req.user = decoded;
 
-    next(); // hợp lệ thì cho qua
-  } catch (error) {
-    console.error("Lỗi verifyToken:", error);
-    return res
-      .status(403)
-      .json({ message: "Token không hợp lệ hoặc đã hết hạn!" });
+    next();
+  } catch (err) {
+    console.error("JWT error:", err);
+
+    return res.status(401).json({ message: "Token không hợp lệ hoặc đã hết hạn!" });
   }
-};
+}
+
+// Optional: middleware check role
+export function requireRole(...roles) {
+  return (req, res, next) => {
+    if (!req.user || !roles.includes(req.user.roleName)) {
+      return res.status(403).json({ message: "Không có quyền truy cập!" });
+    }
+    next();
+  };
+}
+
 
 // Middleware kiểm tra quyền
 export const authorizeRoles = (...allowedRoles) => {

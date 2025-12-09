@@ -17,7 +17,7 @@ const SearchBox = () => {
   const handleLogout = async () => {
     try {
       // Gọi API backend xoá session + cookie
-      await axiosClient.post("/login/logout", {}, { withCredentials: true });
+      await axiosClient.post("/auth/logout", {}, { withCredentials: true });
 
       // Xoá token trong context/frontend
       logout();

@@ -43,10 +43,13 @@ const HeaderDetail = ({
   searchData,
   setSearchData,
   sortMode,
+  reload,
   setSortMode,
+  onReloadTicket,
   isLecturer,
 }) => {
   const [open, setOpen] = useState(false);
+  const [openBorrow, setOpenBorrow] = useState(false);
   const [repository, setRepository] = useState("");
   const { user } = useAuth();
   const [showSearch, setShowSearch] = useState(false);
@@ -55,6 +58,7 @@ const HeaderDetail = ({
   const searchRef = useRef(null);
   const historyRef = useRef(null);
   const [highlight, setHighlight] = useState(false);
+  const [count, setCount] = useState(0);
 
   const checkPermission = () => {
     const hasAccess =
@@ -137,6 +141,19 @@ const HeaderDetail = ({
     }
   };
 
+  useEffect(() => {
+    const loadBell = async () => {
+      try {
+        const res = await axiosClient.get("/borrow-requests/pending");
+        setHighlight((res.data?.length || 0) > 0);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadBell();
+  }, []);
+
   const handleBellChange = (count) => {
     setHighlight(count > 0);
   };
@@ -184,22 +201,24 @@ const HeaderDetail = ({
             </div>
 
             <div className="flex flex-row gap-[10px] items-center">
-              <Dialog>
+              <Dialog openBorrow={openBorrow} setOpenBorrow={setOpenBorrow}>
                 <DialogTrigger asChild>
-                  <div className="w-[40px] h-[40px] rounded-full  flex items-center justify-center">
+                  <div
+                    onClick={() => {
+                      if (checkPermission()) setOpenBorrow(true);
+                    }}
+                    className="relative w-[40px] h-[40px] flex items-center justify-center"
+                  >
                     <Bell
-                      onClick={() => checkPermission()}
                       className={`${
-                        highlight
-                          ? "bg-[#fb923c] text-[#fb923c]"
-                          : "text-textpri"
+                        highlight ? "text-[#fb923c]" : "text-textpri"
                       } hover:text-[#fb923c] hover:scale-[1.05] active:scale-[0.95] transition-all duration-100 cursor-pointer`}
                     />
                   </div>
                 </DialogTrigger>
-                <DialogContent className="bg-[#1a1a1a] rounded-[12px] !max-w-none w-[500px] items-center border-none text-white ">
+                <DialogContent className="bg-[#1a1a1a] rounded-[12px] !max-w-none w-fit gap-[20px] items-center border-none text-white ">
                   <DialogHeader>
-                    <DialogTitle className="text-[20px]">
+                    <DialogTitle className="text-[20px] text-[#fb923c]">
                       Danh Sách Phiếu Mượn Chờ Duyệt
                     </DialogTitle>
                     <DialogDescription className={`text-textsec`}>
@@ -207,7 +226,22 @@ const HeaderDetail = ({
                     </DialogDescription>
                   </DialogHeader>
 
-                  <BorrowList onBellChange={handleBellChange} />
+                  <BorrowList
+                    onBellChange={handleBellChange}
+                    onReloadTicket={onReloadTicket}
+                    reload={reload}
+                  />
+
+                  <p className="w-fit text-[20px] font-vegan text-textsec drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                    <span className="text-[#fb923c]/70 drop-shadow-[0_0_12px_rgba(251,146,60,0.9)]">
+                      U
+                    </span>
+                    neti{" "}
+                    <span className="text-[#fb923c]/70 drop-shadow-[0_0_12px_rgba(251,146,60,0.9)]">
+                      A
+                    </span>
+                    utomotive
+                  </p>
                 </DialogContent>
               </Dialog>
 

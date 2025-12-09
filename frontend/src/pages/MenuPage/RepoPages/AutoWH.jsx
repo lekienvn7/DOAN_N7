@@ -20,15 +20,11 @@ const AutoWH = () => {
       if (quantity === 0) return prev.filter((i) => i._id !== item._id);
 
       const exists = prev.find((i) => i._id === item._id);
-      if (exists)
-        return prev.map((i) =>
-          i._id === item._id ? { ...i, borrowQty: quantity } : i
-        );
+      if (exists) return prev; // BorrowForm sẽ lo quantity
 
-      return [...prev, { ...item, borrowQty: quantity }];
+      return [...prev, item];
     });
   };
-
 
   const handleUpdateQuantity = (id, qty) => {
     setBorrowList((prev) =>
@@ -44,6 +40,10 @@ const AutoWH = () => {
     setReload((prev) => prev + 1);
   };
 
+  const reloadTicket = () => {
+    setReload((prev) => prev + 1);
+  };
+
   return (
     <div className="flex flex-row">
       {isLecturer ? (
@@ -53,6 +53,7 @@ const AutoWH = () => {
           borrowQty={borrowQty}
           setBorrowQty={setBorrowQty}
           repositoryId={repoId}
+          onBorrowSuccess={() => setCount((prev) => prev + 1)}
         />
       ) : (
         <AutomotiveUtilities />
@@ -62,7 +63,9 @@ const AutoWH = () => {
           mode={mode}
           setMode={setMode}
           onReload={reloadList}
+          onReloadTicket={reloadTicket}
           searchData={searchData}
+          reload={reload}
           setSearchData={setSearchData}
           sortMode={sortMode}
           setSortMode={setSortMode}

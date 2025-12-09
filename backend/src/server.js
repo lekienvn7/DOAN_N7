@@ -55,7 +55,7 @@ app.use("/api/maintenance", maintenanceRoutes);
 
 app.use("/api/export", exportExcel);
 
-app.use("/api/login", authRoutes);
+app.use("/api/auth", authRoutes);
 
 app.use("/api/borrow-requests", borrowRequestRoutes);
 

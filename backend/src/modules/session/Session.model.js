@@ -6,23 +6,13 @@ const sessionSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
-      index: true,
     },
-    refreshToken: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    expiresAt: {
-      type: Date,
-      required: true,
-    },
+    refreshToken: { type: String, required: true, unique: true },
+    userAgent: String,
+    ipAddress: String,
+    expiresAt: { type: Date, required: true },
   },
   { timestamps: true }
 );
 
-sessionSchema.index({ expireAt: 1 }, { expireAfterSeconds: 0 });
-
-const Session = mongoose.model("Session", sessionSchema);
-
-export default Session;
+export default mongoose.model("Session", sessionSchema);

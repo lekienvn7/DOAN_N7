@@ -4,7 +4,6 @@ const TransactionSchema = new mongoose.Schema(
   {
     transactionID: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
     },
@@ -35,6 +34,8 @@ const TransactionSchema = new mongoose.Schema(
       trim: true,
       default: "",
     },
+    beforeQuantity: { type: Number, required: true },
+    afterQuantity: { type: Number, required: true },
   },
   { timestamps: true }
 );

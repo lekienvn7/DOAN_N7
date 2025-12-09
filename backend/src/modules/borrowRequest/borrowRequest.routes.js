@@ -13,9 +13,9 @@ router.post("/", createBorrowRequest);
 
 router.get("/pending/", getPendingRequests);
 
-router.patch("/:id/approve", approveBorrowRequest);
+router.patch("/approve", approveBorrowRequest);
 
-router.patch("/:id/reject", rejectBorrowRequest);
+router.patch("/reject", rejectBorrowRequest);
 
 router.get("/my-borrowing", getMyBorrowing);
 

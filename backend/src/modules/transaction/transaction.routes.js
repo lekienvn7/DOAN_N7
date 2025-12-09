@@ -4,10 +4,7 @@ import {
   authorizeRoles,
   checkRepositoryAccess,
 } from "../../middlewares/authMiddleware.js";
-import {
-  getTransaction,
-  addTransaction,
-} from "./transaction.controller.js";
+import { getTransaction, addTransaction } from "./transaction.controller.js";
 
 const router = express.Router();
 

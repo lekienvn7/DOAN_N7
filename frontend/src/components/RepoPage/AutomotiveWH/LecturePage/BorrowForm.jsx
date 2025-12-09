@@ -1,18 +1,22 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import axiosClient from "@/api/axiosClient";
 import { useAuth } from "@/context/authContext";
 
-const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
-  const [qtyMap, setQtyMap] = useState({}); // mỗi item 1 quantity riêng
+const BorrowForm = ({
+  borrowList,
+  onUpdateQuantity,
+  repositoryId,
+  onBorrowSuccess,
+}) => {
+  const [qtyMap, setQtyMap] = useState({});
   const [notice, setNotice] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const { user } = useAuth();
 
   const handleChange = (id, max, val) => {
-    const value = Math.min(Number(val), max); // chặn vượt số lượng
+    const value = Math.min(Number(val), max);
     setQtyMap((prev) => ({ ...prev, [id]: value }));
     onUpdateQuantity(id, value);
   };
@@ -23,20 +27,17 @@ const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
     for (const item of borrowList) {
       const qty = qtyMap[item._id];
 
-      // Không được để trống
       if (qty === "" || qty === undefined || qty === null) return false;
-
-      // Không được = 0
       if (Number(qty) <= 0) return false;
-
-      // Không được vượt tồn kho
       if (Number(qty) > item.quantity) return false;
     }
-
     return true;
   };
 
   const handleSubmit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+
     try {
       const items = borrowList.map((item) => ({
         material: item._id,
@@ -47,21 +48,20 @@ const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
         repository: repositoryId,
         items,
         note: notice,
-        teacher: user.id,
+        teacher: user.userID,
       };
 
-      const res = await axiosClient.post("/borrow-requests", payload);
+      await axiosClient.post("/borrow-requests", payload);
 
       toast.success("Đã gửi phiếu mượn!");
 
-      // clear form sau khi gửi
+      // Reset form
       setQtyMap({});
       setNotice("");
 
-      if (submitting) return;
-      setSubmitting(true);
+     
     } catch (err) {
-      toast.error(err.response?.data?.message || "Gửi phiếu thất bại");
+      toast.error(err.response?.data?.message || "Gửi phiếu thất bại!");
     } finally {
       setSubmitting(false);
     }
@@ -69,13 +69,13 @@ const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
 
   return (
     <AnimatePresence>
-      <div className="flex flex-col gap-[35px] p-[15px] w-[240px] bg-bgmain border-t-1 border-r-1  border-gray-700">
+      <div className="flex flex-col gap-[35px] p-[15px] w-[240px] bg-bgmain border-t-1 border-r-1 border-gray-700">
         <div className="flex flex-col gap-[5px]">
           <h2 className="text-center text-[20px] font-bold">
             Phiếu mượn vật tư
           </h2>
           <p className="text-center text-[12px] text-textsec">
-            <span className="text-red-400">Chú ý: </span>không được mượn bằng
+            <span className="text-red-400">Chú ý:</span> không được mượn bằng
             hoặc quá số lượng tồn kho
           </p>
         </div>
@@ -136,7 +136,7 @@ const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
         <button
           disabled={!isValid() || submitting}
           onClick={handleSubmit}
-          className={` rounded-[12px] p-[10px] w-[200px] ${
+          className={`rounded-[12px] p-[10px] w-[200px] ${
             !isValid()
               ? "bg-textsec cursor-not-allowed"
               : "bg-highlightcl cursor-pointer hover:bg-[#60a5fa]"

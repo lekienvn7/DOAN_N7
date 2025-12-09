@@ -20,7 +20,7 @@ export const getTransaction = async (req, res) => {
   }
 };
 
-/* ------------------ THÊM GIAO DỊCH (VẬT TƯ / THIẾT BỊ) ------------------ */
+/* ------------------ THÊM GIAO DỊCH ------------------ */
 export const addTransaction = async (req, res) => {
   try {
     const result = await transactionService.addTransaction(req.body);

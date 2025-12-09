@@ -1,5 +1,7 @@
 import borrowRequestService from "./borrowRequest.service.js";
 import { getIO } from "../../utils/socket.js";
+import User from "../user/User.model.js";
+import mongoose from "mongoose";
 
 export async function createBorrowRequest(req, res) {
   try {
@@ -8,15 +10,21 @@ export async function createBorrowRequest(req, res) {
     if (!items || items.length === 0)
       return res.status(400).json({ message: "Danh sách vật tư trống" });
 
+    // Validate teacher
+    const teacherData = await User.findOne({ userID: teacher });
+
+    if (!teacherData) {
+      return res.status(404).json({ message: "Không tìm thấy giảng viên!" });
+    }
+
     const br = await borrowRequestService.createBorrowRequest({
       repository,
-      teacher,
+      teacher: teacherData, // <-- ObjectId hợp lệ
       items,
       note,
       expectedReturnDate,
     });
 
-    // Báo cho quản lý kho
     const io = getIO();
     io.to(`repo:${repository}:manager`).emit("borrowRequest:new", br);
 
@@ -31,27 +39,6 @@ export async function getPendingRequests(req, res) {
   res.json(list);
 }
 
-export async function approveBorrowRequest(req, res) {
-  try {
-    const { id } = req.params;
-    const managerId = req.user._id;
-
-    const br = await borrowRequestService.approveBorrowRequest({
-      id,
-      managerId,
-    });
-
-    // Emit cho giảng viên + quản lý kho
-    const io = getIO();
-    io.to(`user:${br.teacher}`).emit("borrowRequest:approved", br);
-    io.to(`repo:${br.repository}:manager`).emit("borrowRequest:approved", br);
-
-    res.json(br);
-  } catch (err) {
-    res.status(400).json({ message: err.message });
-  }
-}
-
 export async function getMyBorrowing(req, res) {
   const teacherId = req.body.userID;
 
@@ -64,20 +51,67 @@ export async function getMyBorrowing(req, res) {
 
 export async function rejectBorrowRequest(req, res) {
   try {
-    const { id } = req.params;
-    const managerId = req.user._id;
+    const { id, managerId, repoID } = req.body;
+
+    if (!managerId) {
+      return res.status(404).json({ message: "Không tìm thấy tài khoản!" });
+    }
+
+    if (!id) {
+      return res.status(400).json({ message: "Thiếu ID phiếu mượn!" });
+    }
+
+    if (!repoID) {
+      return res.status(400).json({ message: "Thiếu ID kho!" });
+    }
 
     const br = await borrowRequestService.rejectBorrowRequest({
       id,
       managerId,
+      repoID,
     });
 
     const io = getIO();
-    io.to(`user:${br.teacher}`).emit("borrowRequest:rejected", br);
+
+    const teacherId = br.teacher._id.toString();
+    io.to(`user:${teacherId}`).emit("borrowRequest:rejected", br);
+
     io.to(`repo:${br.repository}:manager`).emit("borrowRequest:rejected", br);
 
-    res.json(br);
+    return res.json(br);
   } catch (err) {
-    res.status(400).json({ message: err.message });
+    console.error("Reject error:", err);
+    return res.status(400).json({ message: err.message });
+  }
+}
+
+export async function approveBorrowRequest(req, res) {
+  try {
+    const { id, managerId, repoID } = req.body;
+
+    if (!managerId) {
+      return res.status(404).json({ message: "Không tìm thấy tài khoản!" });
+    }
+
+    if (!repoID) {
+      return res.status(404).json({ message: "Không tìm thấy kho!" });
+    }
+
+    const br = await borrowRequestService.approveBorrowRequest({
+      id,
+      managerId, // ✔️ vẫn giữ nguyên cách bạn dùng managerId
+      repoID, // ✔️ truyền repoID xuống service
+    });
+
+    // Emit cho giảng viên + quản lý kho
+    const io = getIO();
+    const teacherId = br.teacher._id.toString();
+
+    io.to(`user:${teacherId}`).emit("borrowRequest:approved", br);
+    io.to(`repo:${repoID}:manager`).emit("borrowRequest:approved", br);
+
+    return res.json(br);
+  } catch (err) {
+    return res.status(400).json({ message: err.message });
   }
 }

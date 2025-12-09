@@ -25,7 +25,10 @@ const LoginBox = () => {
 
     try {
       setLoading(true);
-      const { data } = await axiosClient.post("/login", { username, password });
+      const { data } = await axiosClient.post("/auth/login", {
+        username,
+        password,
+      });
 
       if (!data.success) {
         toast.error(data.message || "Sai tài khoản hoặc mật khẩu");
