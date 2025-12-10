@@ -99,8 +99,8 @@ export async function approveBorrowRequest(req, res) {
 
     const br = await borrowRequestService.approveBorrowRequest({
       id,
-      managerId, // ✔️ vẫn giữ nguyên cách bạn dùng managerId
-      repoID, // ✔️ truyền repoID xuống service
+      managerId, 
+      repoID, 
     });
 
     // Emit cho giảng viên + quản lý kho

@@ -103,7 +103,7 @@ export async function approveBorrowRequest({ id, managerId, repoID }) {
         [
           {
             transactionID,
-            repository: repo._id,
+            repository: repoID,
             material: item.materialID,
             type: "export",
             quantity: item.quantity,

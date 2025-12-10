@@ -55,11 +55,13 @@ const BorrowForm = ({
 
       toast.success("Đã gửi phiếu mượn!");
 
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+
       // Reset form
       setQtyMap({});
       setNotice("");
-
-     
     } catch (err) {
       toast.error(err.response?.data?.message || "Gửi phiếu thất bại!");
     } finally {

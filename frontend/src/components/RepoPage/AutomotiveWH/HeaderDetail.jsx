@@ -201,11 +201,14 @@ const HeaderDetail = ({
             </div>
 
             <div className="flex flex-row gap-[10px] items-center">
-              <Dialog openBorrow={openBorrow} setOpenBorrow={setOpenBorrow}>
+              <Dialog open={openBorrow} onOpenChange={setOpenBorrow}>
                 <DialogTrigger asChild>
                   <div
-                    onClick={() => {
-                      if (checkPermission()) setOpenBorrow(true);
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (checkPermission()) {
+                        setOpenBorrow(true);
+                      }
                     }}
                     className="relative w-[40px] h-[40px] flex items-center justify-center"
                   >
@@ -216,6 +219,7 @@ const HeaderDetail = ({
                     />
                   </div>
                 </DialogTrigger>
+
                 <DialogContent className="bg-[#1a1a1a] rounded-[12px] !max-w-none w-fit gap-[20px] items-center border-none text-white ">
                   <DialogHeader>
                     <DialogTitle className="text-[20px] text-[#fb923c]">
