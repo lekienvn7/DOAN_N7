@@ -13,7 +13,7 @@ async function getAllRepository() {
       select: "userID fullName email -_id",
       populate: { path: "role", select: "roleName -_id" },
     })
-    .populate("materials.material", "name type status -_id");
+    .populate("materials.material", "name type status materialID -_id");
 
   return repo;
 }

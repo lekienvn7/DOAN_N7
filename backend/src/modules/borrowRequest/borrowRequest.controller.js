@@ -97,20 +97,23 @@ export async function approveBorrowRequest(req, res) {
       return res.status(404).json({ message: "Không tìm thấy kho!" });
     }
 
-    const br = await borrowRequestService.approveBorrowRequest({
+    const result = await borrowRequestService.approveBorrowRequest({
       id,
-      managerId, 
-      repoID, 
+      managerId,
+      repoID,
     });
+
+    // 👉 LẤY ĐÚNG borrowRequest
+    const br = result.data;
 
     // Emit cho giảng viên + quản lý kho
     const io = getIO();
-    const teacherId = br.teacher._id.toString();
+    const teacherId = br.teacher.toString(); // teacher là ObjectId
 
     io.to(`user:${teacherId}`).emit("borrowRequest:approved", br);
     io.to(`repo:${repoID}:manager`).emit("borrowRequest:approved", br);
 
-    return res.json(br);
+    return res.json(result); // hoặc res.json(br)
   } catch (err) {
     return res.status(400).json({ message: err.message });
   }

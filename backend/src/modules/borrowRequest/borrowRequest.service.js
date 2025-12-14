@@ -1,4 +1,5 @@
 import BorrowRequest from "./BorrowRequest.model.js";
+import User from "../user/User.model.js";
 import Transaction from "../transaction/Transaction.model.js";
 import Repository from "../repository/Repository.model.js";
 import mongoose from "mongoose";
@@ -10,10 +11,32 @@ async function createBorrowRequest({
   note,
   expectedReturnDate,
 }) {
+  if (!Array.isArray(items) || items.length === 0) {
+    throw new Error("Danh sách vật tư không hợp lệ");
+  }
+
+  // ÉP NGAY Ở ĐÂY
+  const normalizedItems = items.map((it, index) => {
+    const materialId = it.material?._id || it.material;
+
+    if (!materialId) {
+      throw new Error(`Item #${index + 1} bị thiếu material`);
+    }
+
+    if (!it.quantity || it.quantity <= 0) {
+      throw new Error(`Số lượng item #${index + 1} không hợp lệ`);
+    }
+
+    return {
+      material: materialId,
+      quantity: it.quantity,
+    };
+  });
+
   const br = await BorrowRequest.create({
     repository,
     teacher,
-    items,
+    items: normalizedItems,
     note,
     expectedReturnDate,
   });
@@ -41,7 +64,17 @@ export async function approveBorrowRequest({ id, managerId, repoID }) {
   session.startTransaction();
 
   try {
-    // Lấy phiếu mượn + populate vật tư
+    const manager = await User.findOne({ userID: managerId }).session(session);
+
+    if (!manager) {
+      throw new Error("Không tìm thấy người duyệt");
+    }
+
+    const managerObjectId = manager._id;
+
+    /* ------------------------------------------------------
+       1) LẤY PHIẾU MƯỢN
+    ------------------------------------------------------ */
     const br = await BorrowRequest.findById(id)
       .populate("items.material")
       .populate("teacher")
@@ -50,30 +83,36 @@ export async function approveBorrowRequest({ id, managerId, repoID }) {
     if (!br) throw new Error("Không tìm thấy phiếu mượn");
     if (br.status !== "pending") throw new Error("Phiếu đã xử lý");
 
-    // Lấy kho
+    /* ------------------------------------------------------
+       2) LẤY KHO
+    ------------------------------------------------------ */
     const repo = await Repository.findById(repoID).session(session);
     if (!repo) throw new Error("Kho không tồn tại!");
 
-    // Danh sách thay đổi để tạo transaction
     const changeList = [];
 
     /* ------------------------------------------------------
-       1) CHECK SỐ LƯỢNG & CẬP NHẬT SỐ LƯỢNG TRONG KHO
+       3) CHECK & TRỪ KHO
     ------------------------------------------------------ */
     for (const it of br.items) {
-      const matID = it.material._id || it.material;
+      const matID =
+        typeof it.material === "object" ? it.material._id : it.material;
 
       const repoItem = repo.materials.find(
         (m) => m.material.toString() === matID.toString()
       );
 
-      if (!repoItem)
+      if (!repoItem) {
         throw new Error(
-          `Kho không chứa vật tư: ${it.material.name || "Unknown"}`
+          `Kho ${repo.repoName} không chứa vật tư: ${
+            it.material?.name || "Unknown"
+          }`
         );
+      }
 
-      if (repoItem.quantity < it.quantity)
-        throw new Error(`Vật tư ${it.material.name || "—"} không đủ số lượng`);
+      if (repoItem.quantity < it.quantity) {
+        throw new Error(`Vật tư ${it.material?.name || "—"} không đủ số lượng`);
+      }
 
       const before = repoItem.quantity;
       const after = before - it.quantity;
@@ -88,11 +127,10 @@ export async function approveBorrowRequest({ id, managerId, repoID }) {
       });
     }
 
-    // lưu kho
     await repo.save({ session });
 
     /* ------------------------------------------------------
-       2) TẠO TRANSACTION (history)
+       4) TẠO TRANSACTION
     ------------------------------------------------------ */
     for (const item of changeList) {
       const transactionID = `GD-${Date.now()}-${Math.floor(
@@ -109,7 +147,7 @@ export async function approveBorrowRequest({ id, managerId, repoID }) {
             quantity: item.quantity,
             beforeQuantity: item.beforeQuantity,
             afterQuantity: item.afterQuantity,
-            createdBy: managerId,
+            createdBy: managerObjectId,
             note: "Giảng viên mượn vật tư",
           },
         ],
@@ -118,17 +156,17 @@ export async function approveBorrowRequest({ id, managerId, repoID }) {
     }
 
     /* ------------------------------------------------------
-       3) UPDATE PHIẾU MƯỢN
+       5) UPDATE PHIẾU MƯỢN
     ------------------------------------------------------ */
     br.status = "approved";
-    br.approvedBy = managerId;
+    br.approvedBy = managerObjectId; // ✅ SỬA CHỖ QUAN TRỌNG
     br.approvedAt = new Date();
     br.repository = repoID;
 
     await br.save({ session });
 
     /* ------------------------------------------------------
-       4) COMMIT & RETURN
+       6) COMMIT
     ------------------------------------------------------ */
     await session.commitTransaction();
     session.endSession();

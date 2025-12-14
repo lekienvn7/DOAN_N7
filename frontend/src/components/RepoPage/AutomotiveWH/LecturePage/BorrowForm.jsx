@@ -15,6 +15,10 @@ const BorrowForm = ({
   const [submitting, setSubmitting] = useState(false);
   const { user } = useAuth();
 
+  const getMaterialId = (item) => item.material?._id || item._id;
+
+  const getMaterialName = (item) => item.material?.name || item.name || "—";
+
   const handleChange = (id, max, val) => {
     const value = Math.min(Number(val), max);
     setQtyMap((prev) => ({ ...prev, [id]: value }));
@@ -25,7 +29,8 @@ const BorrowForm = ({
     if (borrowList.length === 0) return false;
 
     for (const item of borrowList) {
-      const qty = qtyMap[item._id];
+      const id = getMaterialId(item);
+      const qty = qtyMap[id];
 
       if (qty === "" || qty === undefined || qty === null) return false;
       if (Number(qty) <= 0) return false;
@@ -39,10 +44,13 @@ const BorrowForm = ({
     setSubmitting(true);
 
     try {
-      const items = borrowList.map((item) => ({
-        material: item._id,
-        quantity: qtyMap[item._id],
-      }));
+      const items = borrowList.map((item) => {
+        const id = getMaterialId(item);
+        return {
+          material: id,
+          quantity: qtyMap[id],
+        };
+      });
 
       const payload = {
         repository: repositoryId,
@@ -101,17 +109,21 @@ const BorrowForm = ({
               )}
 
               {borrowList.map((item) => (
-                <tr key={item._id} className="text-[14px]">
-                  <td className="p-[5px]">{item.name}</td>
+                <tr key={getMaterialId(item)} className="text-[14px]">
+                  <td className="p-[5px]">{getMaterialName(item)}</td>
 
                   <td>
                     <div className="flex flex-row gap-[5px]">
                       <input
                         type="number"
                         max={item.quantity}
-                        value={qtyMap[item._id] || ""}
+                        value={qtyMap[getMaterialId(item)] || ""}
                         onChange={(e) =>
-                          handleChange(item._id, item.quantity, e.target.value)
+                          handleChange(
+                            getMaterialId(item),
+                            item.quantity,
+                            e.target.value
+                          )
                         }
                         className="no-arrows w-[40px] px-[10px] bg-[#222] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#fb923c]"
                       />
