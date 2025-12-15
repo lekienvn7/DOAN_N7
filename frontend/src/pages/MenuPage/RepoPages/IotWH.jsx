@@ -1,6 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import IotUtilities from "@/components/RepoPage/IotWH/IotUtilities";
 import HeaderDetail from "@/components/RepoPage/IotWH/HeaderDetail";
 import RepoDetail from "@/components/RepoPage/IotWH/RepoDetail";
 
@@ -15,8 +14,6 @@ const IotWH = () => {
   };
 
   return (
-    <div className="flex flex-row">
-      <IotUtilities />
       <div className="flex flex-col">
         <HeaderDetail
           mode={mode}
@@ -35,7 +32,6 @@ const IotWH = () => {
           onReload={reloadList}
         />
       </div>
-    </div>
   );
 };
 

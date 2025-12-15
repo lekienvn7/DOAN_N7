@@ -12,7 +12,7 @@ const RepoDetail = ({ mode, reload, searchData, sortMode, onReload }) => {
         transition={{
           duration: 0.5,
         }}
-        className=" w-[calc(100vw-240px)] max-h-[calc(100vh-270px)] overflow-y-auto scrollbar-thin scrollbar-thumb-[#60a5fa]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-gray-700"
+        className=" w-[100vw] max-h-[calc(100vh-270px)] overflow-y-auto scrollbar-thin scrollbar-thumb-[#60a5fa]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-gray-700"
       >
         <TechnologyList
           key={reload}

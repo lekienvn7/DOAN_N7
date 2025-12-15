@@ -1,6 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import MechanicalUtilities from "@/components/RepoPage/MechanicalWH/MechanicalUtilities";
 import HeaderDetail from "@/components/RepoPage/MechanicalWH/HeaderDetail";
 import RepoDetail from "@/components/RepoPage/MechanicalWH/RepoDetail";
 
@@ -15,8 +14,6 @@ const MechanicalWH = () => {
   };
 
   return (
-    <div className="flex flex-row">
-      <MechanicalUtilities />
       <div className="flex flex-col">
         <HeaderDetail
           mode={mode}
@@ -35,7 +32,6 @@ const MechanicalWH = () => {
           onReload={reloadList}
         />
       </div>
-    </div>
   );
 };
 

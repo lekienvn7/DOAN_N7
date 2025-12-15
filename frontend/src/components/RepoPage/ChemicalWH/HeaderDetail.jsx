@@ -8,13 +8,15 @@ import {
   Minus,
   Search,
   RefreshCcw,
-  TrendingUpDown,
   ChevronsRight,
-  TrendingUp,
   ToolCase,
+  ListCollapse,
+  PencilRuler,
+  Bell,
   ArrowDownUp,
   Download,
   History,
+  SquareMousePointer,
   X,
 } from "lucide-react";
 import { useAuth } from "@/context/authContext";
@@ -30,6 +32,7 @@ import {
   DialogClose,
 } from "../../ui/dialog.jsx";
 import axiosClient from "@/api/axiosClient";
+import BorrowList from "./ManagerPage/BorrowList";
 
 const HeaderDetail = ({
   mode,
@@ -39,6 +42,9 @@ const HeaderDetail = ({
   setSearchData,
   sortMode,
   setSortMode,
+  onReloadTicket,
+  reload,
+  isLecturer,
 }) => {
   const [open, setOpen] = useState(false);
   const [repository, setRepository] = useState("");
@@ -48,6 +54,8 @@ const HeaderDetail = ({
   const [showHistory, setShowHistory] = useState(false);
   const searchRef = useRef(null);
   const historyRef = useRef(null);
+  const [openBorrow, setOpenBorrow] = useState(false);
+  const [highlight, setHighlight] = useState(false);
 
   const checkPermission = () => {
     const hasAccess =
@@ -130,6 +138,10 @@ const HeaderDetail = ({
     }
   };
 
+  const handleBellChange = (count) => {
+    setHighlight(count > 0);
+  };
+
   useEffect(() => {
     function handleClickOutside(e) {
       if (
@@ -148,7 +160,11 @@ const HeaderDetail = ({
   }, []);
 
   return (
-    <div className=" flex flex-col p-[20px] w-[calc(100vw-240px)] h-[150px] bg-bgmain border-t-1 border-gray-700">
+    <div
+      className={`flex flex-col p-[20px] ${
+        isLecturer ? "w-[calc(100vw-240px)]" : "w-[100vw]"
+      } h-[150px] bg-bgmain border-t-1 border-gray-700`}
+    >
       <div className="flex flex-col gap-[5px]">
         <AnimatePresence>
           <motion.div
@@ -172,45 +188,95 @@ const HeaderDetail = ({
               </p>
             </div>
 
-            <Dialog>
-              <DialogTrigger asChild>
-                <button className="h-[40px] p-[15px] bg-highlightcl rounded-[12px] items-center font-bold flex flex-row gap-[10px] cursor-pointer hover:bg-[#2563eb]">
-                  <ToolCase /> Thông tin
-                </button>
-              </DialogTrigger>
+            <div className="flex flex-row gap-[10px] items-center">
+              <Dialog open={openBorrow} onOpenChange={setOpenBorrow}>
+                <DialogTrigger asChild>
+                  <div
+                    onClick={(e) => {
+                      e.preventDefault();
+                      if (checkPermission()) {
+                        setOpenBorrow(true);
+                      }
+                    }}
+                    className="relative w-[40px] h-[40px] flex items-center justify-center"
+                  >
+                    <Bell
+                      className={`${
+                        highlight ? "text-[#c7a7ff]" : "text-textpri"
+                      } hover:text-[#c7a7ff] hover:scale-[1.05] active:scale-[0.95] transition-all duration-100 cursor-pointer`}
+                    />
+                  </div>
+                </DialogTrigger>
 
-              <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white ">
-                <DialogHeader>
-                  <DialogTitle>
-                    Thông tin chi tiết{" "}
-                    <span className="text-[#c7a7ff]">kho hóa chất</span>
-                  </DialogTitle>
-                </DialogHeader>
-                <ul className="mt-[20px] flex flex-col gap-[5px]">
-                  <li>
-                    <span className="text-[#60A5FA] font-semibold">
-                      Vị trí:
-                    </span>{" "}
-                    {repository.location}
-                  </li>
-                  <li>
-                    <span className="text-[#60A5FA] font-semibold">
-                      {" "}
-                      Quản lý phụ trách:
-                    </span>{" "}
-                    {repository?.manager?.fullName || "Chưa có quản lý"}
-                    {" - "}
-                    {repository?.manager?.email || "—"}
-                  </li>
-                  <li>
-                    <span className="text-[#60A5FA] font-semibold">
-                      Tạo vào:
-                    </span>{" "}
-                    {formatDate(repository.createdAt)}
-                  </li>
-                </ul>
-              </DialogContent>
-            </Dialog>
+                <DialogContent className="bg-[#1a1a1a] rounded-[12px] !max-w-none w-fit gap-[20px] items-center border-none text-white ">
+                  <DialogHeader>
+                    <DialogTitle className="text-[20px] text-[#c7a7ff]">
+                      Danh Sách Phiếu Mượn Chờ Duyệt
+                    </DialogTitle>
+                    <DialogDescription className={`text-textsec`}>
+                      Duyệt phiếu mượn để chuyển vật tư cho giáo viên
+                    </DialogDescription>
+                  </DialogHeader>
+
+                  <BorrowList
+                    onBellChange={handleBellChange}
+                    onReloadTicket={onReloadTicket}
+                    reload={reload}
+                  />
+
+                  <p className="w-fit text-[22px] font-vegan text-textsec drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
+                    <span className="text-[#c7a7ff]/70 drop-shadow-[0_0_7px_rgba(215,184,255,0.55)]">
+                      U
+                    </span>
+                    neti{" "}
+                    <span className="text-[#c7a7ff]/70 drop-shadow-[0_0_7px_rgba(215,184,255,0.55)]">
+                      C
+                    </span>
+                    hemical
+                  </p>
+                </DialogContent>
+              </Dialog>
+
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="h-[40px] p-[15px] bg-highlightcl rounded-[12px] items-center font-bold flex flex-row gap-[10px] cursor-pointer hover:bg-[#2563eb]">
+                    <ToolCase /> Thông tin
+                  </button>
+                </DialogTrigger>
+
+                <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white ">
+                  <DialogHeader>
+                    <DialogTitle>
+                      Thông tin chi tiết{" "}
+                      <span className="text-[#c7a7ff]">kho hóa chất</span>
+                    </DialogTitle>
+                  </DialogHeader>
+                  <ul className="mt-[20px] flex flex-col gap-[5px]">
+                    <li>
+                      <span className="text-[#60A5FA] font-semibold">
+                        Vị trí:
+                      </span>{" "}
+                      {repository.location}
+                    </li>
+                    <li>
+                      <span className="text-[#60A5FA] font-semibold">
+                        {" "}
+                        Quản lý phụ trách:
+                      </span>{" "}
+                      {repository?.manager?.fullName || "Chưa có quản lý"}
+                      {" - "}
+                      {repository?.manager?.email || "—"}
+                    </li>
+                    <li>
+                      <span className="text-[#60A5FA] font-semibold">
+                        Tạo vào:
+                      </span>{" "}
+                      {formatDate(repository.createdAt)}
+                    </li>
+                  </ul>
+                </DialogContent>
+              </Dialog>
+            </div>
           </motion.div>
         </AnimatePresence>
 
@@ -425,18 +491,21 @@ const HeaderDetail = ({
             <div className="border-r h-5 mx-2 text-textsec "></div>
             <button
               onClick={(e) => {
-                e.preventDefault(); // Ngăn Radix mở tự động
-                if (checkPermission()) {
-                  setMode((prev) => (prev === "view" ? "edit" : "view"));
-                }
+                setMode((prev) => (prev === "view" ? "edit" : "view"));
               }}
               className="text-[14px] ml-[5px] flex flex-row gap-[10px] hover:text-[#c7a7ff] transition-colors duration-300 cursor-pointer ml-[15px]"
             >
-              {mode === "view" ? `Chỉnh sửa` : `Chi tiết`}
+              {mode === "view"
+                ? `${isLecturer ? "Lựa chọn" : "Chỉnh sửa"}`
+                : `Chi tiết`}
               {mode === "view" ? (
-                <TrendingUp size={18} />
+                isLecturer ? (
+                  <SquareMousePointer size={18} />
+                ) : (
+                  <PencilRuler size={18} />
+                )
               ) : (
-                <TrendingUpDown size={18} />
+                <ListCollapse size={18} />
               )}
             </button>
           </div>

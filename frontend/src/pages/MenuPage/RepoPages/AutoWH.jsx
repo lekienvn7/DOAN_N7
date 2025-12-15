@@ -1,7 +1,6 @@
 import React from "react";
 import { useState } from "react";
 import { useAuth } from "@/context/authContext";
-import AutomotiveUtilities from "@/components/RepoPage/AutomotiveWH/AutomotiveUtilities";
 import HeaderDetail from "@/components/RepoPage/AutomotiveWH/HeaderDetail";
 import RepoDetail from "@/components/RepoPage/AutomotiveWH/RepoDetail";
 import BorrowForm from "@/components/RepoPage/AutomotiveWH/LecturePage/BorrowForm";
@@ -56,7 +55,7 @@ const AutoWH = () => {
           onBorrowSuccess={() => setCount((prev) => prev + 1)}
         />
       ) : (
-        <AutomotiveUtilities />
+        <></>
       )}
       <div className="flex flex-col">
         <HeaderDetail

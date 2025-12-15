@@ -10,7 +10,7 @@ const BorrowList = ({ onBellChange, onReloadTicket, reload }) => {
   const [request, setRequest] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
-  const AUTOMOTIVE_REPO_ID = "690981405de9a612110089dd";
+  const AUTOMOTIVE_REPO_ID = "691553eafd7805ceea7a95b6";
 
   const loadData = async () => {
     setLoading(true);
@@ -50,7 +50,7 @@ const BorrowList = ({ onBellChange, onReloadTicket, reload }) => {
       await axiosClient.patch("/borrow-requests/approve", {
         id,
         managerId: user.userID,
-        repoID: "690981405de9a612110089dd",
+        repoID: "691553eafd7805ceea7a95b6",
       });
 
       setRequest((prev) => {

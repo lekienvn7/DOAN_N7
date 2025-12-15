@@ -58,7 +58,6 @@ const HeaderDetail = ({
   const searchRef = useRef(null);
   const historyRef = useRef(null);
   const [highlight, setHighlight] = useState(false);
-  const [count, setCount] = useState(0);
 
   const checkPermission = () => {
     const hasAccess =
@@ -176,7 +175,11 @@ const HeaderDetail = ({
   }, []);
 
   return (
-    <div className=" flex flex-col p-[20px] w-[calc(100vw-240px)] h-[150px] bg-bgmain border-t-1 border-gray-700">
+    <div
+      className={`flex flex-col p-[20px] ${
+        isLecturer ? "w-[calc(100vw-240px)]" : "w-[100vw]"
+      } h-[150px] bg-bgmain border-t-1 border-gray-700`}
+    >
       <div className="flex flex-col gap-[5px]">
         <AnimatePresence>
           <motion.div

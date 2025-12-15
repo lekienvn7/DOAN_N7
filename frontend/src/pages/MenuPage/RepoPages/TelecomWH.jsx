@@ -1,6 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import TelecomUtilities from "@/components/RepoPage/TelecomWH/TelecomUtilities";
 import HeaderDetail from "@/components/RepoPage/TelecomWH/HeaderDetail";
 import RepoDetail from "@/components/RepoPage/TelecomWH/RepoDetail";
 
@@ -15,8 +14,6 @@ const TelecomWH = () => {
   };
 
   return (
-    <div className="flex flex-row">
-      <TelecomUtilities />
       <div className="flex flex-col">
         <HeaderDetail
           mode={mode}
@@ -35,7 +32,6 @@ const TelecomWH = () => {
           onReload={reloadList}
         />
       </div>
-    </div>
   );
 };
 

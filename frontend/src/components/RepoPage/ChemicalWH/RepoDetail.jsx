@@ -2,7 +2,15 @@ import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import ChemicalList from "./ChemicalList";
 
-const RepoDetail = ({ mode, reload, searchData, sortMode, onReload }) => {
+const RepoDetail = ({
+  mode,
+  reload,
+  searchData,
+  sortMode,
+  onReload,
+  isLecturer,
+  onSelectChange,
+}) => {
   return (
     <AnimatePresence>
       <motion.div
@@ -12,7 +20,9 @@ const RepoDetail = ({ mode, reload, searchData, sortMode, onReload }) => {
         transition={{
           duration: 0.5,
         }}
-        className=" w-[calc(100vw-240px)] max-h-[calc(100vh-270px)] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-gray-700"
+        className={`${
+          isLecturer ? "w-[calc(100vw-240px)]" : "w-[100vw]"
+        } max-h-[calc(100vh-270px)] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 p-[0px] bg-bgmain border-t-1 border-gray-700`}
       >
         <ChemicalList
           key={reload}
@@ -21,6 +31,8 @@ const RepoDetail = ({ mode, reload, searchData, sortMode, onReload }) => {
           searchData={searchData}
           sortMode={sortMode}
           onReload={onReload}
+          isLecturer={isLecturer}
+          onSelectChange={onSelectChange}
         />
       </motion.div>
     </AnimatePresence>

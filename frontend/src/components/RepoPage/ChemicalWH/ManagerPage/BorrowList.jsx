@@ -10,7 +10,7 @@ const BorrowList = ({ onBellChange, onReloadTicket, reload }) => {
   const [request, setRequest] = useState([]);
   const [loading, setLoading] = useState(false);
   const { user } = useAuth();
-  const AUTOMOTIVE_REPO_ID = "690981405de9a612110089dd";
+  const CHEMICAL_REPO_ID = "69230a5e163002521d0aa697";
 
   const loadData = async () => {
     setLoading(true);
@@ -19,7 +19,7 @@ const BorrowList = ({ onBellChange, onReloadTicket, reload }) => {
       const res = await axiosClient.get("/borrow-requests/pending");
 
       const filtered = (res.data || []).filter(
-        (r) => r.repository === AUTOMOTIVE_REPO_ID
+        (r) => r.repository === CHEMICAL_REPO_ID
       );
 
       setRequest(filtered);
@@ -50,7 +50,7 @@ const BorrowList = ({ onBellChange, onReloadTicket, reload }) => {
       await axiosClient.patch("/borrow-requests/approve", {
         id,
         managerId: user.userID,
-        repoID: "690981405de9a612110089dd",
+        repoID: "69230a5e163002521d0aa697",
       });
 
       setRequest((prev) => {
@@ -70,7 +70,7 @@ const BorrowList = ({ onBellChange, onReloadTicket, reload }) => {
       await axiosClient.patch(`/borrow-requests/reject`, {
         id,
         managerId: user._id,
-        repoID: "690981405de9a612110089dd",
+        repoID: "69230a5e163002521d0aa697",
       });
 
       setRequest((prev) => {

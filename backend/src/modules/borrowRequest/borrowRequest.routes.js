@@ -5,6 +5,7 @@ import {
   getPendingRequests,
   getMyBorrowing,
   rejectBorrowRequest,
+  returnBorrow,
 } from "./borrowRequest.controller.js";
 
 const router = express.Router();
@@ -16,6 +17,8 @@ router.get("/pending/", getPendingRequests);
 router.patch("/approve", approveBorrowRequest);
 
 router.patch("/reject", rejectBorrowRequest);
+
+router.patch("/return", returnBorrow);
 
 router.get("/my-borrowing", getMyBorrowing);
 

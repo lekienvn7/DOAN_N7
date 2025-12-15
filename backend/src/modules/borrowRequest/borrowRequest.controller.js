@@ -118,3 +118,14 @@ export async function approveBorrowRequest(req, res) {
     return res.status(400).json({ message: err.message });
   }
 }
+
+export async function returnBorrow(req, res) {
+  try {
+    const { id } = req.params;
+    const result = await borrowRequestService.returnBorrowRequest({ id });
+    res.json(result);
+  } catch (err) {
+    res.status(400).json({ message: err.message });
+  }
+}
+

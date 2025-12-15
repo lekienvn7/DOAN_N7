@@ -200,10 +200,46 @@ async function rejectBorrowRequest({ id, managerId }) {
   return br;
 }
 
+export async function returnBorrowRequest({ id }) {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const br = await BorrowRequest.findById(id)
+      .populate("items.material")
+      .session(session);
+
+    if (!br) throw new Error("Không tìm thấy phiếu");
+    if (br.status !== "approved")
+      throw new Error("Phiếu chưa được duyệt hoặc đã trả");
+
+    // cộng lại kho
+    for (const it of br.items) {
+      const mat = await Material.findById(it.material._id).session(session);
+      mat.quantity += it.quantity;
+      await mat.save({ session });
+    }
+
+    // cập nhật trạng thái
+    br.status = "returned";
+    br.returnedAt = new Date();
+    await br.save({ session });
+
+    await session.commitTransaction();
+    return br;
+  } catch (err) {
+    await session.abortTransaction();
+    throw err;
+  } finally {
+    session.endSession();
+  }
+}
+
 export default {
   createBorrowRequest,
   approveBorrowRequest,
   getMyBorrowing,
   getPendingRequests,
   rejectBorrowRequest,
+  returnBorrowRequest,
 };

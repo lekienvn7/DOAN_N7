@@ -14,7 +14,15 @@ import { Tooltip } from "react-tooltip";
 import ChemicalDetail from "./ChemicalDetail";
 import ChemicalEdit from "./ChemicalEdit";
 
-const ChemicalList = ({ mode, reload, searchData, onReload, sortMode }) => {
+const ChemicalList = ({
+  mode,
+  reload,
+  searchData,
+  onReload,
+  sortMode,
+  isLecturer,
+  onSelectChange,
+}) => {
   const [chemical, setChemical] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = (searchData || "").toLowerCase().trim().split(/\s+/);
@@ -24,6 +32,8 @@ const ChemicalList = ({ mode, reload, searchData, onReload, sortMode }) => {
   const [sortHazard, setSortHazard] = useState(null);
   const [sortFlame, setSortFlame] = useState(null);
   const [filterData, setFilterData] = useState([]);
+
+  const [selectedItems, setSelectedItems] = useState({});
 
   useEffect(() => {
     setLoading(true);
@@ -55,6 +65,19 @@ const ChemicalList = ({ mode, reload, searchData, onReload, sortMode }) => {
 
     setFilterData(filtered);
   }, [searchData, chemical]);
+
+  const handleSelect = (item, checked) => {
+    setSelectedItems((prev) => ({
+      ...prev,
+      [item._id]: {
+        ...prev[item._id],
+        checked,
+        quantity: checked ? prev[item._id]?.quantity || 1 : 0,
+        itemData: item,
+      },
+    }));
+    onSelectChange(item, checked ? selectedItems[item._id]?.quantity || 1 : 0);
+  };
 
   const hazardLevelList = [
     { type: "low", name: "Không nguy hiểm", num: 0 },
@@ -554,7 +577,9 @@ const ChemicalList = ({ mode, reload, searchData, onReload, sortMode }) => {
             </th>
             <th className="p-[5px] w-[5%]">Độc tính</th>
             <th colSpan={2} className="text-center w-[5%]">
-              {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
+              {mode === "view"
+                ? "Chi tiết"
+                : `${isLecturer ? "Lựa chọn" : " Chỉnh sửa"}`}
             </th>
           </tr>
         </thead>
@@ -650,6 +675,13 @@ const ChemicalList = ({ mode, reload, searchData, onReload, sortMode }) => {
                 <td className=" text-center p-[5px]">
                   {mode === "view" ? (
                     <ChemicalDetail item={item} />
+                  ) : isLecturer ? (
+                    <input
+                      type="checkbox"
+                      checked={selectedItems[item._id]?.checked || false}
+                      onChange={(e) => handleSelect(item, e.target.checked)}
+                      className="w-[18px] h-[18px] cursor-pointer"
+                    />
                   ) : (
                     <ChemicalEdit item={item} onReload={onReload} />
                   )}

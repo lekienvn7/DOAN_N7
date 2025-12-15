@@ -9,12 +9,19 @@ import {
   ClockArrowDown,
 } from "lucide-react";
 import axiosClient from "@/api/axiosClient";
-import { toast } from "sonner";
 import { Tooltip } from "react-tooltip";
 import ElectricDetail from "./ElectricDetail";
 import ElectricEdit from "./ElectricEdit";
 
-const ElectricList = ({ mode, reload, searchData, sortMode, onReload }) => {
+const ElectricList = ({
+  mode,
+  reload,
+  searchData,
+  onReload,
+  sortMode,
+  isLecturer,
+  onSelectChange,
+}) => {
   const [electrical, setElectrical] = useState([]);
   const [loading, setLoading] = useState(false);
   const keywords = searchData.toLowerCase().trim().split(/\s+/);
@@ -24,6 +31,7 @@ const ElectricList = ({ mode, reload, searchData, sortMode, onReload }) => {
   const [sortPower, setSortPower] = useState(null);
   const [sortCurrent, setSortCurrent] = useState(null);
   const [filterData, setFilterData] = useState([]);
+  const [selectedItems, setSelectedItems] = useState({});
 
   useEffect(() => {
     setLoading(true);
@@ -55,6 +63,19 @@ const ElectricList = ({ mode, reload, searchData, sortMode, onReload }) => {
 
     setFilterData(filtered);
   }, [searchData, electrical]);
+
+  const handleSelect = (item, checked) => {
+    setSelectedItems((prev) => ({
+      ...prev,
+      [item._id]: {
+        ...prev[item._id],
+        checked,
+        quantity: checked ? prev[item._id]?.quantity || 1 : 0,
+        itemData: item,
+      },
+    }));
+    onSelectChange(item, checked ? selectedItems[item._id]?.quantity || 1 : 0);
+  };
 
   const highlightText = (text, searchData) => {
     if (!searchData.trim()) return text;
@@ -513,7 +534,9 @@ const ElectricList = ({ mode, reload, searchData, sortMode, onReload }) => {
               </div>
             </th>
             <th colSpan={2} className="text-center w-[5%]">
-              {mode === "view" ? "Chi tiết" : "Chỉnh sửa"}
+              {mode === "view"
+                ? "Chi tiết"
+                : `${isLecturer ? "Lựa chọn" : " Chỉnh sửa"}`}
             </th>
           </tr>
         </thead>
@@ -565,6 +588,13 @@ const ElectricList = ({ mode, reload, searchData, sortMode, onReload }) => {
               <td className=" text-center p-[5px]">
                 {mode === "view" ? (
                   <ElectricDetail item={item} />
+                ) : isLecturer ? (
+                  <input
+                    type="checkbox"
+                    checked={selectedItems[item._id]?.checked || false}
+                    onChange={(e) => handleSelect(item, e.target.checked)}
+                    className="w-[18px] h-[18px] cursor-pointer"
+                  />
                 ) : (
                   <ElectricEdit item={item} onReload={onReload} />
                 )}
