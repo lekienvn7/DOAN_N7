@@ -98,20 +98,21 @@ const CreateForm = () => {
           <option value="">-- Chọn vai trò --</option>
           <option value="ADMINISTRATOR">Quản lý tổng</option>
           <option value="WH MANAGER">Quản lý kho</option>
-          <option value="MT MANAGER">Quản lý bảo trì</option>
-          <option value="LECTURER">Giảng viên</option>
+          <option value="LECTURER">Nhân viên</option>
         </select>
 
         <select
           value={yourRepo}
-          onClick={() => {
-            if (!(role === "ADMINISTRATOR" || role === "WH MANAGER")) {
+          onClick={(e) => {
+            if (role === "ADMINISTRATOR") {
+              setYourRepo("all");
+            } else if (!(role === "WH MANAGER")) {
               toast.error("Không thể chọn phân kho với quyền hiện tại!");
             }
           }}
           onChange={(e) => {
             {
-              !(role === "ADMINISTRATOR" || role === "WH MANAGER")
+              !(role === "WH MANAGER")
                 ? e.preventDefault()
                 : setYourRepo(e.target.value);
             }

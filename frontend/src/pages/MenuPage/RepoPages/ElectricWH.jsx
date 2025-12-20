@@ -45,18 +45,6 @@ const ElectricWH = () => {
 
   return (
     <div className="flex flex-row">
-      {isLecturer ? (
-        <BorrowForm
-          borrowList={borrowList}
-          onUpdateQuantity={handleUpdateQuantity}
-          borrowQty={borrowQty}
-          setBorrowQty={setBorrowQty}
-          repositoryId={repoId}
-          onBorrowSuccess={() => setCount((prev) => prev + 1)}
-        />
-      ) : (
-        <></>
-      )}
       <div className="flex flex-col">
         <HeaderDetail
           mode={mode}
@@ -69,6 +57,9 @@ const ElectricWH = () => {
           sortMode={sortMode}
           setSortMode={setSortMode}
           isLecturer={isLecturer}
+          borrowList={borrowList}
+          onUpdateQuantity={handleUpdateQuantity}
+          repositoryId={repoId}
         />
         <RepoDetail
           mode={mode}

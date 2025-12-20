@@ -32,7 +32,9 @@ async function addRole(data) {
   }
 
   // Check permission tồn tại
-  const existingPermission = await Permission.findOne({ permissionID: permission });
+  const existingPermission = await Permission.findOne({
+    permissionID: permission,
+  });
   if (!existingPermission) {
     const err = new Error("Mã quyền không tồn tại!");
     err.status = 404;
@@ -54,7 +56,7 @@ async function addRole(data) {
 }
 
 async function updateRole(roleID, data) {
-  const { roleDescription, permission } = data;
+  const { roleDescription, permission, roleName } = data;
 
   const existingPermission = await Permission.findOne({
     permissionID: permission,
@@ -68,7 +70,7 @@ async function updateRole(roleID, data) {
 
   const updatedRole = await Role.findOneAndUpdate(
     { roleID },
-    { roleDescription, permission: existingPermission._id },
+    { roleDescription, roleName, permission: existingPermission._id },
     { new: true }
   );
 

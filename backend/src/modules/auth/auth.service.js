@@ -17,6 +17,8 @@ function buildPayload(user) {
     roleID: user.role?.roleID,
     roleName: user.role?.roleName,
     yourRepo: user.yourRepo || [],
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
   };
 }
 
@@ -56,13 +58,10 @@ async function login(data) {
     };
   }
 
-  // Access token
   const token = signAccessToken(user);
 
-  // Refresh token random
   const refreshToken = crypto.randomBytes(64).toString("hex");
 
-  // Xóa session cũ NẾU bạn muốn 1 user chỉ login 1 nơi
   await Session.deleteMany({ userID: user._id });
 
   // Tạo session mới
@@ -111,7 +110,9 @@ async function refresh(refreshToken) {
 
   if (session.expiresAt < new Date()) {
     await Session.deleteOne({ _id: session._id });
-    const err = new Error("Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!");
+    const err = new Error(
+      "Phiên đăng nhập đã hết hạn, vui lòng đăng nhập lại!"
+    );
     err.status = 401;
     throw err;
   }

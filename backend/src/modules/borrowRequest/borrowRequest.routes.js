@@ -7,6 +7,7 @@ import {
   rejectBorrowRequest,
   returnBorrow,
 } from "./borrowRequest.controller.js";
+import { verifyToken } from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -14,12 +15,12 @@ router.post("/", createBorrowRequest);
 
 router.get("/pending/", getPendingRequests);
 
-router.patch("/approve", approveBorrowRequest);
+router.patch("/approve", verifyToken, approveBorrowRequest);
 
-router.patch("/reject", rejectBorrowRequest);
+router.patch("/reject", verifyToken, rejectBorrowRequest);
 
-router.patch("/return", returnBorrow);
+router.put("/return/:id", verifyToken, returnBorrow);
 
-router.get("/my-borrowing", getMyBorrowing);
+router.get("/my-borrowing/:id", getMyBorrowing);
 
 export default router;

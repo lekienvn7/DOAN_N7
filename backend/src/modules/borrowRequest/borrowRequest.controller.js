@@ -40,7 +40,7 @@ export async function getPendingRequests(req, res) {
 }
 
 export async function getMyBorrowing(req, res) {
-  const teacherId = req.body.userID;
+  const teacherId = req.params.id;
 
   if (!teacherId) {
     return res.status(400).json({ message: "Không thấy userID" });
@@ -51,7 +51,8 @@ export async function getMyBorrowing(req, res) {
 
 export async function rejectBorrowRequest(req, res) {
   try {
-    const { id, managerId, repoID } = req.body;
+    const { id, repoID } = req.body;
+    const managerId = req.user._id;
 
     if (!managerId) {
       return res.status(404).json({ message: "Không tìm thấy tài khoản!" });
@@ -87,7 +88,8 @@ export async function rejectBorrowRequest(req, res) {
 
 export async function approveBorrowRequest(req, res) {
   try {
-    const { id, managerId, repoID } = req.body;
+    const { id, repoID } = req.body;
+    const managerId = req.user._id;
 
     if (!managerId) {
       return res.status(404).json({ message: "Không tìm thấy tài khoản!" });
@@ -122,10 +124,15 @@ export async function approveBorrowRequest(req, res) {
 export async function returnBorrow(req, res) {
   try {
     const { id } = req.params;
-    const result = await borrowRequestService.returnBorrowRequest({ id });
+    const userId = req.user._id;
+
+    const result = await borrowRequestService.returnBorrowRequest({
+      id,
+      managerId: userId,
+    });
+
     res.json(result);
   } catch (err) {
     res.status(400).json({ message: err.message });
   }
 }
-

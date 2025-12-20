@@ -12,7 +12,7 @@ const Menu = () => {
     { name: "Kho vật tư", path: "/error-repo", key: "2" },
     { name: "Bảo trì thiết bị", path: "/error-material", key: "3" },
     { name: "Báo cáo", path: "/error-report", key: "4" },
-    { name: "Thông tin tài khoản", path: "/error-user", key: "5" },
+    { name: "Chỉnh sửa thông tin", path: "/user", key: "5" },
   ];
 
   // Admin
@@ -20,7 +20,7 @@ const Menu = () => {
     { name: "Trang chủ", path: "/home", key: "1" },
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
-    { name: "Giao tiếp", path: "/notice", key: "4" },
+    { name: "Chỉnh sửa thông tin", path: "/user", key: "4" },
     { name: "Quản lý/Phân quyền", path: "/role", key: "5" },
   ];
 
@@ -29,16 +29,16 @@ const Menu = () => {
     { name: "Trang chủ", path: "/home", key: "1" },
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
-    { name: "Báo cáo", path: "/report", key: "4" },
-    { name: "Thông tin tài khoản", path: "/user", key: "5" },
+    { name: "Vật tư đang mượn", path: "/report", key: "4" },
+    { name: "Chỉnh sửa thông tin", path: "/user", key: "5" },
   ];
 
   const lecturerMenuItems = [
     { name: "Trang chủ", path: "/home", key: "1" },
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
-    { name: "Tin nhắn", path: "/notice", key: "4" },
-    { name: "Thông tin tài khoản", path: "/user", key: "5" },
+    { name: "Vật tư đang mượn", path: "/report", key: "4" },
+    { name: "Chỉnh sửa thông tin", path: "/user", key: "5" },
   ];
 
   // Chọn menu theo role
@@ -77,7 +77,7 @@ const Menu = () => {
   };
 
   return (
-    <ul className="flex flex-row gap-[30px]">
+    <ul className="flex flex-row gap-[40px]">
       {activeMenu.map((item) => (
         <li key={item.path}>
           <Link

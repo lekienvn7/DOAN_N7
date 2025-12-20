@@ -3,16 +3,22 @@ import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "sonner";
 import axiosClient from "@/api/axiosClient";
 import { useAuth } from "@/context/authContext";
+import { Calendar } from "@/components/ui/calendar";
+import { cn } from "@/lib/utils";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { CalendarIcon } from "lucide-react";
+import { format } from "date-fns";
 
-const BorrowForm = ({
-  borrowList,
-  onUpdateQuantity,
-  repositoryId,
-  onBorrowSuccess,
-}) => {
+const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
   const [qtyMap, setQtyMap] = useState({});
   const [notice, setNotice] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [expectedReturnDate, setExpectedReturnDate] = useState(undefined);
   const { user } = useAuth();
 
   const getMaterialId = (item) => item.material?._id || item._id;
@@ -25,8 +31,12 @@ const BorrowForm = ({
     onUpdateQuantity(id, value);
   };
 
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const isValid = () => {
     if (borrowList.length === 0) return false;
+    if (!expectedReturnDate) return false;
 
     for (const item of borrowList) {
       const id = getMaterialId(item);
@@ -57,6 +67,7 @@ const BorrowForm = ({
         items,
         note: notice,
         teacher: user.userID,
+        expectedReturnDate,
       };
 
       await axiosClient.post("/borrow-requests", payload);
@@ -70,6 +81,7 @@ const BorrowForm = ({
       // Reset form
       setQtyMap({});
       setNotice("");
+      setExpectedReturnDate("");
     } catch (err) {
       toast.error(err.response?.data?.message || "Gửi phiếu thất bại!");
     } finally {
@@ -79,23 +91,51 @@ const BorrowForm = ({
 
   return (
     <AnimatePresence>
-      <div className="flex flex-col gap-[35px] p-[15px] w-[240px] bg-bgmain border-t-1 border-r-1 border-gray-700">
-        <div className="flex flex-col gap-[5px]">
-          <h2 className="text-center text-[20px] font-bold">
-            Phiếu mượn vật tư
-          </h2>
-          <p className="text-center text-[12px] text-textsec">
-            <span className="text-red-400">Chú ý:</span> không được mượn bằng
-            hoặc quá số lượng tồn kho
-          </p>
+      <div className="flex flex-col gap-[25px] w-[500px]">
+        <div className="flex flex-col gap-[15px]">
+          <div className="flex flex-col gap-[5px]">
+            <p className="ml-[5px] text-[13px]">
+              Hạn trả <span className="text-red-400">*</span>
+            </p>
+
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-[200px] justify-start text-left font-normal bg-[#222] text-white cursor-pointer",
+                    !expectedReturnDate && "text-gray-400"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {expectedReturnDate
+                    ? format(expectedReturnDate, "dd/MM/yyyy")
+                    : "Chọn ngày trả"}
+                </Button>
+              </PopoverTrigger>
+
+              <PopoverContent
+                className="w-auto p-0 bg-[#0f0f0f] text-textpri "
+                align="start"
+              >
+                <Calendar
+                  mode="single"
+                  selected={expectedReturnDate}
+                  onSelect={setExpectedReturnDate}
+                  disabled={(date) => date < today} // không chọn ngày quá khứ
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
         </div>
 
-        <div className="max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60">
+        <div className="max-h-[250px] w-[570px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60">
           <table>
             <thead className="border-b border-gray-700 bg-[#1a0f08]">
               <tr className="text-left text-[#fdd700] p-[10px]">
-                <th className="w-[65%]">Tên vật tư</th>
-                <th className="w-[35%]">S.lượng</th>
+                <th className="w-[60%]">Tên vật tư</th>
+                <th className="w-[10%]">S.lượng</th>
               </tr>
             </thead>
 
@@ -143,21 +183,23 @@ const BorrowForm = ({
             value={notice}
             placeholder="Ghi chú..."
             onChange={(e) => setNotice(e.target.value)}
-            className="w-[200px] px-[10px] py-[5px] bg-[#222] placeholder:text-gray-400 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#fdd700]"
+            className="w-[570px] px-[10px] py-[5px] bg-[#222] placeholder:text-gray-400 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#fdd700]"
           />
         </div>
 
-        <button
-          disabled={!isValid() || submitting}
-          onClick={handleSubmit}
-          className={`rounded-[12px] p-[10px] w-[200px] ${
-            !isValid()
-              ? "bg-textsec cursor-not-allowed"
-              : "bg-highlightcl cursor-pointer hover:bg-[#60a5fa]"
-          }`}
-        >
-          {submitting ? "Đang gửi..." : "Gửi phiếu mượn"}
-        </button>
+        <div className="w-[570px] flex flex-col items-center">
+          <button
+            disabled={!isValid() || submitting}
+            onClick={handleSubmit}
+            className={`rounded-[12px] p-[10px] w-[200px] ${
+              !isValid()
+                ? "bg-textsec cursor-not-allowed"
+                : "bg-highlightcl cursor-pointer hover:bg-[#60a5fa]"
+            }`}
+          >
+            {submitting ? "Đang gửi..." : "Gửi phiếu mượn"}
+          </button>
+        </div>
       </div>
     </AnimatePresence>
   );

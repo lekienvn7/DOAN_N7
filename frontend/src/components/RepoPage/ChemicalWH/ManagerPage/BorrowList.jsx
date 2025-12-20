@@ -49,7 +49,6 @@ const BorrowList = ({ onBellChange, onReloadTicket, reload }) => {
     try {
       await axiosClient.patch("/borrow-requests/approve", {
         id,
-        managerId: user.userID,
         repoID: "69230a5e163002521d0aa697",
       });
 
@@ -69,7 +68,6 @@ const BorrowList = ({ onBellChange, onReloadTicket, reload }) => {
     try {
       await axiosClient.patch(`/borrow-requests/reject`, {
         id,
-        managerId: user._id,
         repoID: "69230a5e163002521d0aa697",
       });
 

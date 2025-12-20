@@ -41,7 +41,10 @@ const borrowRequestSchema = new mongoose.Schema(
     approvedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     approvedAt: Date,
 
-    expectedReturnDate: Date,
+    expectedReturnDate: {
+      type: Date,
+      required: true,
+    },
   },
   { timestamps: true }
 );

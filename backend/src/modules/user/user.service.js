@@ -93,13 +93,16 @@ async function changePassword(userID, data) {
 }
 
 async function updateUser(userID, data) {
-  const { fullName, yourRepo, role, email, phone } = data;
+  const { fullName, yourRepo, role, email, phone, username } = data;
 
   // Tạo đối tượng update trống để chỉ thêm field nào được gửi lên
   const updateData = {};
 
   if (fullName) {
     updateData.fullName = fullName;
+  }
+  if (username) {
+    updateData.username = username;
   }
   if (email) {
     updateData.email = email;

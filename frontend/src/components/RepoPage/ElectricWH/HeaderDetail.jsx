@@ -15,6 +15,7 @@ import {
   Bell,
   ArrowDownUp,
   Download,
+  ReceiptText,
   History,
   SquareMousePointer,
   X,
@@ -31,6 +32,7 @@ import {
   DialogDescription,
   DialogClose,
 } from "../../ui/dialog.jsx";
+import BorrowForm from "./LecturerPage/BorrowForm";
 import axiosClient from "@/api/axiosClient";
 import BorrowList from "./ManagerPage/BorrowList";
 
@@ -43,6 +45,9 @@ const HeaderDetail = ({
   sortMode,
   setSortMode,
   onReloadTicket,
+  borrowList,
+  handleUpdateQuantity,
+  repositoryId,
   reload,
   isLecturer,
 }) => {
@@ -159,9 +164,7 @@ const HeaderDetail = ({
 
   return (
     <div
-      className={`flex flex-col p-[20px] ${
-        isLecturer ? "w-[calc(100vw-240px)]" : "w-[100vw]"
-      } h-[150px] bg-bgmain border-t-1 border-gray-700`}
+      className={`flex flex-col p-[20px] w-[100vw] h-[150px] bg-bgmain border-t-1 border-gray-700`}
     >
       <div className="flex flex-col gap-[5px]">
         <AnimatePresence>
@@ -187,6 +190,33 @@ const HeaderDetail = ({
             </div>
 
             <div className="flex flex-row gap-[10px] items-center">
+              <Dialog>
+                <DialogTrigger asChild>
+                  <ReceiptText
+                    className={`
+                      text-textpri hover:text-[#fdd700] hover:scale-[1.05] active:scale-[0.95] transition-all duration-100 cursor-pointer`}
+                  />
+                </DialogTrigger>
+
+                <DialogContent className="bg-[#1a1a1a] rounded-[12px] !max-w-none w-fit gap-[20px] items-center border-none text-white ">
+                  <DialogTitle>
+                    <p className="text-[20px] font-bold">Phiếu mượn vật tư</p>
+                  </DialogTitle>
+                  <DialogDescription>
+                    <p>
+                      <span className="text-red-500">Chú ý:</span> Không được
+                      mượn quá số lượng vật tư còn trong kho và chỉ được mượn
+                      tối đa 1 tuần!
+                    </p>
+                  </DialogDescription>
+
+                  <BorrowForm
+                    borrowList={borrowList}
+                    onUpdateQuantity={handleUpdateQuantity}
+                    repositoryId={repositoryId}
+                  />
+                </DialogContent>
+              </Dialog>
               <Dialog open={openBorrow} onOpenChange={setOpenBorrow}>
                 <DialogTrigger asChild>
                   <div

@@ -54,7 +54,6 @@ const ChangePasswordBox = ({ user, navigate }) => {
 
       toast.success("Đổi mật khẩu thành công!");
 
-      // 2. Login lại bằng pass mới
       const res = await axiosClient.post("/auth/login", {
         username: user.username,
         password: newPass,

@@ -34,6 +34,12 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("mustChangePassword");
   };
 
+  // 🔥 THÊM ĐOẠN NÀY
+  const updateUser = (newUserData) => {
+    setUser(newUserData);
+    localStorage.setItem("user", JSON.stringify(newUserData));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -41,6 +47,7 @@ export const AuthProvider = ({ children }) => {
         mustChangePassword,
         login,
         logout,
+        updateUser, 
       }}
     >
       {children}
