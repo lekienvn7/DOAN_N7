@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from "react";
 import axiosClient from "@/api/axiosClient";
 import { toast } from "sonner";
 import { useAuth } from "@/context/authContext";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const ReportPage = () => {
   const { user } = useAuth();
@@ -10,6 +10,10 @@ const ReportPage = () => {
   const [loading, setLoading] = useState(false);
   const [requests, setRequests] = useState([]);
   const [returningId, setReturningId] = useState(null);
+
+  const [openReturn, setOpenReturn] = useState(false);
+  const [currentRequest, setCurrentRequest] = useState(null);
+  const [returnItems, setReturnItems] = useState([]);
 
   const formatDate = (dateString) => {
     if (!dateString) return "—";
@@ -39,15 +43,66 @@ const ReportPage = () => {
     loadData();
   }, [loadData]);
 
-  const handleReturn = async (id) => {
-    if (!id) return;
+  /* ================== OPEN RETURN MODAL ================== */
+  const openReturnModal = (request) => {
+    setCurrentRequest(request);
+    setReturnItems(
+      request.items.map((it) => ({
+        materialId: it.material._id,
+        name: it.material.name,
+        borrowedQty: it.quantity,
+        condition: "intact",
+        damagedQty: 0,
+      }))
+    );
+    setOpenReturn(true);
+  };
 
+  const updateCondition = (idx, condition) => {
+    setReturnItems((prev) =>
+      prev.map((it, i) =>
+        i === idx
+          ? {
+              ...it,
+              condition,
+              damagedQty: condition === "damaged" ? it.damagedQty : 0,
+            }
+          : it
+      )
+    );
+  };
+
+  const updateDamagedQty = (idx, value) => {
+    setReturnItems((prev) =>
+      prev.map((it, i) =>
+        i === idx
+          ? {
+              ...it,
+              damagedQty: Math.min(Math.max(0, Number(value)), it.borrowedQty),
+            }
+          : it
+      )
+    );
+  };
+
+  const isValidReturn = returnItems.every((it) => {
+    if (it.condition === "intact") return true;
+    return it.damagedQty > 0 && it.damagedQty <= it.borrowedQty;
+  });
+
+  /* ================== CONFIRM RETURN ================== */
+  const confirmReturn = async () => {
     const toastId = toast.loading("Đang trả vật tư...");
-    setReturningId(id);
+    setReturningId(currentRequest._id);
 
     try {
-      await axiosClient.put(`/borrow-requests/return/${id}`);
+      await axiosClient.put(`/borrow-requests/return/${currentRequest._id}`, {
+        returnItems,
+      });
+
       toast.success("Trả vật tư thành công!", { id: toastId });
+      setOpenReturn(false);
+      setCurrentRequest(null);
       loadData();
     } catch (err) {
       toast.error(err?.response?.data?.message || "Trả vật tư thất bại!", {
@@ -70,126 +125,147 @@ const ReportPage = () => {
   }
 
   return (
-    <div className="flex flex-col px-[30px] gap-[20px]">
-      <div className="p-[20px]">
-        <p className="text-left text-textpri text-[20px]">
-          Danh sách phiếu mượn của tôi
-        </p>
-      </div>
+    <>
+      <div className="flex flex-col px-[30px] gap-[20px]">
+        <div className="p-[20px]">
+          <p className="text-left text-textpri text-[20px]">
+            Danh sách phiếu mượn của tôi
+          </p>
+        </div>
 
-      <div className="w-[1460px] flex justify-center">
-        <div className="flex flex-row gap-[20px] p-[20px] max-w-[1350px] h-[550px] items-center overflow-x-auto scrollbar-thin scrollbar-thumb-[#fb923c]/50 hover:scrollbar-thumb-[#fca86b]/60">
-          {requests.length === 0 && (
-            <motion.div
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              className="w-[350px] h-[300px] bg-[#2c2c2e] rounded-[12px] px-4 py-5 flex-shrink-0 text-center border border-[#3F3F46]"
-            >
-              <p className="text-textsec">Không có phiếu mượn nào.</p>
-            </motion.div>
-          )}
-
-          {requests.map((item) => (
-            <motion.div
-              key={item._id}
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ type: "spring", stiffness: 90, damping: 12 }}
-              className="w-[350px] bg-[#2c2c2e] rounded-[12px] px-4 py-5 flex-shrink-0 border border-[#3F3F46]"
-            >
-              <p className="font-bold text-[#fb923c] text-[18px]">Phiếu mượn</p>
-
-              <div className="mt-2 text-textpri text-sm space-y-1">
-                <p>
-                  <span className="font-semibold text-[#fb923c]">
-                    Mã phiếu:
-                  </span>{" "}
-                  BR-{item._id.slice(-5).toUpperCase()}
-                </p>
-                <p>
-                  <span className="font-semibold text-[#fb923c]">GV:</span>{" "}
-                  {item.teacher?.fullName || "—"}
-                </p>
-                <p>
-                  <span className="font-semibold text-[#fb923c]">Ghi chú:</span>{" "}
-                  {item.note || "—"}
-                </p>
-                <p>
-                  <span className="font-semibold text-[#fb923c]">
-                    Ngày mượn:
-                  </span>{" "}
-                  {formatDate(item.createdAt)}
-                </p>
-                <p>
-                  <span className="font-semibold text-[#fb923c]">
-                    Ngày trả (dự kiến):
-                  </span>{" "}
-                  {formatDate(item.expectedReturnDate)}
-                </p>
-                <p>
-                  <span className="font-semibold text-[#fb923c]">
-                    Trạng thái:
-                  </span>{" "}
-                  <span
-                    className={`font-semibold ${
-                      item.status === "approved"
-                        ? "text-green-400"
-                        : item.status === "returned"
-                        ? "text-blue-400"
-                        : "text-yellow-400"
-                    }`}
-                  >
-                    {statusList.find((r) => r.type === item.status)?.name ||
-                      item.status}
-                  </span>
-                </p>
-              </div>
-
-              <div className="mt-3">
-                <p className="font-semibold text-[#fb923c] mb-1">
-                  Vật tư mượn:
+        <div className="w-[1460px] flex justify-center">
+          <div className="flex flex-row gap-[20px] p-[20px] max-w-[1350px] h-[550px] items-center overflow-x-auto">
+            {requests.map((item) => (
+              <motion.div
+                key={item._id}
+                className="w-[350px] bg-[#2c2c2e] rounded-[12px] px-4 py-5 flex-shrink-0 border border-[#3F3F46]"
+              >
+                <p className="font-bold text-[#fb923c] text-[18px]">
+                  Phiếu mượn
                 </p>
 
-                <div className="flex flex-col gap-2 max-h-[130px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#fb923c]/50 pr-1">
-                  {item.items?.map((it, idx) => (
-                    <div
-                      key={idx}
-                      className="flex justify-between bg-[#1f1f1f] px-3 py-2 rounded-[10px] border border-[#3F3F46]"
-                    >
-                      <p className="text-textpri text-sm">
-                        {it.material?.name || "—"}
-                      </p>
-                      <p className="text-[#fb923c] font-semibold text-sm">
-                        x{it.quantity}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* ACTION */}
-              <div className="mt-4">
-                {item.status === "approved" ? (
-                  <button
-                    disabled={returningId === item._id}
-                    onClick={() => handleReturn(item._id)}
-                    className="w-full py-2 rounded-[10px] bg-green-600 hover:bg-green-700 disabled:opacity-50 transition-all"
-                  >
-                    {returningId === item._id ? "Đang trả..." : "Trả vật tư"}
-                  </button>
-                ) : (
-                  <p className="text-center text-xs text-textsec italic">
-                    {item.status === "returned"
-                      ? "Phiếu đã được trả"
-                      : "Chờ quản lý duyệt"}
+                <div className="mt-2 text-textpri text-sm space-y-1">
+                  <p>
+                    <span className="font-semibold text-[#fb923c]">
+                      Mã phiếu:
+                    </span>{" "}
+                    BR-{item._id.slice(-5).toUpperCase()}
                   </p>
-                )}
-              </div>
-            </motion.div>
-          ))}
+                  <p>
+                    <span className="font-semibold text-[#fb923c]">GV:</span>{" "}
+                    {item.teacher?.fullName || "—"}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-[#fb923c]">
+                      Ngày trả (dự kiến):
+                    </span>{" "}
+                    {formatDate(item.expectedReturnDate)}
+                  </p>
+                  <p>
+                    <span className="font-semibold text-[#fb923c]">
+                      Trạng thái:
+                    </span>{" "}
+                    <span className="text-green-400">Đang mượn</span>
+                  </p>
+                </div>
+
+                <div className="mt-4">
+                  {item.status === "approved" && (
+                    <button
+                      onClick={() => openReturnModal(item)}
+                      className="w-full py-2 rounded-[10px] bg-green-600 hover:bg-green-700"
+                    >
+                      Trả vật tư
+                    </button>
+                  )}
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </div>
-    </div>
+
+      {/* ================== RETURN MODAL ================== */}
+      <AnimatePresence>
+        {openReturn && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-[#1f1f1f] w-[600px] rounded-[12px] p-5 text-textpri"
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
+            >
+              <p className="text-[#fb923c] font-bold text-lg mb-4">
+                Trả vật tư
+              </p>
+
+              <div className="space-y-3 max-h-[350px] overflow-y-auto">
+                {returnItems.map((it, idx) => (
+                  <div
+                    key={idx}
+                    className="border border-[#3F3F46] p-3 rounded"
+                  >
+                    <p className="font-semibold">{it.name}</p>
+                    <p className="text-sm">Đã mượn: {it.borrowedQty}</p>
+
+                    <div className="flex gap-4 mt-2">
+                      <label>
+                        <input
+                          type="radio"
+                          checked={it.condition === "intact"}
+                          onChange={() => updateCondition(idx, "intact")}
+                        />{" "}
+                        Nguyên vẹn
+                      </label>
+                      <label>
+                        <input
+                          type="radio"
+                          checked={it.condition === "damaged"}
+                          onChange={() => updateCondition(idx, "damaged")}
+                        />{" "}
+                        Hỏng
+                      </label>
+                    </div>
+
+                    {it.condition === "damaged" && (
+                      <input
+                        type="number"
+                        min={1}
+                        max={it.borrowedQty}
+                        value={it.damagedQty}
+                        onChange={(e) => updateDamagedQty(idx, e.target.value)}
+                        className="mt-2 w-full bg-[#2c2c2e] border border-[#3F3F46] rounded px-2 py-1"
+                        placeholder="Số lượng hỏng"
+                      />
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              <div className="flex justify-end gap-3 mt-4">
+                <button
+                  onClick={() => setOpenReturn(false)}
+                  className="px-4 py-2 bg-gray-600 rounded"
+                >
+                  Huỷ
+                </button>
+                <button
+                  disabled={!isValidReturn}
+                  onClick={confirmReturn}
+                  className="px-4 py-2 bg-green-600 rounded disabled:opacity-50"
+                >
+                  Xác nhận trả
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

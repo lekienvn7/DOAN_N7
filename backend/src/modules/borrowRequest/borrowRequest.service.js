@@ -4,6 +4,7 @@ import Transaction from "../transaction/Transaction.model.js";
 import Repository from "../repository/Repository.model.js";
 import mongoose from "mongoose";
 import Material from "../material/Material.model.js";
+import { createNotification } from "../Notification/notice.service.js";
 
 export async function createBorrowRequest({
   repository,
@@ -129,6 +130,17 @@ export async function createBorrowRequest({
     ------------------------------------------------------ */
     await session.commitTransaction();
     session.endSession();
+
+    try {
+      await createNotification({
+        type: "borrow",
+        title: "Mượn vật tư",
+        message: `Giảng viên ${teacher.fullName} đã mượn vật tư thành công`,
+        user: teacher._id,
+      });
+    } catch (err) {
+      console.error("Notification error:", err.message);
+    }
 
     return {
       success: true,
@@ -271,6 +283,17 @@ export async function approveBorrowRequest({ id, managerId, repoID }) {
     await session.commitTransaction();
     session.endSession();
 
+    try {
+      await createNotification({
+        type: "borrow",
+        title: "Phiếu mượn được duyệt",
+        message: `Phiếu mượn của ${br.teacher.fullName} đã được duyệt.`,
+        user: br.teacher._id,
+      });
+    } catch (err) {
+      console.error("Notification error:", err.message);
+    }
+
     return {
       success: true,
       message: "Duyệt phiếu mượn thành công!",
@@ -297,10 +320,21 @@ async function rejectBorrowRequest({ id, managerId }) {
 
   await br.save();
 
+  try {
+    await createNotification({
+      type: "borrow",
+      title: "Phiếu mượn bị từ chối",
+      message: `Phiếu mượn của ${br.teacher.fullName} đã bị từ chối.`,
+      user: br.teacher._id,
+    });
+  } catch (err) {
+    console.error("Notification error:", err.message);
+  }
+
   return br;
 }
 
-export async function returnBorrowRequest({ id, managerId }) {
+export async function returnBorrowRequest({ id, managerId, returnItems }) {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -326,43 +360,89 @@ export async function returnBorrowRequest({ id, managerId }) {
     if (!repo) throw new Error("Kho không tồn tại");
 
     /* ------------------------------------------------------
-       3) CỘNG LẠI VẬT TƯ
+       3) MAP DATA TRẢ VẬT TƯ
     ------------------------------------------------------ */
-    const changeList = [];
+    const returnMap = new Map();
+    for (const r of returnItems) {
+      returnMap.set(r.materialId.toString(), r);
+    }
 
+    const changeList = [];
+    const intactList = [];
+    const damagedList = [];
+
+    /* ------------------------------------------------------
+       4) XỬ LÝ TỪNG VẬT TƯ
+    ------------------------------------------------------ */
     for (const it of br.items) {
-      const matID =
-        typeof it.material === "object" ? it.material._id : it.material;
+      const matId = it.material._id.toString();
+      const returnInfo = returnMap.get(matId);
+
+      if (!returnInfo)
+        throw new Error(`Thiếu thông tin trả vật tư: ${it.material.name}`);
 
       const repoItem = repo.materials.find(
-        (m) => m.material.toString() === matID.toString()
+        (m) => m.material.toString() === matId
       );
 
-      if (!repoItem) {
+      if (!repoItem)
         throw new Error(
-          `Kho ${repo.repoName} không chứa vật tư: ${
-            it.material?.name || "Unknown"
-          }`
+          `Kho ${repo.repoName} không chứa vật tư ${it.material.name}`
         );
+
+      const borrowedQty = it.quantity;
+      let returnQty = borrowedQty;
+
+      if (returnInfo.condition === "damaged") {
+        if (
+          returnInfo.damagedQty <= 0 ||
+          returnInfo.damagedQty > borrowedQty
+        ) {
+          throw new Error(
+            `Số lượng hỏng không hợp lệ cho vật tư ${it.material.name}`
+          );
+        }
+
+        returnQty = borrowedQty - returnInfo.damagedQty;
+
+        damagedList.push({
+          name: it.material.name,
+          quantity: returnInfo.damagedQty,
+        });
+      } else {
+        intactList.push({
+          name: it.material.name,
+          quantity: borrowedQty,
+        });
       }
 
       const before = repoItem.quantity;
-      const after = before + it.quantity;
+      const after = before + returnQty;
 
       repoItem.quantity = after;
 
       changeList.push({
-        materialID: matID,
-        quantity: it.quantity,
+        materialID: matId,
+        name: it.material.name,
+        returnQty,
         beforeQuantity: before,
         afterQuantity: after,
       });
     }
 
+    /* ------------------------------------------------------
+       5) QUÁ HẠN → KHÓA GIẢNG VIÊN
+    ------------------------------------------------------ */
+    if (new Date() > br.expectedReturnDate) {
+      const teacher = await User.findById(br.teacher._id).session(session);
+      teacher.isLocked = true;
+      await teacher.save({ session });
+    }
+
     await repo.save({ session });
 
     /* ------------------------------------------------------
-       4) TẠO TRANSACTION (NHẬP KHO)
+       6) TẠO TRANSACTION NHẬP KHO
     ------------------------------------------------------ */
     for (const item of changeList) {
       const transactionID = `GD-${Date.now()}-${Math.floor(
@@ -376,11 +456,11 @@ export async function returnBorrowRequest({ id, managerId }) {
             repository: repo._id,
             material: item.materialID,
             type: "import",
-            quantity: item.quantity,
+            quantity: item.returnQty,
             beforeQuantity: item.beforeQuantity,
             afterQuantity: item.afterQuantity,
             createdBy: managerId || null,
-            note: "Nhân viên trả vật tư",
+            note: "Trả vật tư",
           },
         ],
         { session }
@@ -388,18 +468,45 @@ export async function returnBorrowRequest({ id, managerId }) {
     }
 
     /* ------------------------------------------------------
-       5) UPDATE PHIẾU
+       7) UPDATE PHIẾU
     ------------------------------------------------------ */
     br.status = "returned";
     br.returnedAt = new Date();
+    br.returnDetail = returnItems; // optional: lưu chi tiết trả
 
     await br.save({ session });
 
     /* ------------------------------------------------------
-       6) COMMIT
+       8) COMMIT
     ------------------------------------------------------ */
     await session.commitTransaction();
     session.endSession();
+
+    /* ------------------------------------------------------
+       9) THÔNG BÁO
+    ------------------------------------------------------ */
+    let message = `${br.teacher.fullName} đã trả vật tư.\n`;
+
+    if (intactList.length) {
+      message += `\n✅ Nguyên vẹn:\n`;
+      intactList.forEach(
+        (i) => (message += `- ${i.name}: ${i.quantity}\n`)
+      );
+    }
+
+    if (damagedList.length) {
+      message += `\n⚠️ Hỏng:\n`;
+      damagedList.forEach(
+        (d) => (message += `- ${d.name}: ${d.quantity}\n`)
+      );
+    }
+
+    await createNotification({
+      type: "return",
+      title: "Trả vật tư",
+      message,
+      user: br.teacher._id,
+    });
 
     return {
       success: true,
@@ -412,6 +519,7 @@ export async function returnBorrowRequest({ id, managerId }) {
     throw err;
   }
 }
+
 
 export default {
   createBorrowRequest,

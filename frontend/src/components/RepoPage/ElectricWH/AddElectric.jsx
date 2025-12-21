@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import axiosClient from "@/api/axiosClient";
-import { DialogFooter, DialogClose } from "../../ui/dialog";
 import {
   Select,
   SelectTrigger,
@@ -12,524 +11,331 @@ import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 
 const AddElectric = ({ onReload }) => {
-  const [name, setName] = useState("");
-  const [maintenanceCycle, setMaintenanceCycle] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("");
-  const [description, setDescription] = useState("");
-  const [materialID, setMaterialID] = useState("");
+  const { user } = useAuth();
+  const createdBy = user?.userID;
 
-  const [voltageRange, setVoltageRange] = useState("");
-  const [power, setPower] = useState("");
-  const [materialInsulation, setMaterialInsulation] = useState("");
-  const [current, setCurrent] = useState("");
-  const [frequency, setFrequency] = useState("");
-  const [resistance, setResistance] = useState("");
-  const [phaseType, setPhaseType] = useState("");
-  const [conductorMaterial, setConductorMaterial] = useState("");
-  const [insulationMaterial, setInsulationMaterial] = useState("");
-  const [fireResistance, setFireResistance] = useState("");
-  const [cableDiameter, setCableDiameter] = useState("");
-  const [waterproofLevel, setWaterproofLevel] = useState("");
-  const [operatingTemp, setOperatingTemp] = useState("");
+  /* ================= STATE ================= */
+  const [basic, setBasic] = useState({
+    name: "",
+    materialID: "",
+    quantity: "",
+    unit: "",
+    description: "",
+    maintenanceCycle: "",
+  });
 
-  const { user } = useAuth(); // lấy thông tin người dùng đăng nhập
-  const createdBy = user?.userID || "unknown"; // fallback nếu chưa có
+  const [spec, setSpec] = useState({
+    voltageRange: "",
+    power: "",
+    materialInsulation: "",
+    current: "",
+    frequency: "",
+    resistance: "",
+    phaseType: "",
+    conductorMaterial: "",
+    insulationMaterial: "",
+    fireResistance: "",
+    cableDiameter: "",
+    waterproofLevel: "",
+    operatingTemp: "",
+  });
+
   const [loading, setLoading] = useState(false);
 
-  // Kiểm tra hợp lệ
+  /* ================= VALIDATION ================= */
   const isValid =
-    name.trim() !== "" &&
-    materialID.trim() !== "" &&
-    maintenanceCycle !== "" &&
-    !isNaN(maintenanceCycle) &&
-    Number(maintenanceCycle) >= 0 &&
-    quantity !== "" &&
-    !isNaN(quantity) &&
-    Number(quantity) >= 0 &&
-    unit.trim() !== "";
+    basic.name.trim() &&
+    basic.materialID.trim() &&
+    basic.unit.trim() &&
+    !isNaN(basic.quantity) &&
+    Number(basic.quantity) > 0 &&
+    !isNaN(basic.maintenanceCycle);
 
-  // Focus vào ô tên vật tư khi dialog vừa mở
-  useEffect(() => {
-    const firstInput = document.querySelector('input[name="materialName"]');
-    if (firstInput) firstInput.focus();
-  }, []);
+  /* ================= HANDLERS ================= */
+  const handleBasicChange = (key, value) =>
+    setBasic((p) => ({ ...p, [key]: value }));
 
+  const handleSpecChange = (key, value) =>
+    setSpec((p) => ({ ...p, [key]: value }));
+
+  /* ================= SUBMIT ================= */
   const handleSubmit = async () => {
     if (!isValid) {
-      toast.error("Vui lòng nhập đầy đủ và hợp lệ các thông tin bắt buộc!");
+      toast.error("Vui lòng nhập đầy đủ thông tin bắt buộc!");
       return;
     }
 
     try {
       setLoading(true);
+
+      /* 1️⃣ TẠO VẬT TƯ */
       const res = await axiosClient.post("/material", {
-        name: name,
-        maintenanceCycle,
-        quantity,
-        unit,
-        description,
-        materialID,
-
-        voltageRange,
-        power,
-        materialInsulation,
-        current,
-        frequency,
-        resistance,
-        phaseType,
-        conductorMaterial,
-        insulationMaterial,
-        fireResistance,
-        cableDiameter,
-        waterproofLevel,
-        operatingTemp,
-
-        type: "electric", // cố định là “electric”
-        createdBy, // lấy id người nhập từ context
-        status: "Trong kho", // mặc định “Trong kho”
+        ...basic,
+        ...spec,
+        type: "electric",
+        createdBy,
       });
 
-      if (res.data.success) {
-        toast.success("Thêm vật tư thành công!");
-        // Reset form
-        setName("");
-        setMaintenanceCycle("");
-        setQuantity("");
-        setUnit("");
-        setDescription("");
-        setMaterialID("");
+      const newMaterialID = res.data?.data?.materialID;
+      if (!newMaterialID) throw new Error("Không tạo được vật tư");
 
-        setVoltageRange("");
-        setPower("");
-        setMaterialInsulation("");
-        setCurrent("");
-        setFrequency("");
-        setResistance("");
-        setPhaseType("");
-        setConductorMaterial("");
-        setInsulationMaterial("");
-        setFireResistance("");
-        setCableDiameter("");
-        setWaterproofLevel("");
-        setOperatingTemp("");
+      /* 2️⃣ THÊM VÀO KHO ĐIỆN */
+      await axiosClient.put("/repository/electric", {
+        materials: [
+          { material: newMaterialID, quantity: Number(basic.quantity) },
+        ],
+      });
 
-        const materialID = res.data.data.materialID; // lấy ID vừa tạo
+      toast.success("Thêm vật tư điện thành công!");
 
-        // Sau 3 giây tự thêm vào kho điện
-        setTimeout(async () => {
-          try {
-            setLoading(true);
-            const repoRes = await axiosClient.put(`/repository/electric`, {
-              materials: [{ material: materialID, quantity: Number(quantity) }],
-            });
+      /* 3️⃣ RESET FORM */
+      setBasic({
+        name: "",
+        materialID: "",
+        quantity: "",
+        unit: "",
+        description: "",
+        maintenanceCycle: "",
+      });
 
-            if (repoRes.data.success) {
-              toast.success(`Vật tư ${materialID} đã được thêm vào kho điện!`);
-              setTimeout(() => onReload(), 500);
-            } else {
-              toast.error("Không thể thêm vào kho: " + repoRes.data.message);
-            }
-          } catch (err) {
-            console.error("Lỗi thêm vào kho:", err);
-            toast.error("Không thể kết nối máy chủ khi thêm vào kho!");
-          } finally {
-            setLoading(false);
-          }
-        }, 1000);
-      } else {
-        toast.error("Thêm vật tư thất bại!");
-      }
-    } catch (error) {
-      console.error("Lỗi thêm vật tư:", error);
-      toast.error(error.response?.data?.message || "Lỗi kết nối!");
+      setSpec({
+        voltageRange: "",
+        power: "",
+        materialInsulation: "",
+        current: "",
+        frequency: "",
+        resistance: "",
+        phaseType: "",
+        conductorMaterial: "",
+        insulationMaterial: "",
+        fireResistance: "",
+        cableDiameter: "",
+        waterproofLevel: "",
+        operatingTemp: "",
+      });
+
+      onReload?.();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Lỗi khi thêm vật tư!");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ================= RENDER ================= */
   return (
-    <div>
-      <div className="flex flex-row gap-[20px]">
-        <div className="flex flex-col gap-[20px] justify-center text-textpri">
-          <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#fdd700]">
-              <InputField
-                label="Tên vật tư"
-                placeholder="Tên vật tư"
-                value={name}
-                onChange={setName}
-              />
-            </div>
-            <div className="text-[#fdd700]">
-              <InputField
-                label="Mã vật tư"
-                placeholder="VD: VT001"
-                type="text"
-                value={materialID}
-                onChange={setMaterialID}
-              />
-            </div>
-            <div className="text-[#fdd700]">
-              <InputField
-                label="Số lượng"
-                placeholder="Số lượng"
-                type="number"
-                value={quantity}
-                onChange={setQuantity}
-              />
-            </div>
-          </div>
+    <div className="flex flex-col gap-[40px] text-white">
+      {/* ===== BASIC INFO ===== */}
+      <Section title="Thông tin cơ bản">
+        <Row>
+          <Input
+            label="Tên vật tư"
+            value={basic.name}
+            onChange={(v) => handleBasicChange("name", v)}
+          />
+          <Input
+            label="Mã vật tư"
+            value={basic.materialID}
+            onChange={(v) => handleBasicChange("materialID", v)}
+          />
+          <Input
+            type="number"
+            label="Số lượng"
+            value={basic.quantity}
+            onChange={(v) => handleBasicChange("quantity", v)}
+          />
+        </Row>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#fdd700]">
-              <InputField
-                label="Đơn vị"
-                placeholder="VD: cái, mét..."
-                value={unit}
-                onChange={setUnit}
-              />
-            </div>
+        <Row>
+          <Input
+            label="Đơn vị"
+            value={basic.unit}
+            onChange={(v) => handleBasicChange("unit", v)}
+          />
+          <Input
+            type="number"
+            label="Hạn bảo trì (tháng)"
+            value={basic.maintenanceCycle}
+            onChange={(v) => handleBasicChange("maintenanceCycle", v)}
+          />
+        </Row>
 
-            <div className="flex flex-col gap-[5px] items-left">
-              <p className="ml-[10px]">Ghi chú:</p>
-              <input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ghi chú thêm"
-                className="w-[420px] py-[5px] px-[10px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
-                       focus:outline-none focus:ring-2 focus:ring-blue-500
-                       placeholder:text-gray-400 transition-all duration-200"
-              />
-            </div>
-          </div>
+        <Textarea
+          label="Ghi chú"
+          value={basic.description}
+          onChange={(v) => handleBasicChange("description", v)}
+        />
+      </Section>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <InputField
-              label="Điện áp (V)"
-              placeholder="VD: 220V"
-              type="text"
-              value={voltageRange}
-              onChange={setVoltageRange}
-            />
-            <InputField
-              label="Công suất (W)"
-              placeholder="VD: 60W"
-              type="number"
-              value={power}
-              onChange={setPower}
-            />
+      {/* ===== TECH SPECS ===== */}
+      <Section title="Thông số kỹ thuật">
+        <Row>
+          <Input
+            label="Điện áp"
+            value={spec.voltageRange}
+            onChange={(v) => handleSpecChange("voltageRange", v)}
+          />
+          <Input
+            label="Công suất (W)"
+            type="number"
+            value={spec.power}
+            onChange={(v) => handleSpecChange("power", v)}
+          />
+          <SelectBox
+            label="Cách điện"
+            value={spec.materialInsulation}
+            onChange={(v) => handleSpecChange("materialInsulation", v)}
+            options={[
+              { value: "Cách điện", label: "Có" },
+              { value: "Dẫn điện", label: "Không" },
+            ]}
+          />
+        </Row>
 
-            <div className="flex flex-col gap-[5px] items-left">
-              <p className="ml-[10px]">Cách điện?</p>
-              <Select
-                value={materialInsulation}
-                onValueChange={(value) => setMaterialInsulation(value)}
-              >
-                <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                  <SelectValue placeholder="-- Chọn --" />
-                </SelectTrigger>
+        <Row>
+          <Input
+            label="Dòng định mức (A)"
+            type="number"
+            value={spec.current}
+            onChange={(v) => handleSpecChange("current", v)}
+          />
+          <Input
+            label="Tần số (Hz)"
+            type="number"
+            value={spec.frequency}
+            onChange={(v) => handleSpecChange("frequency", v)}
+          />
+          <SelectBox
+            label="Chịu lửa"
+            value={spec.fireResistance}
+            onChange={(v) => handleSpecChange("fireResistance", v)}
+            options={["Không", "Thấp", "Trung bình", "Cao"].map((v) => ({
+              value: v,
+              label: v,
+            }))}
+          />
+        </Row>
 
-                <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                  <SelectItem
-                    value="Cách điện"
-                    className="cursor-pointer hover:bg-highlightcl"
-                  >
-                    Có
-                  </SelectItem>
-                  <SelectItem
-                    value="Dẫn điện"
-                    className="cursor-pointer hover:bg-highlightcl"
-                  >
-                    Không
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+        <Row>
+          <Input
+            label="Vật liệu lõi"
+            value={spec.conductorMaterial}
+            onChange={(v) => handleSpecChange("conductorMaterial", v)}
+          />
+          <Input
+            label="Lớp bọc"
+            value={spec.insulationMaterial}
+            onChange={(v) => handleSpecChange("insulationMaterial", v)}
+          />
+          <SelectBox
+            label="Loại pha"
+            value={spec.phaseType}
+            onChange={(v) => handleSpecChange("phaseType", v)}
+            options={["Một pha", "Hai pha", "Ba pha"].map((v) => ({
+              value: v,
+              label: v,
+            }))}
+          />
+        </Row>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <InputField
-              label="Dòng điện định mức"
-              placeholder="VD: 16A"
-              type="number"
-              value={current}
-              onChange={setCurrent}
-            />
-            <InputField
-              label="Tần số"
-              placeholder="VD: 60Hz"
-              type="number"
-              value={frequency}
-              onChange={setFrequency}
-            />
-
-            <InputField
-              label="Điện trở"
-              placeholder="VD: 200Ω"
-              type="number"
-              value={resistance}
-              onChange={setResistance}
-            />
-          </div>
-
-          <div className="flex flex-row gap-[20px] items-center">
-            <InputField
-              label="Vật liệu lõi"
-              placeholder="VD: lõi đồng, nhôm,..."
-              type="text"
-              value={conductorMaterial}
-              onChange={setConductorMaterial}
-            />
-            <InputField
-              label="Lớp bọc ngoài"
-              placeholder="VD: PVC, XLPE,..."
-              type="text"
-              value={insulationMaterial}
-              onChange={setInsulationMaterial}
-            />
-
-            <div className="flex flex-col gap-[5px] items-left">
-              <p className="ml-[10px]">Loại pha điện</p>
-              <Select
-                value={phaseType}
-                onValueChange={(value) => setPhaseType(value)}
-              >
-                <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                  <SelectValue placeholder="-- Chọn --" />
-                </SelectTrigger>
-
-                <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                  <SelectItem
-                    value="Một pha"
-                    className="cursor-pointer hover:bg-highlightcl"
-                  >
-                    Một pha (1P)
-                  </SelectItem>
-                  <SelectItem
-                    value="Hai pha"
-                    className="cursor-pointer hover:bg-highlightcl"
-                  >
-                    Hai pha (2P)
-                  </SelectItem>
-                  <SelectItem
-                    value="Ba pha"
-                    className="cursor-pointer hover:bg-highlightcl"
-                  >
-                    Ba pha (3P)
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-[20px]">
-          <div className="flex flex-col gap-[5px] items-left">
-            <p className="ml-[10px]">Khả năng chịu lửa</p>
-            <Select
-              value={fireResistance}
-              onValueChange={(value) => setFireResistance(value)}
-            >
-              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                <SelectValue placeholder="-- Chọn --" />
-              </SelectTrigger>
-
-              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                <SelectItem
-                  value="Không có"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Không có
-                </SelectItem>
-                <SelectItem
-                  value="Thấp"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Thấp
-                </SelectItem>
-                <SelectItem
-                  value="Trung bình"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Trung bình
-                </SelectItem>
-                <SelectItem
-                  value="Cao"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Cao
-                </SelectItem>
-                <SelectItem
-                  value="Chống lửa hoàn toàn"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Chống lửa hoàn toàn
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <InputField
-            label="Đường kính dây cáp"
-            placeholder="VD: 2.5mm²"
-            type="text"
-            value={cableDiameter}
-            onChange={setCableDiameter}
+        <Row>
+          <Input
+            label="Điện trở (Ω)"
+            type="number"
+            value={spec.resistance}
+            onChange={(v) => handleSpecChange("resistance", v)}
           />
 
-          <div className="text-[#fdd700]">
-            <InputField
-              label="Hạn bảo trì"
-              placeholder="VD: 6 tháng"
-              type="number"
-              value={maintenanceCycle}
-              onChange={setMaintenanceCycle}
-            />
-          </div>
+          <Input
+            label="Đường kính cáp"
+            value={spec.cableDiameter}
+            onChange={(v) => handleSpecChange("cableDiameter", v)}
+          />
+          <SelectBox
+            label="Chuẩn IP"
+            value={spec.waterproofLevel}
+            onChange={(v) => handleSpecChange("waterproofLevel", v)}
+            options={["IP20", "IP44", "IP65", "IP67"].map((v) => ({
+              value: v,
+              label: v,
+            }))}
+          />
+        </Row>
+      </Section>
 
-          <div className="flex flex-col gap-[5px] items-left">
-            <p className="ml-[10px]">Mức độ bảo vệ</p>
-            <Select
-              value={waterproofLevel}
-              onValueChange={(value) => setWaterproofLevel(value)}
-            >
-              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                <SelectValue placeholder="-- Chọn --" />
-              </SelectTrigger>
-
-              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                <SelectItem
-                  value="IP20"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  IP20: không chống nước
-                </SelectItem>
-                <SelectItem
-                  value="IP44"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  IP44: chống mưa nhẹ
-                </SelectItem>
-                <SelectItem
-                  value="IP65"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  IP65: chống bụi hoàn toàn và chống nước mức phun mạnh
-                </SelectItem>
-                <SelectItem
-                  value="IP67"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  IP67: có thể ngâm nước tạm thời
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          <div className="flex flex-col gap-[5px] items-left">
-            <p className="ml-[10px]">Nhiệt độ hoạt động</p>
-            <Select
-              value={operatingTemp}
-              onValueChange={(value) => setOperatingTemp(value)}
-            >
-              <SelectTrigger className="bg-[#2c2c2e] border border-[#5E5E60] text-white w-[200px] rounded-[12px] cursor-pointer">
-                <SelectValue placeholder="-- Chọn --" />
-              </SelectTrigger>
-
-              <SelectContent className="bg-[#1a1a1a] text-white border border-gray-700 rounded-[12px]">
-                <SelectItem
-                  value="0°C -> 40°C"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Dải phổ thông: 0°C đến 40°C
-                </SelectItem>
-                <SelectItem
-                  value="-20°C -> 60°C"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Dải tiêu chuẩn CN nhẹ: -20°C đến 60°C
-                </SelectItem>
-                <SelectItem
-                  value="-30°C -> 70°C"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Dải tiêu chuẩn CN: -30°C đến 70°C
-                </SelectItem>
-                <SelectItem
-                  value="-40°C -> 85°C"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Dải outdoor (ngoài trời): -40°C đến 85°C
-                </SelectItem>
-                <SelectItem
-                  value="-40°C -> 125°C"
-                  className="cursor-pointer hover:bg-highlightcl"
-                >
-                  Dải chuyên dụng chịu nhiệt cao: -40°C đến 125°C
-                </SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+      {/* ===== ACTION ===== */}
+      <div className="flex justify-end pt-6 border-t border-[#2a2a2a]">
+        <button
+          onClick={handleSubmit}
+          disabled={!isValid || loading}
+          className={`px-6 py-3 rounded-[14px] font-semibold transition ${
+            isValid
+              ? "bg-[#FFD700] text-black hover:bg-[#f8e16c]"
+              : "bg-gray-600 text-gray-300 cursor-not-allowed"
+          }`}
+        >
+          {loading ? "Đang thêm..." : "Nhập vật tư"}
+        </button>
       </div>
-
-      <DialogFooter className="!flex-row !justify-between !items-center mt-5">
-        <p className="w-fit text-[22px] font-vegan text-textsec drop-shadow-[0_0_8px_rgba(255,255,255,0.4)] ">
-          <span className="text-[#fdd700]/70 drop-shadow-[0_0_6px_rgba(253,215,0,0.55)]">
-            U
-          </span>
-          neti{" "}
-          <span className="text-[#fdd700]/70 drop-shadow-[0_0_6px_rgba(253,215,0,0.55)]">
-            E
-          </span>
-          lectrical
-        </p>
-
-        <div className="flex flex-row gap-3">
-          <DialogClose asChild>
-            <button className="px-4 py-2 bg-gray-700 text-white rounded-[12px] hover:bg-gray-600 transition">
-              Hủy
-            </button>
-          </DialogClose>
-
-          <button
-            onClick={handleSubmit}
-            disabled={!isValid}
-            className={`px-4 py-2 rounded-[12px] transition font-semibold ${
-              isValid
-                ? "bg-[#FFD700] text-black hover:bg-[#f8e16c] cursor-pointer"
-                : "bg-gray-600 text-gray-300 cursor-not-allowed"
-            }`}
-          >
-            {loading ? "Đang thêm..." : "Nhập vật tư"}
-          </button>
-        </div>
-      </DialogFooter>
     </div>
   );
 };
 
-// Component con cho input (tái sử dụng)
-const InputField = ({
-  label,
-  placeholder,
-  type = "text",
-  value,
-  onChange,
-  width = "200px",
-}) => (
-  <div className="flex flex-col gap-[5px] items-left">
-    <p className="ml-[10px]">{label}:</p>
+/* ================= SUB COMPONENTS ================= */
+
+const Section = ({ title, children }) => (
+  <div className="flex flex-col gap-6">
+    <h3 className="text-[20px] font-semibold text-[#FFD700]">{title}</h3>
+    {children}
+  </div>
+);
+
+const Row = ({ children }) => (
+  <div className="grid grid-cols-3 gap-6">{children}</div>
+);
+
+const Input = ({ label, type = "text", value, onChange }) => (
+  <div className="flex flex-col gap-[5px]">
+    <label className="text-sm text-gray-300">{label}</label>
     <input
       type={type}
-      placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-[${width}] px-[10px] py-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
+      className="w-[400px] px-[10px] py-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
                    focus:outline-none focus:ring-2 focus:ring-blue-500
-                   placeholder:text-gray-400 transition-all duration-200`}
+                   placeholder:text-gray-400 transition-all duration-200"
     />
+  </div>
+);
+
+const Textarea = ({ label, value, onChange }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm text-gray-300">{label}</label>
+    <textarea
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="px-3 py-2 rounded-[12px] bg-[#2c2c2e] border border-[#3f3f46]
+                 focus:ring-2 focus:ring-[#FFD700] outline-none min-h-[40px]"
+    />
+  </div>
+);
+
+const SelectBox = ({ label, value, onChange, options }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm text-gray-300">{label}</label>
+    <Select value={value} onValueChange={onChange}>
+      <SelectTrigger className="w-[400px]  bg-[#2c2c2e] border border-[#3f3f46] rounded-[12px]">
+        <SelectValue placeholder="-- Chọn --" />
+      </SelectTrigger>
+      <SelectContent className="bg-[#1a1a1a] text-white">
+        {options.map((o) => (
+          <SelectItem key={o.value} value={o.value}>
+            {o.label}
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   </div>
 );
 

@@ -10,6 +10,7 @@ import maintenanceRoutes from "./modules/maintenance/maintenance.routes.js";
 import exportExcel from "./modules/exportExcel/exportExcel.routes.js";
 import borrowRequestRoutes from "./modules/borrowRequest/borrowRequest.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
+import notificationRoutes from "./modules/Notification/notice.routes.js";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -48,6 +49,8 @@ app.use("/api/user", userRoutes);
 app.use("/api/role", roleRoutes);
 
 app.use("/api/repository", repoRoutes);
+
+app.use("/api/notifications", notificationRoutes);
 
 app.use("/api/transaction", transactionRoutes);
 

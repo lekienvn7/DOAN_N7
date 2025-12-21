@@ -9,6 +9,7 @@ import TechnologyMaterial from "./MaterialModel/Technology.model.js";
 import AutomotiveMaterial from "./MaterialModel/Automotive.model.js";
 import TelecomMaterial from "./MaterialModel/Telecom.model.js";
 import FashionMaterial from "./MaterialModel/Fashion.model.js";
+import { createNotification } from "../Notification/notice.service.js";
 import {
   electricFields,
   chemicalFields,
@@ -37,7 +38,7 @@ const modelMap = {
 
 async function getAllMaterials() {
   const materials = await Material.find()
-    .populate("createdBy", "fullName userID")
+    .populate("createdBy", "fullName email userID")
     .populate("updatedBy", "fullName")
     .lean();
 
@@ -114,6 +115,17 @@ async function addMaterial(data) {
     maintenanceCycle,
     createdBy: user._id,
   });
+
+  try {
+    await createNotification({
+      type: "material",
+      title: "Thêm vật tư",
+      message: `${user.fullName} Đã thêm vật tư "${name}".`,
+      user: user._id,
+    });
+  } catch (err) {
+    console.error("Notification error:", err.message);
+  }
 
   return {
     message: "Thêm vật tư thành công!",

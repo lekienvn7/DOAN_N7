@@ -29,6 +29,7 @@ module.exports = {
         satoshi: ["Satoshi", "sans-serif"],
         inter: ["Inter", "sans-serif"],
         vegan: ["Vegan", "sans-serif"],
+        googleSans: ["GoogleSanBold", "sans-serif"],
       },
       colors: {
         bgmain: "#0a0a0a",
@@ -37,7 +38,6 @@ module.exports = {
         textsec: "#a1a1a6",
         highlightcl: "#0a84ff",
         mechanicalColor: "#e6eef2",
-        
       },
       backgroundImage: {
         "gradient-primary": "var(--gradient-primary)",

@@ -5,6 +5,7 @@ import axiosClient from "@/api/axiosClient";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import AnimatedStat from "@/components/AnimatedStat";
+import NoticePage from "./NoticePage";
 import WeatherToday from "@/components/WeatherToday";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -287,63 +288,13 @@ const HomePage = () => {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 20 }}
           transition={{ type: "spring", stiffness: 90, damping: 12 }}
-          className="w-[45vw] bg-[#121212] rounded-[12px]  p-[20px] flex flex-col"
+          className="w-[700px] bg-[#121212] rounded-[12px]  p-[20px] flex flex-col"
         >
-          {/* Header */}
           <p className="text-[#60A5FA] text-[20px] text-left mb-[15px]">
             Thông báo
           </p>
 
-          {/* Body scroll */}
-          <div className="flex flex-col gap-[12px] max-h-[250px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#fb923c]/50 hover:scrollbar-thumb-[#fca86b]/60">
-            {pendingRequests.map((r) => {
-              const repoConfig = getRepoConfig(r.repository);
-
-              return (
-                <div
-                  key={r._id}
-                  onClick={() => repoConfig && navigate(repoConfig.link)}
-                  className="bg-[#121212] border border-gray-700 rounded-[10px] p-[12px]
-                 hover:bg-[#262626] transition cursor-pointer"
-                >
-                  <div className="flex flex-row justify-between">
-                    <div className="flex flex-col gap-[5px]">
-                      <p
-                        className={`${
-                          repoConfig?.color || "text-white"
-                        } font-semibold`}
-                      >
-                        {r.teacher?.fullName || "Giảng viên"}
-                      </p>
-
-                      <p className="text-textpri text-sm">
-                        Yêu cầu mượn <b>{r.items.length}</b> vật tư
-                      </p>
-                    </div>
-
-                    <p
-                      className={`text-xs ${
-                        repoConfig?.color || "text-textpri"
-                      }`}
-                    >
-                      {repoConfig?.name || "Kho"}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
-            {pendingRequests.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: 20 }}
-                transition={{ type: "spring", stiffness: 90, damping: 12 }}
-                className="h-[240px] bg-[#2c2c2e] rounded-[12px] px-4 py-5 flex-shrink-0 text-center border border-[#3F3F46]"
-              >
-                <p className="text-textsec">Không có phiếu nào.</p>
-              </motion.div>
-            )}
-          </div>
+          <NoticePage />
         </motion.div>
       </div>
 

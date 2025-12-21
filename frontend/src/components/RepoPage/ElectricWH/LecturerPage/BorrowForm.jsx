@@ -19,6 +19,7 @@ const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
   const [notice, setNotice] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [expectedReturnDate, setExpectedReturnDate] = useState(undefined);
+  const ONE_DAY = 24 * 60 * 60 * 1000;
   const { user } = useAuth();
 
   const getMaterialId = (item) => item.material?._id || item._id;
@@ -69,6 +70,10 @@ const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
         teacher: user.userID,
         expectedReturnDate,
       };
+
+      if (user.isLocked) {
+        throw new Error("Tài khoản đã bị khóa do trả vật tư quá hạn");
+      }
 
       await axiosClient.post("/borrow-requests", payload);
 
@@ -122,7 +127,9 @@ const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
                   mode="single"
                   selected={expectedReturnDate}
                   onSelect={setExpectedReturnDate}
-                  disabled={(date) => date < today} // không chọn ngày quá khứ
+                  disabled={(date) =>
+                    date < today || date - today > 14 * ONE_DAY
+                  } // không chọn ngày quá khứ
                   initialFocus
                 />
               </PopoverContent>

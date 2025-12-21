@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema(
       type: String, // Cloudinary public_ID để xóa hình
     },
 
+    isLocked: {
+      type: Boolean,
+      default: false,
+    },
+
     yourRepo: {
       type: String,
       default: null,

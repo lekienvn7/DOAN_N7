@@ -41,7 +41,7 @@ const materialSchema = new mongoose.Schema(
     status: {
       // Trạng thái vât liệu
       type: String,
-      enum: ["Trong kho", "Đang bảo trì", "Hỏng"],
+      enum: ["Trong kho", "Quá hạn", "Thanh lý"],
       default: "Trong kho",
     },
     isSpecial: {

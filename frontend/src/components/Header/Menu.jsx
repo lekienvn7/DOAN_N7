@@ -82,7 +82,7 @@ const Menu = () => {
         <li key={item.path}>
           <Link
             to={item.path}
-            className={`relative pb-5 text-[15px]
+            className={`relative pb-5 text-[13px]
               after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full 
               after:scale-x-0 after:bg-textsec after:transition-transform after:duration-300 
               hover:after:scale-x-100
