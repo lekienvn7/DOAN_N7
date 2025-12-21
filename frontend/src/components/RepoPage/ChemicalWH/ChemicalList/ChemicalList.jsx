@@ -1,10 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import ElectricCarousel from "./ElectricCarousel";
+import ChemicalCarousel from "./ChemicalCarousel";
 
-const STORAGE_KEY = "electric_search_history";
+const STORAGE_KEY = "chemical_search_history";
 
-const ElectricList = ({ reload }) => {
+const ChemicalList = ({ reload }) => {
   const [searchData, setSearchData] = useState("");
   const [history, setHistory] = useState([]);
   const [openHistory, setOpenHistory] = useState(false);
@@ -51,17 +51,18 @@ const ElectricList = ({ reload }) => {
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    return () =>
+      document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   return (
     <section>
-      {/* TITLE + SEARCH */}
+      {/* ===== TITLE + SEARCH ===== */}
       <section
         className="flex justify-between items-center"
         style={{ paddingInline: "var(--page-x)" }}
       >
-        <h2 className="text-[35px] font-semibold">Danh sách vật tư</h2>
+        <h2 className="text-[35px] font-semibold">Danh sách hóa chất</h2>
 
         {/* SEARCH */}
         <div ref={boxRef} className="relative w-[320px]">
@@ -78,7 +79,7 @@ const ElectricList = ({ reload }) => {
                   e.currentTarget.blur();
                 }
               }}
-              placeholder="Tìm dây điện, CB, biến áp…"
+              placeholder="Tìm hóa chất, dung môi, axit…"
               className="bg-transparent outline-none placeholder:text-textsec text-white w-full"
             />
           </div>
@@ -87,7 +88,9 @@ const ElectricList = ({ reload }) => {
           {openHistory && history.length > 0 && (
             <div className="absolute top-[52px] w-full bg-[#1c1c1e] rounded-2xl p-3 shadow-xl z-20">
               <div className="flex justify-between items-center mb-2 px-2">
-                <span className="text-xs text-[#a1a1a6]">Lịch sử tìm kiếm</span>
+                <span className="text-xs text-[#a1a1a6]">
+                  Lịch sử tìm kiếm
+                </span>
                 <button
                   onClick={clearHistory}
                   className="text-xs text-red-400 hover:text-red-300"
@@ -115,16 +118,16 @@ const ElectricList = ({ reload }) => {
         </div>
       </section>
 
-      {/* LIST */}
+      {/* ===== CAROUSEL ===== */}
       <motion.div
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: "easeOut" }}
       >
-        <ElectricCarousel reload={reload} searchData={searchData} />
+        <ChemicalCarousel reload={reload} searchData={searchData} />
       </motion.div>
     </section>
   );
 };
 
-export default ElectricList;
+export default ChemicalList;

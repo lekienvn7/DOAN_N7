@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState, useMemo } from "react";
 import axiosClient from "@/api/axiosClient";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import ElectricCard from "./ElectricCard";
+import ChemicalCard from "./ChemicalCard";
 
-const ElectricCarousel = ({ reload, searchData }) => {
+const ChemicalCarousel = ({ reload, searchData }) => {
   const [data, setData] = useState([]);
   const [atStart, setAtStart] = useState(true);
   const scrollRef = useRef(null);
@@ -13,7 +13,7 @@ const ElectricCarousel = ({ reload, searchData }) => {
   ========================= */
   useEffect(() => {
     const timer = setTimeout(() => {
-      axiosClient.get("/repository/material/electric").then((res) => {
+      axiosClient.get("/repository/material/chemical").then((res) => {
         if (res.data?.success) {
           setData(res.data.materials || []);
         }
@@ -80,19 +80,19 @@ const ElectricCarousel = ({ reload, searchData }) => {
         onScroll={handleScroll}
         className={`
           flex gap-8 overflow-x-auto py-[25px]
-          scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60
+          scrollbar-thin scrollbar-thumb-[#c7a7ff]/50 hover:scrollbar-thumb-[#e8d6ff]/60
           transition-[padding] duration-300
           ${atStart ? "pl-[var(--page-x)]" : "pl-0"}
         `}
       >
         {filteredData.length === 0 ? (
           <p className="text-[#a1a1a6] text-lg">
-            Không tìm thấy vật tư phù hợp!
+            Không tìm thấy hóa chất phù hợp!
           </p>
         ) : (
           filteredData.map((item) => (
             <div key={item._id} className="shrink-0">
-              <ElectricCard item={item} />
+              <ChemicalCard item={item} />
             </div>
           ))
         )}
@@ -101,4 +101,4 @@ const ElectricCarousel = ({ reload, searchData }) => {
   );
 };
 
-export default ElectricCarousel;
+export default ChemicalCarousel;
