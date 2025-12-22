@@ -1,9 +1,11 @@
 import { Toaster } from "sonner";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+
 import HomePage from "./pages/MenuPage/HomePage";
 import NotFound from "./pages/NotFound";
 import UserPage from "./pages/MenuPage/UserPage";
 import WHpage from "./pages/MenuPage/Warehouse";
+
 import ElectricWH from "./pages/MenuPage/RepoPages/ElectricWH";
 import ChemicalWH from "./pages/MenuPage/RepoPages/ChemicalWH";
 import IotWH from "./pages/MenuPage/RepoPages/IotWH";
@@ -12,8 +14,10 @@ import MechanicalWH from "./pages/MenuPage/RepoPages/MechanicalWH";
 import AutoWH from "./pages/MenuPage/RepoPages/AutoWH";
 import TelecomWH from "./pages/MenuPage/RepoPages/TelecomWH";
 import FashionWH from "./pages/MenuPage/RepoPages/FashionWH";
+
 import LoginPage from "./pages/MenuPage/LoginPage";
 import MaterialPage from "./pages/MenuPage/MaterialPage";
+
 import Chemical from "./pages/MenuPage/RepoMaterialPage/Chemical";
 import Electric from "./pages/MenuPage/RepoMaterialPage/Electric";
 import Automotive from "./pages/MenuPage/RepoMaterialPage/Automotive";
@@ -22,16 +26,20 @@ import Iot from "./pages/MenuPage/RepoMaterialPage/Iot";
 import Mechanical from "./pages/MenuPage/RepoMaterialPage/Mechanical";
 import Technology from "./pages/MenuPage/RepoMaterialPage/Technology";
 import Telecom from "./pages/MenuPage/RepoMaterialPage/Telecom";
+
 import BrokenMaterial from "./components/MaterialPage/TelecomMaterial/BrokenMaterial";
 import MaterialRepair from "./components/MaterialPage/TelecomMaterial/MaterialRepair";
 import MaterialRepairing from "./components/MaterialPage/TelecomMaterial/MaterialRepairing";
+
 import RolePage from "./pages/MenuPage/RolePage";
 import ReportPage from "./pages/MenuPage/ReportPage";
 import NoticePage from "./pages/MenuPage/NoticePage";
+
 import ErrorRepo from "./pages/ErrorPage/ErrorRepo";
 import ErrorMaterial from "./pages/ErrorPage/ErrorMaterial";
 import ErrorReport from "./pages/ErrorPage/ErrorReport";
 import ErrorUser from "./pages/ErrorPage/ErrorUser";
+
 import Layout from "./pages/Layout";
 import { AuthProvider } from "./context/authContext";
 
@@ -42,18 +50,21 @@ function App() {
       <BrowserRouter>
         <AuthProvider>
           <Routes>
+            {/* HOME */}
             <Route
               path="/home"
               element={
-                <Layout className="bg-bgmain">
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <HomePage />
                 </Layout>
               }
             />
+
+            {/* REPOSITORY */}
             <Route
               path="/repository"
               element={
-                <Layout className="bg-bgpanel">
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <WHpage />
                 </Layout>
               }
@@ -68,10 +79,11 @@ function App() {
               <Route path="fashion" element={<FashionWH />} />
             </Route>
 
+            {/* MATERIAL */}
             <Route
               path="/material"
               element={
-                <Layout className="bg-bgmain">
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <MaterialPage />
                 </Layout>
               }
@@ -125,85 +137,80 @@ function App() {
               </Route>
             </Route>
 
+            {/* ROLE */}
             <Route
               path="/role"
               element={
-                <Layout className="bg-[#121212]">
+                <Layout className="bg-[var(--bg-subtle)] text-[var(--text-primary)]">
                   <RolePage />
                 </Layout>
               }
             />
+
+            {/* USER */}
             <Route
               path="/user"
               element={
-                <Layout className="bg-bgmain">
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <UserPage />
                 </Layout>
               }
             />
+
+            {/* REPORT */}
             <Route
               path="/report"
               element={
-                <Layout className="bg-bgmain">
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <ReportPage />
                 </Layout>
               }
             />
+
+            {/* NOTICE */}
             <Route
               path="/notice"
               element={
-                <Layout className="bg-bgmain">
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <NoticePage />
                 </Layout>
               }
             />
 
+            {/* LOGIN */}
             <Route
               path="/login"
               element={
-                <Layout className="bg-bgmain">
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <LoginPage />
                 </Layout>
               }
             />
+
+            {/* ERRORS */}
+            {[
+              ["/error-repo", <ErrorRepo />],
+              ["/error-material", <ErrorMaterial />],
+              ["/error-report", <ErrorReport />],
+              ["/error-user", <ErrorUser />],
+            ].map(([path, Comp]) => (
+              <Route
+                key={path}
+                path={path}
+                element={
+                  <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
+                    {Comp}
+                  </Layout>
+                }
+              />
+            ))}
+
+            {/* NOT FOUND */}
             <Route
               path="*"
               element={
-                <Layout className="bg-bgmain">
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <NotFound />
-                </Layout>
-              }
-            />
-
-            <Route
-              path="/error-repo"
-              element={
-                <Layout className="bg-bgmain">
-                  <ErrorRepo />
-                </Layout>
-              }
-            />
-            <Route
-              path="/error-material"
-              element={
-                <Layout className="bg-bgmain">
-                  <ErrorMaterial />
-                </Layout>
-              }
-            />
-            <Route
-              path="/error-report"
-              element={
-                <Layout className="bg-bgmain">
-                  <ErrorReport />
-                </Layout>
-              }
-            />
-            <Route
-              path="/error-user"
-              element={
-                <Layout className="bg-bgmain">
-                  <ErrorUser />
                 </Layout>
               }
             />
