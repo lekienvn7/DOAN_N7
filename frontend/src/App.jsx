@@ -34,6 +34,7 @@ import MaterialRepairing from "./components/MaterialPage/TelecomMaterial/Materia
 import RolePage from "./pages/MenuPage/RolePage";
 import ReportPage from "./pages/MenuPage/ReportPage";
 import NoticePage from "./pages/MenuPage/NoticePage";
+import ProblematicMaterialPage from "./pages/MenuPage/ProblematicMaterialPage/ProblematicMaterialPage";
 
 import ErrorRepo from "./pages/ErrorPage/ErrorRepo";
 import ErrorMaterial from "./pages/ErrorPage/ErrorMaterial";
@@ -173,6 +174,15 @@ function App() {
               element={
                 <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <NoticePage />
+                </Layout>
+              }
+            />
+
+            <Route
+              path="/material/problematic"
+              element={
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
+                  <ProblematicMaterialPage />
                 </Layout>
               }
             />

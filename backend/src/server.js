@@ -11,6 +11,7 @@ import exportExcel from "./modules/exportExcel/exportExcel.routes.js";
 import borrowRequestRoutes from "./modules/borrowRequest/borrowRequest.routes.js";
 import authRoutes from "./modules/auth/auth.routes.js";
 import notificationRoutes from "./modules/Notification/notice.routes.js";
+import materialProblemRoutes from "./modules/materialProblem/materialProblem.routes.js";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
@@ -59,6 +60,8 @@ app.use("/api/maintenance", maintenanceRoutes);
 app.use("/api/export", exportExcel);
 
 app.use("/api/auth", authRoutes);
+
+app.use("/api/material-problem", materialProblemRoutes);
 
 app.use("/api/borrow-requests", borrowRequestRoutes);
 

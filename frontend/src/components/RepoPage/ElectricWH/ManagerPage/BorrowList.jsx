@@ -104,7 +104,7 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
   if (loading) {
     return (
       <div className="h-[300px] flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[var(--accent-blue)] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -112,18 +112,26 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
   /* ================= UI ================= */
   return (
     <div className="relative">
-      <p className="text-[30px] font-semibold text-textpri mb-[25px]">
-        Phiếu mượn cần duyệt
+      <p className="text-[35px] font-bold font-googleSans text-[var(--text-tertiary)] mb-[50px]">
+        <span className="gradient-text">Phiếu mượn</span> cần duyệt
       </p>
 
       {/* SCROLL BUTTON LEFT */}
       {!atStart && (
         <button
           onClick={() => scroll("left")}
-          className="absolute left-4 top-1/2 -translate-y-1/2 z-10
-                     w-12 h-12 rounded-full bg-textsec text-textpri shadow-lg"
+          className="
+            absolute left-4 top-1/2 -translate-y-1/2 z-10
+            w-12 h-12 rounded-full
+            bg-[var(--bg-subtle)]
+            text-[var(--text-secondary)]
+            border border-[var(--border-light)]
+            shadow-[var(--shadow-sm)]
+            hover:bg-[var(--bg-hover)]
+            transition
+          "
         >
-          <ChevronLeft />
+          <ChevronLeft size={20} />
         </button>
       )}
 
@@ -131,10 +139,18 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
       {request.length > 0 && (
         <button
           onClick={() => scroll("right")}
-          className="absolute right-4 top-1/2 -translate-y-1/2 z-10
-                     w-12 h-12 rounded-full bg-textsec text-textpri shadow-lg"
+          className="
+            absolute right-4 top-1/2 -translate-y-1/2 z-10
+            w-12 h-12 rounded-full
+            bg-[var(--bg-subtle)]
+            text-[var(--text-secondary)]
+            border border-[var(--border-light)]
+            shadow-[var(--shadow-sm)]
+            hover:bg-[var(--bg-hover)]
+            transition
+          "
         >
-          <ChevronRight />
+          <ChevronRight size={20} />
         </button>
       )}
 
@@ -144,8 +160,7 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
         onScroll={handleScroll}
         className="
           flex gap-6 overflow-x-auto pb-[10px]
-          scrollbar-thin scrollbar-thumb-[#fdd700]/40
-          hover:scrollbar-thumb-[#fdd700]
+          scrollbar-none
         "
       >
         {request.map((item) => (
@@ -155,18 +170,20 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
             animate={{ opacity: 1, x: 0 }}
             className="
               shrink-0 w-[360px] h-[420px]
-              bg-[#2c2c2e] rounded-xl p-4
-              border border-[#3f3f46]
+              bg-[var(--bg-panel)]
+              rounded-xl p-4
+              border border-[var(--border-light)]
               flex flex-col
+              text-[var(--text-primary)]
             "
           >
             {/* HEADER */}
-            <p className="text-yellow-400 font-bold">
+            <p className="text-[var(--accent-blue)] font-semibold">
               Phiếu #{item._id.slice(-5)}
             </p>
 
-            <p className="mt-2 text-sm">
-              <span className="text-yellow-400">GV:</span>{" "}
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              <span className="text-[var(--text-tertiary)]">GV:</span>{" "}
               {item.teacher?.fullName}
             </p>
 
@@ -174,17 +191,26 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
             <div
               className="
                 mt-3 flex-1 space-y-2 overflow-y-auto pr-1
-                scrollbar-thin scrollbar-thumb-[#fdd700]/30
-                hover:scrollbar-thumb-[#fdd700]/60
+                scrollbar-none
               "
             >
               {item.items.map((it, i) => (
                 <div
                   key={i}
-                  className="flex justify-between bg-[#1f1f1f] p-2 rounded"
+                  className="
+                    flex justify-between
+                    bg-[var(--bg-subtle)]
+                    border border-[var(--border-light)]
+                    p-2 rounded
+                    text-sm
+                  "
                 >
-                  <span className="truncate">{it.material?.name}</span>
-                  <span className="text-yellow-400">x{it.quantity}</span>
+                  <span className="truncate text-[var(--text-secondary)]">
+                    {it.material?.name}
+                  </span>
+                  <span className="text-[var(--text-primary)] font-medium">
+                    x{it.quantity}
+                  </span>
                 </div>
               ))}
             </div>
@@ -193,13 +219,27 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
             <div className="mt-4 flex gap-2">
               <button
                 onClick={() => handleApprove(item._id)}
-                className="flex-1 bg-green-600 rounded py-2 hover:bg-green-500 transition"
+                className="
+                  flex-1
+                  bg-[var(--success)]
+                  text-white
+                  rounded py-2
+                  hover:opacity-90
+                  transition
+                "
               >
                 Duyệt
               </button>
               <button
                 onClick={() => handleReject(item._id)}
-                className="flex-1 bg-red-600 rounded py-2 hover:bg-red-500 transition"
+                className="
+                  flex-1
+                  bg-[var(--danger)]
+                  text-white
+                  rounded py-2
+                  hover:opacity-90
+                  transition
+                "
               >
                 Từ chối
               </button>
@@ -208,7 +248,16 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
         ))}
 
         {request.length === 0 && (
-          <div className="shrink-0 w-[360px] h-[200px] flex items-center justify-center text-gray-400 bg-[#2c2c2e] rounded-xl border border-[#3f3f46]">
+          <div
+            className="
+              shrink-0 w-[360px] h-[200px]
+              flex items-center justify-center
+              text-[var(--text-quaternary)]
+              bg-[var(--bg-subtle)]
+              rounded-xl
+              border border-[var(--border-light)]
+            "
+          >
             Không có phiếu nào
           </div>
         )}

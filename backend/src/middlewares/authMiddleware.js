@@ -25,7 +25,9 @@ export function verifyToken(req, res, next) {
   } catch (err) {
     console.error("JWT error:", err);
 
-    return res.status(401).json({ message: "Token không hợp lệ hoặc đã hết hạn!" });
+    return res
+      .status(401)
+      .json({ message: "Token không hợp lệ hoặc đã hết hạn!" });
   }
 }
 
@@ -38,7 +40,6 @@ export function requireRole(...roles) {
     next();
   };
 }
-
 
 // Middleware kiểm tra quyền
 export const authorizeRoles = (...allowedRoles) => {

@@ -125,10 +125,12 @@ export async function returnBorrow(req, res) {
   try {
     const { id } = req.params;
     const userId = req.user._id;
+    const { returnItems } = req.body;
 
     const result = await borrowRequestService.returnBorrowRequest({
       id,
       managerId: userId,
+      returnItems,
     });
 
     res.json(result);

@@ -7,7 +7,10 @@ import {
   resetUserPassword,
   changePassword,
 } from "./user.controller.js";
-import { verifyToken, authorizeRoles } from "../../middlewares/authMiddleware.js";
+import {
+  verifyToken,
+  authorizeRoles,
+} from "../../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
@@ -23,7 +26,7 @@ router.put(
 );
 
 router.put("/change-pass/:id", changePassword); // Đổi mật khẩu lần đầu
-router.put("/:id",  updateUser);
+router.put("/:id", updateUser);
 
 router.delete("/:id", deleteUser);
 

@@ -4,6 +4,7 @@ import Transaction from "../transaction/Transaction.model.js";
 import Repository from "../repository/Repository.model.js";
 import mongoose from "mongoose";
 import Material from "../material/Material.model.js";
+import MaterialProblem from "../materialProblem/MaterialProblem.model.js";
 import { createNotification } from "../Notification/notice.service.js";
 
 export async function createBorrowRequest({
@@ -342,9 +343,36 @@ export async function returnBorrowRequest({ id, managerId, returnItems }) {
   session.startTransaction();
 
   try {
-    /* ------------------------------------------------------
+    /* ======================================================
+       0) VALIDATE DATA TRẢ
+    ====================================================== */
+    if (!Array.isArray(returnItems) || !returnItems.length) {
+      throw new Error("Thiếu danh sách vật tư trả");
+    }
+
+    returnItems.forEach((r) => {
+      if (!r.materialId) throw new Error("Thiếu materialId trong returnItems");
+
+      // normalize
+      if (!r.condition) r.condition = "intact";
+
+      if (r.condition === "damaged") {
+        const dq = Number(r.damagedQty);
+        if (!dq || dq <= 0) {
+          throw new Error("Vật tư hỏng phải có damagedQty > 0");
+        }
+        r.damagedQty = dq;
+        // default: hỏng do người mượn (để tránh khóa oan vì hỏng tự nhiên)
+        if (!r.damageReason) r.damageReason = "borrower_fault";
+      } else {
+        r.damagedQty = 0;
+        r.damageReason = null;
+      }
+    });
+
+    /* ======================================================
        1) LẤY PHIẾU MƯỢN
-    ------------------------------------------------------ */
+    ====================================================== */
     const br = await BorrowRequest.findById(id)
       .populate("items.material")
       .populate("teacher")
@@ -353,70 +381,105 @@ export async function returnBorrowRequest({ id, managerId, returnItems }) {
     if (!br) throw new Error("Không tìm thấy phiếu mượn");
     if (br.status !== "approved")
       throw new Error("Phiếu chưa được duyệt hoặc đã trả");
-
     if (!br.repository) throw new Error("Phiếu mượn không gắn kho");
 
-    /* ------------------------------------------------------
+    // chặn luôn nếu user đang bị khóa (phòng trường hợp lách)
+    if (br.teacher?.isLocked) {
+      throw new Error("Tài khoản người mượn đang bị khóa");
+    }
+
+    /* ======================================================
        2) LẤY KHO
-    ------------------------------------------------------ */
+    ====================================================== */
     const repo = await Repository.findById(br.repository).session(session);
     if (!repo) throw new Error("Kho không tồn tại");
 
-    /* ------------------------------------------------------
-       3) MAP DATA TRẢ VẬT TƯ
-    ------------------------------------------------------ */
+    /* ======================================================
+       3) MAP DATA TRẢ
+    ====================================================== */
     const returnMap = new Map();
-    for (const r of returnItems) {
-      returnMap.set(r.materialId.toString(), r);
-    }
+    returnItems.forEach((r) => returnMap.set(r.materialId.toString(), r));
 
     const changeList = [];
     const intactList = [];
     const damagedList = [];
 
-    /* ------------------------------------------------------
+    // flag tính “1 lần hỏng” cho phiếu này (đúng ý bạn: hỏng quá 7 lần)
+    let hasBorrowerFaultDamage = false;
+
+    /* ======================================================
        4) XỬ LÝ TỪNG VẬT TƯ
-    ------------------------------------------------------ */
+    ====================================================== */
     for (const it of br.items) {
       const matId = it.material._id.toString();
       const returnInfo = returnMap.get(matId);
 
-      if (!returnInfo)
+      if (!returnInfo) {
         throw new Error(`Thiếu thông tin trả vật tư: ${it.material.name}`);
+      }
 
       const repoItem = repo.materials.find(
         (m) => m.material.toString() === matId
       );
-
-      if (!repoItem)
+      if (!repoItem) {
         throw new Error(
           `Kho ${repo.repoName} không chứa vật tư ${it.material.name}`
         );
+      }
 
-      const borrowedQty = it.quantity;
+      const borrowedQty = Number(it.quantity);
       let returnQty = borrowedQty;
 
+      /* ---------- TRƯỜNG HỢP HỎNG ---------- */
       if (returnInfo.condition === "damaged") {
-        if (returnInfo.damagedQty <= 0 || returnInfo.damagedQty > borrowedQty) {
+        const damagedQty = Number(returnInfo.damagedQty || 0);
+
+        if (damagedQty > borrowedQty) {
           throw new Error(
-            `Số lượng hỏng không hợp lệ cho vật tư ${it.material.name}`
+            `Số lượng hỏng vượt quá số lượng mượn của ${it.material.name}`
           );
         }
 
-        returnQty = borrowedQty - returnInfo.damagedQty;
+        returnQty = borrowedQty - damagedQty;
 
         damagedList.push({
           name: it.material.name,
-          quantity: returnInfo.damagedQty,
+          quantity: damagedQty,
+          damageReason: returnInfo.damageReason || "borrower_fault",
         });
+
+        // chỉ tính vào “điểm phạt” nếu là lỗi người mượn
+        if (
+          (returnInfo.damageReason || "borrower_fault") === "borrower_fault"
+        ) {
+          hasBorrowerFaultDamage = true;
+        }
+
+        
+        await MaterialProblem.create(
+          [
+            {
+              material: it.material._id,
+              quantity: damagedQty,
+              reason: "Hỏng khi mượn",
+              sourceBorrowRequest: br._id,
+              createdBy: managerId,
+              status: "pending",
+              damageReason: returnInfo.damageReason || "borrower_fault",
+            },
+          ],
+          { session }
+        );
       } else {
+        /* ---------- NGUYÊN VẸN ---------- */
         intactList.push({
           name: it.material.name,
           quantity: borrowedQty,
         });
       }
 
-      const before = repoItem.quantity;
+      /* ---------- CẬP NHẬT KHO ---------- */
+      const before = Number(repoItem.quantity);
       const after = before + returnQty;
 
       repoItem.quantity = after;
@@ -430,20 +493,29 @@ export async function returnBorrowRequest({ id, managerId, returnItems }) {
       });
     }
 
-    /* ------------------------------------------------------
-       5) QUÁ HẠN → KHÓA GIẢNG VIÊN
-    ------------------------------------------------------ */
-    if (new Date() > br.expectedReturnDate) {
+    /* ======================================================
+       5) HỎNG QUÁ 7 LẦN → KHÓA GIẢNG VIÊN
+    ====================================================== */
+    let lockMessage = "";
+    if (hasBorrowerFaultDamage) {
       const teacher = await User.findById(br.teacher._id).session(session);
-      teacher.isLocked = true;
+      if (!teacher) throw new Error("Không tìm thấy người mượn");
+
+      teacher.damageCount = Number(teacher.damageCount || 0) + 1;
+
+      if (teacher.damageCount >= 2) {
+        teacher.isLocked = true;
+        lockMessage = `\nTài khoản đã bị khóa (hỏng ${teacher.damageCount}/7 lần).`;
+      }
+
       await teacher.save({ session });
     }
 
     await repo.save({ session });
 
-    /* ------------------------------------------------------
+    /* ======================================================
        6) TẠO TRANSACTION NHẬP KHO
-    ------------------------------------------------------ */
+    ====================================================== */
     for (const item of changeList) {
       const transactionID = `GD-${Date.now()}-${Math.floor(
         Math.random() * 9999
@@ -467,24 +539,31 @@ export async function returnBorrowRequest({ id, managerId, returnItems }) {
       );
     }
 
-    /* ------------------------------------------------------
-       7) UPDATE PHIẾU
-    ------------------------------------------------------ */
+    /* ======================================================
+       7) UPDATE PHIẾU (CHỈ ĐỂ LỊCH SỬ)
+    ====================================================== */
     br.status = "returned";
     br.returnedAt = new Date();
-    br.returnDetail = returnItems; // optional: lưu chi tiết trả
+    br.returnDetail = returnItems; // ⚠️ chỉ để xem lại lịch sử
+
+    // lưu thêm tóm tắt hỏng cho dễ hiển thị + báo cáo
+    br.damageSummary = {
+      hasBorrowerFaultDamage,
+      intactCount: intactList.length,
+      damagedCount: damagedList.length,
+    };
 
     await br.save({ session });
 
-    /* ------------------------------------------------------
+    /* ======================================================
        8) COMMIT
-    ------------------------------------------------------ */
+    ====================================================== */
     await session.commitTransaction();
     session.endSession();
 
-    /* ------------------------------------------------------
+    /* ======================================================
        9) THÔNG BÁO
-    ------------------------------------------------------ */
+    ====================================================== */
     let message = `${br.teacher.fullName} đã trả vật tư.\n`;
 
     if (intactList.length) {
@@ -494,8 +573,16 @@ export async function returnBorrowRequest({ id, managerId, returnItems }) {
 
     if (damagedList.length) {
       message += `\n⚠️ Hỏng:\n`;
-      damagedList.forEach((d) => (message += `- ${d.name}: ${d.quantity}\n`));
+      damagedList.forEach((d) => {
+        const reasonTxt =
+          d.damageReason === "natural_expiry"
+            ? " (hỏng tự nhiên)"
+            : " (lỗi người mượn)";
+        message += `- ${d.name}: ${d.quantity}${reasonTxt}\n`;
+      });
     }
+
+    if (lockMessage) message += lockMessage;
 
     await createNotification({
       type: "return",
@@ -506,7 +593,9 @@ export async function returnBorrowRequest({ id, managerId, returnItems }) {
 
     return {
       success: true,
-      message: "Trả vật tư thành công",
+      message: lockMessage
+        ? "Trả vật tư thành công. Tài khoản người mượn đã bị khóa do hỏng quá số lần."
+        : "Trả vật tư thành công",
       data: br,
     };
   } catch (err) {

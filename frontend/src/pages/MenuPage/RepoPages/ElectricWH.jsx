@@ -8,6 +8,7 @@ import AddElectric from "@/components/RepoPage/ElectricWH/AddElectric";
 import QuickSectionNav from "@/components/RepoPage/ElectricWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/ElectricWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/ElectricWH/LecturerPage/BorrowForm";
+import ReportPage from "../ReportPage";
 
 const revealUp = {
   hidden: { opacity: 0, y: 28 },
@@ -64,18 +65,28 @@ const ElectricWH = () => {
   const listRef = useRef(null);
   const addRef = useRef(null);
   const ticketRef = useRef(null);
+  const borrowFormRef = useRef(null);
+  const reportRef = useRef(null);
 
   const sections = useMemo(() => {
     return [
       { id: "list", label: "Danh sách vật tư", ref: listRef },
+
       ...(canAddMaterial
         ? [{ id: "add", label: "Thêm vật tư", ref: addRef }]
         : []),
+
       ...(canSeeBorrowTickets
         ? [{ id: "tickets", label: "Phiếu mượn", ref: ticketRef }]
         : []),
+
+      ...(isLecturer
+        ? [{ id: "borrow", label: "Mượn vật tư", ref: borrowFormRef }]
+        : []),
+
+      { id: "report", label: "Vật tư đang mượn", ref: reportRef },
     ];
-  }, [canAddMaterial, canSeeBorrowTickets]);
+  }, [canAddMaterial, canSeeBorrowTickets, isLecturer]);
 
   return (
     <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-primary)] flex flex-col">
@@ -124,7 +135,6 @@ const ElectricWH = () => {
             variants={revealUp}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
             className="
               mx-[80px]
               p-[28px]
@@ -141,14 +151,9 @@ const ElectricWH = () => {
             variants={revealUp}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
             className="
               mx-[80px]
-              bg-white
-              rounded-[24px]
               p-[28px]
-              shadow-[0_12px_32px_rgba(0,0,0,0.06)]
-              border border-[var(--border-light)]
             "
           >
             <BorrowList
@@ -162,17 +167,13 @@ const ElectricWH = () => {
         {/* ===== FORM MƯỢN (LECTURER) ===== */}
         {isLecturer && (
           <motion.section
+            ref={borrowFormRef}
             variants={revealUp}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true }}
             className="
               mx-[80px]
-              bg-white
-              rounded-[24px]
               p-[28px]
-              shadow-[0_12px_32px_rgba(0,0,0,0.06)]
-              border border-[var(--border-light)]
             "
           >
             <BorrowForm
@@ -182,6 +183,16 @@ const ElectricWH = () => {
             />
           </motion.section>
         )}
+
+        <motion.section
+          ref={reportRef}
+          variants={revealUp}
+          initial="hidden"
+          whileInView="visible"
+          className="mx-[80px] p-[28px]"
+        >
+          <ReportPage canReturn={isLecturer} />
+        </motion.section>
       </main>
     </div>
   );

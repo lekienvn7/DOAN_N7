@@ -16,6 +16,7 @@ function buildPayload(user) {
     fullName: user.fullName,
     roleID: user.role?.roleID,
     roleName: user.role?.roleName,
+    isLocked: user.isLocked,
     yourRepo: user.yourRepo || [],
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,

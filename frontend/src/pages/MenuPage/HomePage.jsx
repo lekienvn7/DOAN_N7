@@ -6,6 +6,7 @@ import AnimatedStat from "@/components/AnimatedStat";
 import NoticePage from "./NoticePage";
 import WeatherToday from "@/components/WeatherToday";
 import { motion } from "framer-motion";
+import gradient from "../../assets/images/gradient.png";
 
 const HomePage = () => {
   const navigate = useNavigate();
@@ -41,9 +42,9 @@ const HomePage = () => {
         w-full
         px-[48px]
         py-[36px]
-        page-ambient
         font-googleSans
         text-[var(--text-primary)]
+        page-ambient
       "
     >
       {/* ================= HERO ================= */}
@@ -53,6 +54,8 @@ const HomePage = () => {
         transition={{ duration: 0.6, ease: "easeOut" }}
         className="
           w-full
+          relative
+          overflow-hidden
           bg-[var(--bg-panel)]
           rounded-[28px]
           p-[36px]
