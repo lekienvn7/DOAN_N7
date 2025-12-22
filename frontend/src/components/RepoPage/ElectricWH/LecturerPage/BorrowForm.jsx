@@ -1,214 +1,317 @@
-import React, { useState } from "react";
-import { AnimatePresence, motion } from "framer-motion";
-import { toast } from "sonner";
+import React, { useEffect, useState } from "react";
 import axiosClient from "@/api/axiosClient";
+import { toast } from "sonner";
 import { useAuth } from "@/context/authContext";
 import { Calendar } from "@/components/ui/calendar";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { Button } from "@/components/ui/button";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { cn } from "@/lib/utils";
 
-const BorrowForm = ({ borrowList, onUpdateQuantity, repositoryId }) => {
-  const [qtyMap, setQtyMap] = useState({});
-  const [notice, setNotice] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [expectedReturnDate, setExpectedReturnDate] = useState(undefined);
-  const ONE_DAY = 24 * 60 * 60 * 1000;
+const BorrowForm = ({ repositoryId }) => {
   const { user } = useAuth();
 
-  const getMaterialId = (item) => item.material?._id || item._id;
+  const [materials, setMaterials] = useState([]);
+  const [selected, setSelected] = useState([]);
+  const [qtyMap, setQtyMap] = useState({});
+  const [note, setNote] = useState("");
+  const [expectedReturnDate, setExpectedReturnDate] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const getMaterialName = (item) => item.material?.name || item.name || "—";
+  const ONE_DAY = 24 * 60 * 60 * 1000;
 
-  const handleChange = (id, max, val) => {
-    const value = Math.min(Number(val), max);
-    setQtyMap((prev) => ({ ...prev, [id]: value }));
-    onUpdateQuantity(id, value);
+  /* ================= FETCH MATERIAL ================= */
+  useEffect(() => {
+    axiosClient
+      .get("/repository/material/electric")
+      .then((res) => {
+        if (res.data?.success) {
+          setMaterials(res.data.materials || []);
+        }
+      })
+      .catch(() => toast.error("Không tải được danh sách vật tư"));
+  }, [repositoryId]);
+
+  /* ================= TOGGLE SELECT ================= */
+  const toggleSelect = (mat) => {
+    setSelected((prev) => {
+      const existed = prev.find((i) => i._id === mat._id);
+
+      if (existed) {
+        setQtyMap((q) => {
+          const clone = { ...q };
+          delete clone[mat._id];
+          return clone;
+        });
+        return prev.filter((i) => i._id !== mat._id);
+      }
+
+      return [...prev, mat];
+    });
   };
 
+  /* ================= QTY CHANGE ================= */
+  const handleQtyChange = (id, max, value) => {
+    const qty = Math.min(Math.max(Number(value), 1), max);
+    setQtyMap((prev) => ({ ...prev, [id]: qty }));
+  };
+
+  /* ================= CHECK SPECIAL ================= */
+  const hasSpecialSelected = selected.some((m) => m.borrowType === "approval");
+
+  /* ================= VALIDATE ================= */
+  const isValid =
+    !!expectedReturnDate &&
+    selected.length > 0 &&
+    selected.every((m) => qtyMap[m._id] > 0);
+
+  /* ================= SUBMIT ================= */
+  const handleSubmit = async () => {
+    if (!isValid || loading) return;
+    setLoading(true);
+
+    try {
+      const items = selected.map((m) => ({
+        material: m._id,
+        quantity: qtyMap[m._id],
+      }));
+
+      await axiosClient.post("/borrow-requests", {
+        repository: repositoryId,
+        teacher: user.userID,
+        expectedReturnDate,
+        note,
+        items,
+      });
+
+      toast.success(
+        hasSpecialSelected
+          ? "Phiếu mượn đã gửi và đang chờ duyệt ⏳"
+          : "Mượn vật tư thành công ✨"
+      );
+
+      window.location.reload();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Gửi phiếu thất bại");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /* ================= DATE HELPERS ================= */
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const isValid = () => {
-    if (borrowList.length === 0) return false;
-    if (!expectedReturnDate) return false;
-
-    for (const item of borrowList) {
-      const id = getMaterialId(item);
-      const qty = qtyMap[id];
-
-      if (qty === "" || qty === undefined || qty === null) return false;
-      if (Number(qty) <= 0) return false;
-      if (Number(qty) > item.quantity) return false;
-    }
-    return true;
+  const getNextMaintenanceDate = (startDate, months) => {
+    if (!startDate || !months) return null;
+    const date = new Date(startDate);
+    date.setMonth(date.getMonth() + months);
+    return date;
   };
 
-  const handleSubmit = async () => {
-    if (submitting) return;
-    setSubmitting(true);
-
-    try {
-      const items = borrowList.map((item) => {
-        const id = getMaterialId(item);
-        return {
-          material: id,
-          quantity: qtyMap[id],
-        };
-      });
-
-      const payload = {
-        repository: repositoryId,
-        items,
-        note: notice,
-        teacher: user.userID,
-        expectedReturnDate,
-      };
-
-      if (user.isLocked) {
-        throw new Error("Tài khoản đã bị khóa do trả vật tư quá hạn");
-      }
-
-      await axiosClient.post("/borrow-requests", payload);
-
-      toast.success("Đã gửi phiếu mượn!");
-
-      setTimeout(() => {
-        window.location.reload();
-      }, 300);
-
-      // Reset form
-      setQtyMap({});
-      setNotice("");
-      setExpectedReturnDate("");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Gửi phiếu thất bại!");
-    } finally {
-      setSubmitting(false);
-    }
+  const getDaysLeft = (targetDate) => {
+    if (!targetDate) return null;
+    const today = new Date();
+    const diff = targetDate - today;
+    return Math.ceil(diff / (1000 * 60 * 60 * 24));
   };
 
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const d = date.getDate().toString().padStart(2, "0");
+    const m = (date.getMonth() + 1).toString().padStart(2, "0");
+    const y = date.getFullYear().toString().slice(-2);
+    return `${d}/${m}/${y}`;
+  };
+
+  /* ================= UI ================= */
   return (
-    <AnimatePresence>
-      <div className="flex flex-col gap-[25px] w-[500px]">
-        <div className="flex flex-col gap-[15px]">
-          <div className="flex flex-col gap-[5px]">
-            <p className="ml-[5px] text-[13px]">
-              Hạn trả <span className="text-red-400">*</span>
-            </p>
+    <div className="grid grid-cols-2 gap-[40px]">
+      {/* ================= LEFT ================= */}
+      <div className="bg-[#111] rounded-[20px] p-[20px]">
+        <h3 className="text-[#fdd700] mb-[4px] font-bold">Danh sách vật tư</h3>
+        <p className="text-[12px] text-gray-400 mb-[10px]">
+          Vật tư <span className="text-pink-400">đặc biệt cần duyệt</span> sẽ
+          được làm nổi bật
+        </p>
 
-            <Popover>
-              <PopoverTrigger asChild>
-                <Button
-                  variant="outline"
-                  className={cn(
-                    "w-[200px] justify-start text-left font-normal bg-[#222] text-white cursor-pointer",
-                    !expectedReturnDate && "text-gray-400"
-                  )}
-                >
-                  <CalendarIcon className="mr-2 h-4 w-4" />
-                  {expectedReturnDate
-                    ? format(expectedReturnDate, "dd/MM/yyyy")
-                    : "Chọn ngày trả"}
-                </Button>
-              </PopoverTrigger>
-
-              <PopoverContent
-                className="w-auto p-0 bg-[#0f0f0f] text-textpri "
-                align="start"
-              >
-                <Calendar
-                  mode="single"
-                  selected={expectedReturnDate}
-                  onSelect={setExpectedReturnDate}
-                  disabled={(date) =>
-                    date < today || date - today > 14 * ONE_DAY
-                  } // không chọn ngày quá khứ
-                  initialFocus
-                />
-              </PopoverContent>
-            </Popover>
-          </div>
-        </div>
-
-        <div className="max-h-[250px] w-[570px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60">
-          <table>
-            <thead className="border-b border-gray-700 bg-[#1a0f08]">
-              <tr className="text-left text-[#fdd700] p-[10px]">
-                <th className="w-[60%]">Tên vật tư</th>
-                <th className="w-[10%]">S.lượng</th>
+        <div className="max-h-[500px] overflow-y-auto scrollbar-thin">
+          <table className="w-full text-[14px]">
+            <thead className="sticky top-0 bg-[#111] z-10 text-left opacity-70 border-b border-gray-700">
+              <tr>
+                <th className="py-2">#</th>
+                <th>Tên</th>
+                <th>SL</th>
+                <th>Bảo trì</th>
+                <th></th>
               </tr>
             </thead>
 
             <tbody>
-              {borrowList.length === 0 && (
-                <tr>
-                  <td colSpan={2}>
-                    <p className="opacity-40">Chưa chọn vật tư muốn mượn</p>
-                  </td>
-                </tr>
-              )}
+              {materials.map((m, idx) => {
+                const disabled = m.quantity === 0;
+                const checked = selected.some((i) => i._id === m._id);
+                const isSpecial = m.borrowType === "approval";
 
-              {borrowList.map((item) => (
-                <tr key={getMaterialId(item)} className="text-[14px]">
-                  <td className="p-[5px]">{getMaterialName(item)}</td>
+                return (
+                  <tr
+                    key={m._id}
+                    className={cn(
+                      "border-b border-gray-800 transition",
+                      disabled && "opacity-40",
+                      isSpecial && "bg-pink-500/10",
+                      checked && "bg-[#fdd700]/10"
+                    )}
+                  >
+                    <td className="py-2">{idx + 1}</td>
 
-                  <td>
-                    <div className="flex flex-row gap-[5px]">
+                    <td className="flex items-center gap-2">
+                      <span
+                        className={cn(isSpecial && "text-pink-300 font-medium")}
+                      >
+                        {m.name}
+                      </span>
+                      {isSpecial && (
+                        <span className="text-[11px] px-2 py-[2px] rounded-full bg-pink-500/20 text-pink-400">
+                          Cần duyệt
+                        </span>
+                      )}
+                    </td>
+
+                    <td>{m.quantity}</td>
+
+                    <td>
+                      {m.maintenanceCycle
+                        ? (() => {
+                            const nextDate = getNextMaintenanceDate(
+                              m.createdAt,
+                              m.maintenanceCycle
+                            );
+                            const daysLeft = getDaysLeft(nextDate);
+
+                            return (
+                              <span
+                                className={
+                                  daysLeft <= 7
+                                    ? "text-red-500"
+                                    : "text-textpri"
+                                }
+                              >
+                                {daysLeft <= 7
+                                  ? `Còn ${daysLeft} ngày`
+                                  : formatDate(nextDate)}
+                              </span>
+                            );
+                          })()
+                        : "—"}
+                    </td>
+
+                    <td>
                       <input
-                        type="number"
-                        max={item.quantity}
-                        value={qtyMap[getMaterialId(item)] || ""}
-                        onChange={(e) =>
-                          handleChange(
-                            getMaterialId(item),
-                            item.quantity,
-                            e.target.value
-                          )
-                        }
-                        className="no-arrows w-[40px] px-[10px] bg-[#222] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#fdd700]"
+                        type="checkbox"
+                        disabled={disabled}
+                        checked={checked}
+                        onChange={() => toggleSelect(m)}
                       />
-                      / {item.quantity}
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
-
-        <div className="flex flex-col gap-[5px]">
-          <p className="ml-[5px]">Ghi chú</p>
-          <input
-            type="text"
-            value={notice}
-            placeholder="Ghi chú..."
-            onChange={(e) => setNotice(e.target.value)}
-            className="w-[570px] px-[10px] py-[5px] bg-[#222] placeholder:text-gray-400 rounded-[12px] focus:outline-none focus:ring-2 focus:ring-[#fdd700]"
-          />
-        </div>
-
-        <div className="w-[570px] flex flex-col items-center">
-          <button
-            disabled={!isValid() || submitting}
-            onClick={handleSubmit}
-            className={`rounded-[12px] p-[10px] w-[200px] ${
-              !isValid()
-                ? "bg-textsec cursor-not-allowed"
-                : "bg-highlightcl cursor-pointer hover:bg-[#60a5fa]"
-            }`}
-          >
-            {submitting ? "Đang gửi..." : "Gửi phiếu mượn"}
-          </button>
-        </div>
       </div>
-    </AnimatePresence>
+
+      {/* ================= RIGHT ================= */}
+      <div className="h-fit bg-[#111] rounded-[20px] p-[20px]">
+        <h3 className="text-[#fdd700] mb-[8px] font-bold">Phiếu mượn vật tư</h3>
+
+        {hasSpecialSelected && (
+          <p className="text-[13px] text-pink-400 mb-[10px]">
+            Phiếu này sẽ <b>cần duyệt</b> do có vật tư đặc biệt
+          </p>
+        )}
+
+        {/* DATE PICKER */}
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "mb-[15px] w-full justify-start bg-[#111] text-white border border-gray-700",
+                "hover:bg-[#1a1a1a]",
+                !expectedReturnDate && "text-gray-400"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {expectedReturnDate
+                ? format(expectedReturnDate, "dd/MM/yyyy")
+                : "Chọn hạn trả"}
+            </Button>
+          </PopoverTrigger>
+
+          <PopoverContent className="bg-bgmain text-textpri">
+            <Calendar
+              mode="single"
+              selected={expectedReturnDate}
+              onSelect={setExpectedReturnDate}
+              disabled={(date) => date < today || date - today > 14 * ONE_DAY}
+            />
+          </PopoverContent>
+        </Popover>
+
+        {/* SELECTED */}
+        <div className="max-h-[300px] overflow-y-auto mb-[10px]">
+          {selected.length === 0 && (
+            <p className="text-gray-500 text-sm">Chưa chọn vật tư</p>
+          )}
+
+          {selected.map((m) => (
+            <div key={m._id} className="flex items-center gap-[10px] mb-[8px]">
+              <p className="flex-1 truncate">{m.name}</p>
+              <input
+                type="number"
+                min={1}
+                max={m.quantity}
+                value={qtyMap[m._id] || ""}
+                className="w-[70px] bg-[#222] rounded px-2 py-1"
+                onChange={(e) =>
+                  handleQtyChange(m._id, m.quantity, e.target.value)
+                }
+              />
+              <span className="opacity-50">/ {m.quantity}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* NOTE */}
+        <input
+          className="w-full mt-[12px] bg-[#222] px-3 py-2 rounded"
+          placeholder="Ghi chú..."
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+        />
+
+        {/* SUBMIT */}
+        <button
+          onClick={handleSubmit}
+          disabled={!isValid || loading}
+          className={cn(
+            "mt-[16px] w-full py-2 rounded font-semibold transition",
+            isValid
+              ? "bg-[#fdd700] text-black hover:bg-[#ffe066]"
+              : "bg-gray-600 cursor-not-allowed"
+          )}
+        >
+          {loading ? "Đang gửi..." : "Gửi phiếu mượn"}
+        </button>
+      </div>
+    </div>
   );
 };
 

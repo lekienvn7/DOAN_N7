@@ -8,7 +8,7 @@ import ChangePassBox from "./ChangePassBox";
 
 const LoginBox = () => {
   const [showForgot, setShowForgot] = useState(false);
-  const navigate = useNavigate(); // hook điều hướng
+  const navigate = useNavigate();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -32,102 +32,82 @@ const LoginBox = () => {
 
       if (!data.success) {
         toast.error(data.message || "Sai tài khoản hoặc mật khẩu");
-        return; // Không load trang
+        return;
       }
 
-      // Nếu đăng nhập thành công
       localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
 
-      toast.success("Đăng nhập thành công");
-      toast.success(`Xin chào ${data.user.fullName}!`, { duration: 2000 });
+      toast.success(`Xin chào ${data.user.fullName}!`);
 
       if (data.mustChangePassword) {
         toast.info("Bạn cần đổi mật khẩu lần đầu!");
-
-        // Lưu token tạm thời
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-
         setUserToChange(data.user);
         setShowChangePassword(true);
         return;
       }
 
-      // Dùng navigate để chuyển ngay UI, sau đó reload nhẹ để reset context
       setTimeout(() => {
-        navigate("/home"); // Chuyển route trước
-        setTimeout(() => {
-          window.location.reload(); // Reload sau để đảm bảo load lại AuthProvider, context, v.v.
-        }, 1); // Chờ 150ms cho navigate hoạt động trước
-      }, 500);
+        navigate("/home");
+        setTimeout(() => window.location.reload(), 1);
+      }, 400);
     } catch (error) {
-      console.error("Lỗi đăng nhập:", error);
-      const msg =
-        error.response?.data?.message || "Không thể kết nối đến server";
-      toast.error(msg);
+      toast.error(
+        error.response?.data?.message || "Không thể kết nối đến server"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // Nếu đang trong giai đoạn đổi mật khẩu
   if (showChangePassword && userToChange) {
     return <ChangePassBox user={userToChange} navigate={navigate} />;
   }
 
   const handleForgot = () => {
-    setLoading(true);
     if (!email) {
-      toast.error("Vui lòng nhập đầy đủ thông tin!");
-      setLoading(false);
+      toast.error("Vui lòng nhập email!");
       return;
     }
 
-    toast.info(
-      "Đã gửi yêu cầu reset mật khẩu đến Admin. Vui lòng kiểm tra email của bạn.",
-      { duration: 2000 }
-    );
+    setLoading(true);
+    toast.info("Yêu cầu khôi phục đã được gửi tới quản trị viên");
 
     setTimeout(() => {
       setLoading(false);
       setShowForgot(false);
-    }, 1000);
+    }, 800);
   };
 
   return (
     <div
       className="
-        login-box 
-        w-[560px] h-[600px]
-        rounded-[24px] flex flex-col items-center
-        p-[30px] shadow-[0_30px_60px_rgba(0,0,0,0.85),_0_-10px_30px_rgba(0,0,0,0.4),_0_0_50px_rgba(255,255,255,0.05)]
-        bg-bgmain overflow-hidden relative
+        w-[520px]
+        rounded-[28px]
+        bg-white
+        p-[36px]
+        shadow-[0_24px_60px_rgba(0,0,0,0.12)]
+        flex flex-col items-center
       "
     >
-      <img
-        src={logoUneti}
-        alt="logo_uneti"
-        className="w-[80px] brightness-[0%] invert-[100%]"
-      />
+      <img src={logoUneti} alt="logo" className="w-[64px] mb-[10px]" />
 
       <AnimatePresence mode="wait">
         {!showForgot ? (
           <motion.div
             key="login"
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 10 }}
-            transition={{ duration: 0.3 }}
-            className="flex flex-col items-center gap-[25px] mt-5"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35, ease: "easeOut" }}
+            className="w-full flex flex-col items-center gap-[22px]"
           >
-            <p className="text-[48px] font-satoshi font-bold text-textpri">
+            <p className="text-[36px] font-bold text-[var(--text-primary)]">
               ĐĂNG NHẬP
             </p>
 
-            <p className="text-[16px] w-[410px] text-textsec text-center">
-              Sử dụng tài khoản được cấp của bạn. Nếu đây là lần đầu, hãy đổi
-              mật khẩu ngay sau đó!
+            <p className="text-[15px] text-[var(--text-secondary)] text-center px-4">
+              Sử dụng tài khoản được cấp để truy cập hệ thống quản lý kho.
             </p>
 
             <form
@@ -135,17 +115,25 @@ const LoginBox = () => {
                 e.preventDefault();
                 handleLogin();
               }}
-              className="flex flex-col gap-[25px]"
+              className="flex flex-col gap-[18px] w-full items-center"
             >
               <input
                 type="text"
                 placeholder="Tên đăng nhập"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff]
-                           border-[2px] border-[#5E5E60] rounded-[12px]
-                           focus:outline-none focus:ring-2 focus:ring-blue-500
-                           placeholder:text-gray-400 transition-all duration-200"
+                className="
+                  w-[420px]
+                  px-4 py-3
+                  rounded-[14px]
+                  border border-[var(--border-light)]
+                  bg-[var(--bg-subtle)]
+                  text-[var(--text-primary)]
+                  placeholder:text-[var(--text-tertiary)]
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-[var(--accent-blue)]
+                "
               />
 
               <input
@@ -153,87 +141,110 @@ const LoginBox = () => {
                 placeholder="Mật khẩu"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff]
-                           border-[2px] border-[#5E5E60] rounded-[12px]
-                           focus:outline-none focus:ring-2 focus:ring-blue-500
-                           placeholder:text-gray-400 transition-all duration-200"
+                className="
+                  w-[420px]
+                  px-4 py-3
+                  rounded-[14px]
+                  border border-[var(--border-light)]
+                  bg-[var(--bg-subtle)]
+                  text-[var(--text-primary)]
+                  placeholder:text-[var(--text-tertiary)]
+                  focus:outline-none
+                  focus:ring-2
+                  focus:ring-[var(--accent-blue)]
+                "
               />
 
               <button
-                onClick={handleLogin}
-                className="w-[410px] h-[55px] rounded-[24px] bg-[#0a84ff]
-                           text-white font-bold hover:bg-[#0066cc]
-                           transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.2)]
-                           flex items-center justify-center cursor-pointer"
+                type="submit"
+                className="
+                  w-[420px]
+                  h-[52px]
+                  rounded-[16px]
+                  bg-[var(--accent-blue)]
+                  text-white
+                  font-semibold
+                  hover:bg-[var(--accent-blue-hover)]
+                  transition
+                  flex items-center justify-center cursor-pointer
+                "
               >
                 {loading ? (
-                  <div className="flex items-center gap-2">
-                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                    <span>Đang xử lý...</span>
-                  </div>
+                  <span className="flex items-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Đang xử lý…
+                  </span>
                 ) : (
                   "Đăng nhập"
                 )}
               </button>
             </form>
 
-            <p
+            <button
               onClick={() => setShowForgot(true)}
-              className="text-[#0a84ff] text-sm cursor-pointer hover:underline transition-all duration-200"
+              className="text-[14px] text-[var(--accent-blue)] hover:underline"
             >
               Quên mật khẩu?
-            </p>
+            </button>
           </motion.div>
         ) : (
           <motion.div
             key="forgot"
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: -10 }}
-            transition={{ duration: 0.3 }}
-            className="flex flex-col items-center gap-[25px] mt-5"
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
+            transition={{ duration: 0.35 }}
+            className="w-full flex flex-col items-center gap-[22px]"
           >
-            <p className="text-[48px] text-center font-satoshi font-bold text-textpri">
+            <p className="text-[32px] font-bold text-[var(--text-primary)]">
               Khôi phục mật khẩu
             </p>
-            <p className="text-[16px] w-[410px] text-textsec text-center">
-              Nhập email của bạn để gửi yêu cầu lấy lại mật khẩu.
+
+            <p className="text-[15px] text-[var(--text-secondary)] text-center">
+              Nhập email để gửi yêu cầu khôi phục.
             </p>
 
             <input
               type="text"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Email hoặc số điện thoại"
-              className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff]
-                         border-[2px] border-[#5E5E60] rounded-[12px]
-                         focus:outline-none focus:ring-2 focus:ring-blue-500
-                         placeholder:text-gray-400 transition-all duration-200"
+              placeholder="Email"
+              className="
+                w-[420px]
+                px-4 py-3
+                rounded-[14px]
+                border border-[var(--border-light)]
+                bg-[var(--bg-subtle)]
+                text-[var(--text-primary)]
+                placeholder:text-[var(--text-tertiary)]
+                focus:outline-none
+                focus:ring-2
+                focus:ring-[var(--accent-blue)]
+              "
             />
 
             <button
               onClick={handleForgot}
-              className="w-[410px] h-[55px] rounded-[24px] bg-[#0A84FF]
-                         text-white font-bold hover:bg-[#2997FF] hover:scale-105
-                         transition-all duration-300 shadow-[0_4px_10px_rgba(0,0,0,0.2)]
-                         flex items-center justify-center cursor-pointer"
+              className="
+                w-[420px]
+                h-[52px]
+                rounded-[16px]
+                bg-[var(--accent-blue)]
+                text-white
+                font-semibold
+                hover:bg-[var(--accent-blue-hover)]
+                transition
+              "
             >
-              {loading ? (
-                <div className="flex items-center gap-2">
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                  <span>Đang xử lý...</span>
-                </div>
-              ) : (
-                "Gửi yêu cầu"
-              )}
+              {loading ? "Đang gửi…" : "Gửi yêu cầu"}
             </button>
 
-            <p
+            <button
               onClick={() => setShowForgot(false)}
-              className="text-[#0A84FF] text-sm cursor-pointer hover:text-[#2997FF] transition-all duration-200"
+              className="text-[14px] text-[var(--accent-blue)] hover:underline"
             >
               ← Quay lại đăng nhập
-            </p>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>

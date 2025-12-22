@@ -46,7 +46,7 @@ body {
 
 * {
   scrollbar-width: thin;
-  scrollbar-color: black transparent;
+  scrollbar-color: lightgray transparent;
 }
 
 /* Chrome / Edge / Safari */
@@ -56,6 +56,68 @@ body {
 
 *::-webkit-scrollbar-track {
   background: rgba(255, 255, 255, 0.04); /* nền mờ */
+}
+
+/* ===============================
+   APPLE AMBIENT FROM HEADER DOWN
+================================ */
+
+/* ===============================
+   APPLE AMBIENT PAGE BACKGROUND
+================================ */
+
+.page-ambient {
+  position: relative;
+  background-color: var(--bg-page);
+  overflow-x: hidden;
+}
+
+/* gradient chỉ ở PHÍA TRÊN */
+.page-ambient::before {
+  content: "";
+  position: absolute;
+  top: 0px;
+  left: -15%;
+  width: 130%;
+  height: 100px;
+
+  background: radial-gradient(
+      75% 150% at 0% 0%,
+      rgba(59, 130, 246, 0.55),
+      transparent 68%
+    ),
+    radial-gradient(
+      75% 150% at 100% 0%,
+      rgba(249, 115, 22, 0.55),
+      transparent 68%
+    );
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* đảm bảo content nổi lên trên */
+.page-ambient > * {
+  position: relative;
+  z-index: 1;
+}
+
+.gradient-text {
+  font-family: "Google Sans", sans-serif;
+  font-weight: 700;
+  line-height: 1.1;
+
+  background: linear-gradient(
+    90deg,
+    #4285f4 0%,
+    /* xanh Google */ #9aa0a6 45%,
+    /* xám trung gian */ #ea4335 100% /* cam/đỏ Google */
+  );
+
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  color: transparent;
 }
 
 /* Thumb – tay kéo */

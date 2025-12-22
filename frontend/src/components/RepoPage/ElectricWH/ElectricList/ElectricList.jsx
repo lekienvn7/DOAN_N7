@@ -61,11 +61,23 @@ const ElectricList = ({ reload }) => {
         className="flex justify-between items-center"
         style={{ paddingInline: "var(--page-x)" }}
       >
-        <h2 className="text-[35px] font-semibold">Danh sách vật tư</h2>
+        <h2 className="text-[35px] font-bold font-googleSans text-[var(--text-tertiary)]">
+          <span className="gradient-text">Danh sách</span> vật tư
+        </h2>
 
         {/* SEARCH */}
         <div ref={boxRef} className="relative w-[320px]">
-          <div className="flex items-center gap-3 bg-[#1c1c1e] px-5 py-3 rounded-full">
+          <div
+            className="
+              flex items-center gap-3
+              bg-[var(--bg-subtle)]
+              px-5 py-3
+              rounded-full
+              border border-[var(--border-light)]
+              focus-within:border-[var(--accent-blue)]
+              transition
+            "
+          >
             <input
               value={searchData}
               onChange={(e) => setSearchData(e.target.value)}
@@ -79,18 +91,38 @@ const ElectricList = ({ reload }) => {
                 }
               }}
               placeholder="Tìm dây điện, CB, biến áp…"
-              className="bg-transparent outline-none placeholder:text-textsec text-white w-full"
+              className="
+                bg-transparent outline-none w-full
+                text-[15px]
+                text-[var(--text-primary)]
+                placeholder:text-[var(--text-tertiary)]
+              "
             />
           </div>
 
           {/* HISTORY */}
           {openHistory && history.length > 0 && (
-            <div className="absolute top-[52px] w-full bg-[#1c1c1e] rounded-2xl p-3 shadow-xl z-20">
+            <div
+              className="
+                absolute top-[56px] w-full z-20
+                bg-[var(--bg-panel)]
+                rounded-[20px]
+                p-3
+                border border-[var(--border-light)]
+                shadow-[0_12px_32px_rgba(0,0,0,0.08)]
+              "
+            >
               <div className="flex justify-between items-center mb-2 px-2">
-                <span className="text-xs text-[#a1a1a6]">Lịch sử tìm kiếm</span>
+                <span className="text-xs text-[var(--text-tertiary)]">
+                  Lịch sử tìm kiếm
+                </span>
                 <button
                   onClick={clearHistory}
-                  className="text-xs text-red-400 hover:text-red-300"
+                  className="
+                    text-xs
+                    text-[var(--accent-blue)]
+                    hover:underline
+                  "
                 >
                   Xóa
                 </button>
@@ -104,7 +136,13 @@ const ElectricList = ({ reload }) => {
                       setSearchData(item);
                       setOpenHistory(false);
                     }}
-                    className="text-left px-3 py-2 rounded-lg text-sm text-textpri hover:bg-white/5"
+                    className="
+                      text-left px-3 py-2 rounded-[12px]
+                      text-[14px]
+                      text-[var(--text-primary)]
+                      hover:bg-[var(--bg-hover)]
+                      transition
+                    "
                   >
                     {item}
                   </button>

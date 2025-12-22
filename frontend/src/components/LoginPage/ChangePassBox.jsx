@@ -22,9 +22,8 @@ const ChangePasswordBox = ({ user, navigate }) => {
     }
 
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-
     if (!passwordRegex.test(newPass)) {
-      toast.error("Mật khẩu tối thiểu 8 ký tự, bao gồm chữ hoa, số và ký tự!");
+      toast.error("Mật khẩu tối thiểu 8 ký tự, gồm chữ hoa và số!");
       return;
     }
 
@@ -35,16 +34,12 @@ const ChangePasswordBox = ({ user, navigate }) => {
 
     try {
       setLoading(true);
-
       const token = localStorage.getItem("token");
 
-      // 1. Đổi mật khẩu
       const { data } = await axiosClient.put(
         `/user/change-pass/${user.userID}`,
         { oldPass, newPass },
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
 
       if (!data.success) {
@@ -59,23 +54,15 @@ const ChangePasswordBox = ({ user, navigate }) => {
         password: newPass,
       });
 
-      if (!res.data.success) {
-        toast.error("Đăng nhập thất bại!");
-        return;
-      }
-
-      // 3. Lưu token
       localStorage.setItem("token", res.data.token);
       localStorage.setItem("user", JSON.stringify(res.data.user));
 
       toast.success("Đăng nhập lại thành công!");
-
-      // 4. Điều hướng đúng (dashboard)
-      navigate("/");
-    } catch (error) {
-      const msg =
-        error.response?.data?.message || "Không thể kết nối đến server!";
-      toast.error(msg);
+      navigate("/home");
+    } catch (err) {
+      toast.error(
+        err.response?.data?.message || "Không thể kết nối đến server!"
+      );
     } finally {
       setLoading(false);
     }
@@ -84,57 +71,80 @@ const ChangePasswordBox = ({ user, navigate }) => {
   return (
     <AnimatePresence mode="wait">
       <motion.div
-        key="login"
-        initial={{ opacity: 0, x: -50 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: 50 }}
-        transition={{ duration: 0.3 }}
-        className="w-[560px] h-[560px] p-[30px] flex flex-col gap-[20px] items-center bg-bgmain shadow-[0_30px_60px_rgba(0,0,0,0.85),_0_-10px_30px_rgba(0,0,0,0.4),_0_0_50px_rgba(255,255,255,0.05)] p-6 rounded-[12px]"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 20 }}
+        transition={{ duration: 0.35, ease: "easeOut" }}
+        className="
+          w-[560px] h-[560px]
+          rounded-[28px]
+          bg-[#1C1C1E]
+          shadow-[0_30px_60px_rgba(0,0,0,0.55)]
+          p-[36px]
+          flex flex-col items-center
+          gap-[22px]
+        "
       >
         <img
           src={logoUneti}
-          alt="logo_uneti"
-          className="w-[100px] brightness-[0%] invert-[100%]"
+          alt="logo"
+          className="w-[90px] brightness-0 invert"
         />
-        <h2 className="text-2xl text-[#ffffff] font-bold">
+
+        <h2 className="text-[28px] font-semibold text-white">
           Cập nhật mật khẩu mới
         </h2>
-        <p className="text-[#A1A1A6]">
-          Đổi mật khẩu bắt buộc khi lần đầu đăng nhập
+
+        <p className="text-[15px] text-[var(--text-tertiary)] text-center">
+          Đổi mật khẩu bắt buộc khi lần đầu đăng nhập hệ thống
         </p>
+
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleChangePassword();
           }}
-          className="flex flex-col gap-[25px]"
+          className="flex flex-col gap-[18px] mt-[10px]"
         >
-          <input
-            type="password"
-            placeholder="Mật khẩu cũ"
-            value={oldPass}
-            onChange={(e) => setOldPass(e.target.value)}
-            className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
-          />
-          <input
-            type="password"
-            placeholder="Mật khẩu mới"
-            value={newPass}
-            onChange={(e) => setNewPass(e.target.value)}
-            className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
-          />
-          <input
-            type="password"
-            placeholder="Nhập lại mật khẩu mới"
-            value={confirmPass}
-            onChange={(e) => setConfirmPass(e.target.value)}
-            className="w-[410px] px-4 py-3 bg-[#2C2C2E] text-[#ffffff] border-[2px] border-[#5E5E60] rounded-[12px] focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:text-gray-400 transition-all duration-200"
-          />
+          {[
+            ["Mật khẩu cũ", oldPass, setOldPass],
+            ["Mật khẩu mới", newPass, setNewPass],
+            ["Nhập lại mật khẩu mới", confirmPass, setConfirmPass],
+          ].map(([label, value, setter]) => (
+            <input
+              key={label}
+              type="password"
+              placeholder={label}
+              value={value}
+              onChange={(e) => setter(e.target.value)}
+              className="
+                w-[410px]
+                px-4 py-3
+                rounded-[14px]
+                bg-[#2C2C2E]
+                text-white
+                placeholder:text-[var(--text-quaternary)]
+                border border-[#3A3A3C]
+                focus:outline-none
+                focus:border-[var(--accent-blue)]
+                focus:ring-2 focus:ring-[rgba(10,132,255,0.35)]
+                transition
+              "
+            />
+          ))}
 
           <button
-            onClick={handleChangePassword}
             disabled={loading}
-            className="w-[410px] h-[50px] bg-[#0A84FF] cursor-pointer text-white font-bold rounded-[24px]  hover:bg-[#2997FF] transition-all duration-300"
+            className="
+              w-[410px] h-[52px]
+              rounded-full
+              bg-[var(--accent-blue)]
+              text-white
+              font-semibold
+              hover:bg-[#2997FF]
+              transition
+              disabled:opacity-60
+            "
           >
             {loading ? "Đang cập nhật..." : "Xác nhận"}
           </button>

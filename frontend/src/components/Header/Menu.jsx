@@ -15,16 +15,14 @@ const Menu = () => {
     { name: "Chỉnh sửa thông tin", path: "/user", key: "5" },
   ];
 
-  // Admin
   const adMenuItems = [
     { name: "Trang chủ", path: "/home", key: "1" },
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
     { name: "Chỉnh sửa thông tin", path: "/user", key: "4" },
-    { name: "Quản lý/Phân quyền", path: "/role", key: "5" },
+    { name: "Quản lý / Phân quyền", path: "/role", key: "5" },
   ];
 
-  // Quản lý
   const managerMenuItems = [
     { name: "Trang chủ", path: "/home", key: "1" },
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
@@ -33,15 +31,8 @@ const Menu = () => {
     { name: "Chỉnh sửa thông tin", path: "/user", key: "5" },
   ];
 
-  const lecturerMenuItems = [
-    { name: "Trang chủ", path: "/home", key: "1" },
-    { name: "Kho vật tư", path: "/repository/electric", key: "2" },
-    { name: "Bảo trì thiết bị", path: "/material/chemical/repair", key: "3" },
-    { name: "Vật tư đang mượn", path: "/report", key: "4" },
-    { name: "Chỉnh sửa thông tin", path: "/user", key: "5" },
-  ];
+  const lecturerMenuItems = managerMenuItems;
 
-  // Chọn menu theo role
   const activeMenu = useMemo(() => {
     if (!user) return menuItems;
     if (user.roleID === "ADMINISTRATOR") return adMenuItems;
@@ -51,7 +42,6 @@ const Menu = () => {
     return menuItems;
   }, [user]);
 
-  // Hotkeys
   useEffect(() => {
     const handleKeyPress = (e) => {
       const tag = (e.target.tagName || "").toLowerCase();
@@ -70,32 +60,55 @@ const Menu = () => {
     return () => window.removeEventListener("keydown", handleKeyPress);
   }, [activeMenu, navigate]);
 
-  // Helper: xác định tab active theo segment đầu
   const isActive = (path) => {
     const seg = "/" + (path.split("/")[1] || "");
     return location.pathname.startsWith(seg);
   };
 
   return (
-    <ul className="flex flex-row gap-[40px]">
-      {activeMenu.map((item) => (
-        <li key={item.path}>
-          <Link
-            to={item.path}
-            className={`relative pb-5 text-[13px]
-              after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-full 
-              after:scale-x-0 after:bg-textsec after:transition-transform after:duration-300 
-              hover:after:scale-x-100
-              ${
-                isActive(item.path)
-                  ? "text-white font-semibold after:scale-x-50"
-                  : "text-[#A1A1A6] hover:text-white"
-              }`}
-          >
-            {item.name}
-          </Link>
-        </li>
-      ))}
+    <ul className="flex flex-row gap-[36px] font-googleSans">
+      {activeMenu.map((item) => {
+        const active = isActive(item.path);
+
+        return (
+          <li key={item.path}>
+            <Link
+              to={item.path}
+              className={`
+                relative
+                pb-[6px]
+                text-[14px]
+                transition-colors
+                duration-200
+
+                ${
+                  active
+                    ? "text-[var(--text-primary)] font-semibold"
+                    : "text-[var(--text-secondary)] hover:text-[var(--text-primary)]"
+                }
+
+                after:absolute
+                after:left-0
+                after:-bottom-[7px]
+                after:h-[2px]
+                after:w-full
+                after:rounded-full
+                after:bg-[var(--accent-blue)]
+                after:transition-transform
+                after:duration-300
+                after:origin-left
+                ${
+                  active
+                    ? "after:scale-x-100"
+                    : "after:scale-x-0 hover:after:scale-x-100"
+                }
+              `}
+            >
+              {item.name}
+            </Link>
+          </li>
+        );
+      })}
     </ul>
   );
 };

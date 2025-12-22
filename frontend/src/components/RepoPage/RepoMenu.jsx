@@ -30,17 +30,16 @@ const RepoMenu = () => {
   };
 
   const REPO_COLORS = {
-    mechanical: "#E5E7EB", // Cơ khí
-    iot: "#5eead4", // Nhúng & IoT
-    technology: "#60a5fa", // CNTT
-    automotive: "#fb923c", // Công nghệ ô tô
-    telecom: "#ff3434", // Điện tử viễn thông
-    fashion: "#f472b6", // Thiết kế thời trang
-    electric: "#fdd700", // Điện
-    chemical: "#c7a7ff", // Hóa chất
+    mechanical: "#8E8E93",
+    iot: "#5EEAD4",
+    technology: "#60A5FA",
+    automotive: "#FB923C",
+    telecom: "#FF453A",
+    fashion: "#F472B6",
+    electric: "#FDD700",
+    chemical: "#C7A7FF",
   };
 
-  // Lấy danh sách kho từ backend
   useEffect(() => {
     const fetchRepos = async () => {
       try {
@@ -48,36 +47,36 @@ const RepoMenu = () => {
         if (res.data.success) {
           setRepos(res.data.data);
         }
-      } catch (error) {
-        console.error("Lỗi khi tải danh sách kho:", error);
+      } catch (err) {
+        console.error("Lỗi khi tải danh sách kho:", err);
       }
     };
     fetchRepos();
   }, []);
 
-  // Xác định kho hiện tại trong danh sách
   const currentIndex = repos.findIndex((repo) =>
     location.pathname.startsWith(`/repository/${repo.repoID}`)
   );
 
-  // Lắng nghe phím tắt (A/D)
   useEffect(() => {
     const handleKeyPress = (e) => {
       const tag = (e.target.tagName || "").toLowerCase();
       if (["input", "textarea"].includes(tag) || e.target.isContentEditable)
         return;
 
-      const key = e.key.toLowerCase();
-      if (repos.length === 0) return;
+      if (!repos.length) return;
 
-      if (key === "a") {
-        // A → kho trước
-        const prevIndex = (currentIndex - 1 + repos.length) % repos.length;
-        navigate(`/repository/${repos[prevIndex].repoID}`);
-      } else if (key === "d") {
-        // D → kho sau
-        const nextIndex = (currentIndex + 1) % repos.length;
-        navigate(`/repository/${repos[nextIndex].repoID}`);
+      if (e.key.toLowerCase() === "a") {
+        navigate(
+          `/repository/${
+            repos[(currentIndex - 1 + repos.length) % repos.length].repoID
+          }`
+        );
+      }
+      if (e.key.toLowerCase() === "d") {
+        navigate(
+          `/repository/${repos[(currentIndex + 1) % repos.length].repoID}`
+        );
       }
     };
 
@@ -87,42 +86,43 @@ const RepoMenu = () => {
 
   return (
     <motion.ul
-      initial={{ x: -200, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 200, opacity: 0 }}
-      transition={{
-        type: "spring",
-        stiffness: 90,
-        damping: 12,
-      }}
-      className="flex flex-row flex-wrap gap-[25px] items-center justify-center gpu"
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
+      className="flex flex-row gap-[25px] items-center justify-center gpu"
     >
-      {repos.map((repo, index) => {
+      {repos.map((repo) => {
         const Icon = iconMap[repo.repoID] || PlugZap;
         const path = `/repository/${repo.repoID.toLowerCase()}`;
         const isActive = location.pathname.startsWith(path);
+        const activeColor = REPO_COLORS[repo.repoID];
 
         return (
-          <li key={repo.repoID || index}>
+          <li key={repo.repoID}>
             <Link
               to={path}
-              className={`group flex flex-col items-center text-center transition-all duration-200 cursor-pointer ${
-                isActive
-                  ? `text-[${REPO_COLORS[repo.repoID]}]`
-                  : "text-[#A1A1A6] hover:text-textpri"
-              }`}
+              className="group flex flex-col items-center text-center transition-all duration-200 cursor-pointer"
+              style={{
+                color: isActive ? activeColor : "var(--text-tertiary)",
+              }}
             >
               <Icon
                 size={20}
-                className={`transition-colors duration-300 ${
-                  isActive
-                    ? `text-[${REPO_COLORS[repo.repoID]}]`
-                    : "text-[#A1A1A6] group-hover:text-textpri"
-                }`}
+                strokeWidth={2}
+                className="transition-colors"
+                style={{
+                  color: isActive ? activeColor : "var(--text-tertiary)",
+                }}
               />
-              <p className="mt-1 text-[12px] font-medium whitespace-nowrap">
+
+              <span
+                className={` mt-1
+                  text-[12px] font-medium whitespace-nowrap
+                  ${!isActive && "group-hover:text-[var(--text-primary)]"}
+                `}
+              >
                 {repo.repoName}
-              </p>
+              </span>
             </Link>
           </li>
         );

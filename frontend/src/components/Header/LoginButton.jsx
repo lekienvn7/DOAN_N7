@@ -1,5 +1,5 @@
 import React from "react";
-import { LogIn } from "lucide-react";
+import { LogIn, LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
@@ -16,16 +16,12 @@ const SearchBox = () => {
 
   const handleLogout = async () => {
     try {
-      // Gọi API backend xoá session + cookie
       await axiosClient.post("/auth/logout", {}, { withCredentials: true });
-
-      // Xoá token trong context/frontend
       logout();
-
       toast.success("Đăng xuất thành công!");
       setTimeout(() => {
         window.location.href = "/home";
-      }, 500);
+      }, 400);
     } catch (error) {
       console.error("Lỗi khi logout:", error);
       toast.error("Không thể đăng xuất. Vui lòng thử lại!");
@@ -38,15 +34,32 @@ const SearchBox = () => {
         <button
           onClick={handleLogout}
           className="
-        group flex items-center text-center w-[130px] gap-2 overflow-hidden whitespace-nowrap
-        rounded-md  text-[#ffffff] font-bold px-3 py-2 
-       transition-all duration-300 cursor-pointer"
+            group
+            flex items-center gap-[6px]
+            px-[10px] py-[6px]
+            rounded-[10px]
+            transition-all duration-200
+            hover:bg-[var(--bg-hover)]
+          "
         >
-          <LogIn className="size-5 group-hover:color-[] text-textsec group-hover:text-textpri" strokeWidth={3} />
+          <LogOut
+            className="
+              size-[18px]
+              text-[var(--text-secondary)]
+              group-hover:text-[var(--accent-blue)]
+              transition-colors
+            "
+            strokeWidth={2}
+          />
           <span
             className="
-              max-w-[0] opacity-0 overflow-hidden
-              transition-all duration-300 group-hover:max-w-[100px] group-hover:opacity-100"
+              text-[14px]
+              text-[var(--text-primary)]
+              font-medium
+              max-w-0 opacity-0 overflow-hidden
+              transition-all duration-300
+              group-hover:max-w-[80px] group-hover:opacity-100
+            "
           >
             Đăng xuất
           </span>
@@ -55,17 +68,32 @@ const SearchBox = () => {
         <button
           onClick={handleLogin}
           className="
-                group flex items-center gap-0 w-[135px] overflow-hidden whitespace-nowrap
-                rounded-md  text-[#ffffff] font-bold px-3 py-2 
-                transition-all duration-500 ease-out hover:gap-2 cursor-pointer
-                "
+            group
+            flex items-center gap-[6px]
+            px-[10px] py-[6px]
+            rounded-[10px]
+            transition-all duration-200
+            hover:bg-[var(--bg-hover)]
+          "
         >
-          <LogIn className="size-5 group-hover:color-[] text-textsec group-hover:text-textpri" strokeWidth={3} />
+          <LogIn
+            className="
+              size-[18px]
+              text-[var(--text-secondary)]
+              group-hover:text-[var(--accent-blue)]
+              transition-colors
+            "
+            strokeWidth={2}
+          />
           <span
             className="
-      max-w-0 opacity-0 overflow-hidden
-      transition-all duration-300 group-hover:max-w-[100px] group-hover:opacity-100
-    "
+              text-[14px]
+              text-[var(--text-primary)]
+              font-medium
+              max-w-0 opacity-0 overflow-hidden
+              transition-all duration-300
+              group-hover:max-w-[80px] group-hover:opacity-100
+            "
           >
             Đăng nhập
           </span>

@@ -28,9 +28,7 @@ const ElectricCarousel = ({ reload, searchData }) => {
   ========================= */
   const filteredData = useMemo(() => {
     if (!searchData?.trim()) return data;
-
     const keyword = searchData.toLowerCase();
-
     return data.filter((item) => item.name?.toLowerCase().includes(keyword));
   }, [data, searchData]);
 
@@ -55,39 +53,58 @@ const ElectricCarousel = ({ reload, searchData }) => {
   ========================= */
   return (
     <div className="relative overflow-hidden">
+      {/* LEFT BUTTON */}
       {!atStart && (
         <button
           onClick={() => scroll("left")}
-          className="absolute left-6 top-1/2 -translate-y-1/2 z-10
-                     w-12 h-12 rounded-full bg-textsec text-textpri shadow-lg"
+          className="
+            absolute left-6 top-1/2 -translate-y-1/2 z-10
+            w-12 h-12 rounded-full
+            bg-[var(--bg-subtle)]
+            text-[var(--text-secondary)]
+            border border-[var(--border-light)]
+            shadow-[var(--shadow-sm)]
+            hover:bg-[var(--bg-hover)]
+            transition
+          "
         >
-          <ChevronLeft />
+          <ChevronLeft size={20} />
         </button>
       )}
 
+      {/* RIGHT BUTTON */}
       {filteredData.length > 0 && (
         <button
           onClick={() => scroll("right")}
-          className="absolute right-6 top-1/2 -translate-y-1/2 z-10
-                     w-12 h-12 rounded-full bg-textsec text-textpri shadow-lg"
+          className="
+            absolute right-6 top-1/2 -translate-y-1/2 z-10
+            w-12 h-12 rounded-full
+            bg-[var(--bg-subtle)]
+            text-[var(--text-secondary)]
+            border border-[var(--border-light)]
+            shadow-[var(--shadow-sm)]
+            hover:bg-[var(--bg-hover)]
+            transition
+          "
         >
-          <ChevronRight />
+          <ChevronRight size={20} />
         </button>
       )}
 
+      {/* SCROLL AREA */}
       <div
         ref={scrollRef}
         onScroll={handleScroll}
         className={`
           flex gap-8 overflow-x-auto py-[25px]
-          scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60
+          scrollbar-none
           transition-[padding] duration-300
           ${atStart ? "pl-[var(--page-x)]" : "pl-0"}
         `}
       >
         {filteredData.length === 0 ? (
-          <p className="text-[#a1a1a6] text-lg">
-            Không tìm thấy vật tư phù hợp!
+          <p className="text-[var(--text-quaternary)] text-lg">
+            Không tìm thấy vật tư phù hợp
           </p>
         ) : (
           filteredData.map((item) => (

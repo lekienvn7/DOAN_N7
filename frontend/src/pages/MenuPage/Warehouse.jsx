@@ -5,13 +5,30 @@ import { motion } from "framer-motion";
 
 const Warehouse = () => {
   return (
-    <div className="text-white">
-      {/* Thanh menu cố định */}
-      <motion.div className="sticky h-[60px] top-0 w-screen p-[20px] flex flex-row items-center justify-center bg-[#121212]  z-50">
+    <div className="text-[var(--text-primary)] bg-[var(--bg-page)]">
+      {/* ===== REPO MENU BAR ===== */}
+      <motion.div
+        initial={{ opacity: 0, y: -6 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: "easeOut" }}
+        className="
+          sticky
+          z-50
+          top-[0px]
+          h-[60px]
+          w-screen
+          flex
+          flex-row
+          items-center
+          justify-center
+          bg-[var(--bg-panel)]
+          backdrop-blur-[14px]
+        "
+      >
         <RepoMenu />
       </motion.div>
 
-      {/* Vùng hiển thị trang con */}
+      {/* ===== PAGE CONTENT ===== */}
       <div className="">
         <Outlet />
       </div>

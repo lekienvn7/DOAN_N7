@@ -46,7 +46,7 @@ export async function createBorrowRequest({
     });
 
     /* ------------------------------------------------------
-       2) LẤY DANH SÁCH MATERIAL & KIỂM TRA VẬT TƯ ĐẶC BIỆT
+       2) LẤY MATERIAL & CHECK BORROW TYPE
     ------------------------------------------------------ */
     const materials = await Material.find({
       _id: { $in: normalizedItems.map((i) => i.material) },
@@ -56,12 +56,15 @@ export async function createBorrowRequest({
       throw new Error("Có vật tư không tồn tại");
     }
 
-    const hasSpecialMaterial = materials.some((m) => m.isSpecial === true);
+    // 🔥 CHUẨN NGHIỆP VỤ MỚI
+    const hasApprovalMaterial = materials.some(
+      (m) => m.borrowType === "approval"
+    );
 
     /* ------------------------------------------------------
-       3) NẾU CÓ VẬT TƯ ĐẶC BIỆT → TẠO PHIẾU CHỜ DUYỆT
+       3) NẾU CÓ VẬT TƯ CẦN DUYỆT → TẠO PHIẾU PENDING
     ------------------------------------------------------ */
-    if (hasSpecialMaterial) {
+    if (hasApprovalMaterial) {
       const br = await BorrowRequest.create(
         [
           {
@@ -87,7 +90,7 @@ export async function createBorrowRequest({
     }
 
     /* ------------------------------------------------------
-       4) KHÔNG CÓ VẬT TƯ ĐẶC BIỆT → MƯỢN LUÔN
+       4) KHÔNG CÓ VẬT TƯ CẦN DUYỆT → MƯỢN LUÔN
     ------------------------------------------------------ */
     const repo = await Repository.findById(repository).session(session);
     if (!repo) throw new Error("Kho không tồn tại");
@@ -118,7 +121,7 @@ export async function createBorrowRequest({
           items: normalizedItems,
           note,
           expectedReturnDate,
-          status: "approved", // mượn ngay
+          status: "approved", // ✅ mượn ngay
           approvedAt: new Date(),
         },
       ],
@@ -394,10 +397,7 @@ export async function returnBorrowRequest({ id, managerId, returnItems }) {
       let returnQty = borrowedQty;
 
       if (returnInfo.condition === "damaged") {
-        if (
-          returnInfo.damagedQty <= 0 ||
-          returnInfo.damagedQty > borrowedQty
-        ) {
+        if (returnInfo.damagedQty <= 0 || returnInfo.damagedQty > borrowedQty) {
           throw new Error(
             `Số lượng hỏng không hợp lệ cho vật tư ${it.material.name}`
           );
@@ -489,16 +489,12 @@ export async function returnBorrowRequest({ id, managerId, returnItems }) {
 
     if (intactList.length) {
       message += `\n✅ Nguyên vẹn:\n`;
-      intactList.forEach(
-        (i) => (message += `- ${i.name}: ${i.quantity}\n`)
-      );
+      intactList.forEach((i) => (message += `- ${i.name}: ${i.quantity}\n`));
     }
 
     if (damagedList.length) {
       message += `\n⚠️ Hỏng:\n`;
-      damagedList.forEach(
-        (d) => (message += `- ${d.name}: ${d.quantity}\n`)
-      );
+      damagedList.forEach((d) => (message += `- ${d.name}: ${d.quantity}\n`));
     }
 
     await createNotification({
@@ -519,7 +515,6 @@ export async function returnBorrowRequest({ id, managerId, returnItems }) {
     throw err;
   }
 }
-
 
 export default {
   createBorrowRequest,

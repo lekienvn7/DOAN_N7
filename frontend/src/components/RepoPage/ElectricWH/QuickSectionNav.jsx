@@ -2,8 +2,14 @@ import React from "react";
 
 const QuickSectionNav = ({ sections }) => {
   return (
-    <div className="sticky top-[56px] z-40 bg-bgmain/80 backdrop-blur border-b border-white/10">
-      <div className="flex gap-[28px] px-[120px] py-[12px] text-[14px]">
+    <div
+      className="
+        sticky top-[56px] z-40
+        bg-[var(--bg-page)]/80
+        backdrop-blur-[18px]
+      "
+    >
+      <div className="flex gap-[28px] px-[120px] py-[14px] text-[14px]">
         {sections.map((s) => (
           <button
             key={s.id}
@@ -13,9 +19,24 @@ const QuickSectionNav = ({ sections }) => {
                 block: "start",
               })
             }
-            className="relative text-gray-400 hover:text-white transition
-              after:absolute after:left-0 after:-bottom-1 after:h-[2px]
-              after:w-0 after:bg-white hover:after:w-full after:transition-all"
+            className="
+              relative
+              font-medium
+              text-[var(--text-secondary)]
+              hover:text-[var(--text-primary)]
+              transition-colors duration-200
+
+              after:absolute
+              after:left-0
+              after:-bottom-[7px]
+              after:h-[2px]
+              after:w-0
+              after:rounded-full
+              after:bg-[var(--accent-blue)]
+              after:transition-all
+              after:duration-300
+              hover:after:w-full
+            "
           >
             {s.label}
           </button>

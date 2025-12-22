@@ -55,38 +55,18 @@ async function addMaterial(data) {
     name,
     materialID,
     type,
-    status,
     quantity,
     unit,
     description,
+    status,
     createdBy,
     maintenanceCycle,
   } = data;
 
-  const SelectedModel = modelMap[type];
-
-  if (!SelectedModel) {
-    const err = new Error("Loại vật tư không hợp lệ!");
+  /* ================= VALIDATE CƠ BẢN ================= */
+  if (!name || quantity == null || !createdBy) {
+    const err = new Error("Thiếu thông tin bắt buộc!");
     err.status = 400;
-    throw err;
-  }
-
-  // Validate
-  if (!name || !type || !unit || quantity == null) {
-    const err = new Error("Thiếu thông tin vật tư bắt buộc!");
-    err.status = 400;
-    throw err;
-  }
-
-  if (await Material.findOne({ materialID })) {
-    const err = new Error("Mã vật tư đã tồn tại!");
-    err.status = 409;
-    throw err;
-  }
-
-  if (await Material.findOne({ name })) {
-    const err = new Error("Tên vật tư đã tồn tại!");
-    err.status = 409;
     throw err;
   }
 
@@ -97,10 +77,45 @@ async function addMaterial(data) {
     throw err;
   }
 
-  // CLEAN FIELD
+  /* =================================================
+     1️⃣ KIỂM TRA VẬT TƯ ĐÃ TỒN TẠI CHƯA
+  ================================================= */
+  const existedMaterial = await Material.findOne({
+    $or: [materialID ? { materialID } : null, { name }].filter(Boolean),
+  });
+
+  /* =================================================
+     2️⃣ NẾU ĐÃ TỒN TẠI → CỘNG SỐ LƯỢNG
+  ================================================= */
+  if (existedMaterial) {
+    existedMaterial.quantity += Number(quantity);
+    await existedMaterial.save();
+
+    return {
+      action: "IMPORT",
+      message: "Nhập thêm vật tư thành công!",
+      material: existedMaterial,
+    };
+  }
+
+  /* =================================================
+     3️⃣ CHƯA TỒN TẠI → TẠO MỚI
+  ================================================= */
+  if (!type || !unit) {
+    const err = new Error("Thiếu thông tin tạo vật tư mới!");
+    err.status = 400;
+    throw err;
+  }
+
+  const SelectedModel = modelMap[type];
+  if (!SelectedModel) {
+    const err = new Error("Loại vật tư không hợp lệ!");
+    err.status = 400;
+    throw err;
+  }
+
   const allowed = allowedMap[type];
   const cleanData = filterFields(data, allowed);
-
   delete cleanData.type;
 
   const newMaterial = await SelectedModel.create({
@@ -116,11 +131,12 @@ async function addMaterial(data) {
     createdBy: user._id,
   });
 
+  /* ================= NOTIFICATION ================= */
   try {
     await createNotification({
       type: "material",
       title: "Thêm vật tư",
-      message: `${user.fullName} Đã thêm vật tư "${name}".`,
+      message: `${user.fullName} đã thêm vật tư "${name}".`,
       user: user._id,
     });
   } catch (err) {
@@ -128,7 +144,8 @@ async function addMaterial(data) {
   }
 
   return {
-    message: "Thêm vật tư thành công!",
+    action: "CREATE",
+    message: "Thêm vật tư mới thành công!",
     material: newMaterial,
   };
 }
@@ -151,7 +168,7 @@ async function updateMaterial(materialID, body, user) {
     throw err;
   }
 
-  // BASE FIELDS
+  /* ===== BASE & CHILD FIELDS ===== */
   const baseFields = [
     "name",
     "quantity",
@@ -159,6 +176,7 @@ async function updateMaterial(materialID, body, user) {
     "unit",
     "description",
     "maintenanceCycle",
+    "borrowType",
   ];
 
   const childFieldMap = {
@@ -177,9 +195,7 @@ async function updateMaterial(materialID, body, user) {
   const cleanBase = filterFields(body, baseFields);
   const cleanChild = filterFields(body, childFields);
 
-  delete cleanBase.type;
   delete cleanBase.materialID;
-  delete cleanChild.type;
   delete cleanChild.materialID;
 
   cleanBase.updatedAt = Date.now();
@@ -189,24 +205,20 @@ async function updateMaterial(materialID, body, user) {
     cleanChild.updatedBy = user.userID;
   }
 
-  // Update base
-  const baseUpdated = await Material.findOneAndUpdate(
+  /* ===== UPDATE BASE ===== */
+  await Material.findOneAndUpdate(
     { materialID },
     cleanBase,
     { new: true }
   );
 
-  // Update detail (chỉ update nếu có field)
-  let detailUpdated;
-
+  /* ===== UPDATE DETAIL ===== */
   if (Object.keys(cleanChild).length > 0) {
-    detailUpdated = await SelectedModel.findOneAndUpdate(
+    await SelectedModel.findOneAndUpdate(
       { materialID },
       cleanChild,
       { new: true }
     );
-  } else {
-    detailUpdated = await SelectedModel.findOne({ materialID });
   }
 
   const populatedBase = await Material.findOne({ materialID })
@@ -223,6 +235,7 @@ async function updateMaterial(materialID, body, user) {
     },
   };
 }
+
 
 async function deleteMaterial(materialID) {
   const deleted = await Material.findOneAndDelete({ materialID });

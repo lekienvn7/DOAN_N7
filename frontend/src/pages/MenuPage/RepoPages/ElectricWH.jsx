@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/authContext";
 
@@ -6,7 +6,8 @@ import HeaderDetail from "@/components/RepoPage/ElectricWH/HeaderDetail";
 import ElectricList from "@/components/RepoPage/ElectricWH/ElectricList/ElectricList";
 import AddElectric from "@/components/RepoPage/ElectricWH/AddElectric";
 import QuickSectionNav from "@/components/RepoPage/ElectricWH/QuickSectionNav";
-
+import BorrowList from "@/components/RepoPage/ElectricWH/ManagerPage/BorrowList";
+import BorrowForm from "@/components/RepoPage/ElectricWH/LecturerPage/BorrowForm";
 
 const revealUp = {
   hidden: { opacity: 0, y: 28 },
@@ -24,36 +25,60 @@ const ElectricWH = () => {
   const [reload, setReload] = useState(0);
   const [searchData, setSearchData] = useState("");
   const [sortMode, setSortMode] = useState(false);
+
   const [borrowList, setBorrowList] = useState([]);
+
   const repoId = "691553eafd7805ceea7a95b6";
 
   const isLecturer = user?.roleID === "LECTURER";
   const canAddMaterial =
     user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH_MANAGER";
+  const canSeeBorrowTickets = canAddMaterial;
 
   const reloadList = () => setReload((p) => p + 1);
+  const reloadTicket = () => setReload((p) => p + 1);
 
   const handleBorrowSelect = (item, quantity) => {
     setBorrowList((prev) => {
-      if (quantity === 0) return prev.filter((i) => i._id !== item._id);
-      if (prev.find((i) => i._id === item._id)) return prev;
+      if (!quantity || quantity <= 0)
+        return prev.filter((i) => i._id !== item._id);
+
+      const existed = prev.find((i) => i._id === item._id);
+      if (existed)
+        return prev.map((i) =>
+          i._id === item._id ? { ...i, borrowQty: quantity } : i
+        );
+
       return [...prev, { ...item, borrowQty: quantity }];
     });
   };
 
-  /* ===== SECTION REFS ===== */
+  const handleUpdateQuantity = (id, qty) => {
+    setBorrowList((prev) =>
+      prev
+        .map((i) => (i._id === id ? { ...i, borrowQty: qty } : i))
+        .filter((i) => i.borrowQty > 0)
+    );
+  };
+
   const listRef = useRef(null);
   const addRef = useRef(null);
+  const ticketRef = useRef(null);
 
-  const sections = [
-    { id: "list", label: "Danh sách vật tư", ref: listRef },
-    ...(canAddMaterial
-      ? [{ id: "add", label: "Thêm vật tư", ref: addRef }]
-      : []),
-  ];
+  const sections = useMemo(() => {
+    return [
+      { id: "list", label: "Danh sách vật tư", ref: listRef },
+      ...(canAddMaterial
+        ? [{ id: "add", label: "Thêm vật tư", ref: addRef }]
+        : []),
+      ...(canSeeBorrowTickets
+        ? [{ id: "tickets", label: "Phiếu mượn", ref: ticketRef }]
+        : []),
+    ];
+  }, [canAddMaterial, canSeeBorrowTickets]);
 
   return (
-    <div className="min-h-screen bg-bgmain text-white flex flex-col">
+    <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-primary)] flex flex-col">
       {/* ===== HEADER ===== */}
       <HeaderDetail
         mode={mode}
@@ -67,19 +92,20 @@ const ElectricWH = () => {
         borrowList={borrowList}
         repositoryId={repoId}
         reload={reload}
+        onUpdateQuantity={handleUpdateQuantity}
       />
 
       {/* ===== QUICK NAV ===== */}
       <QuickSectionNav sections={sections} />
 
-      <main className="mt-[56px] flex flex-col gap-[96px]">
+      <main className="mt-[56px] flex flex-col gap-[20px]">
         {/* ===== DANH SÁCH VẬT TƯ ===== */}
         <motion.section
           ref={listRef}
           variants={revealUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
+          viewport={{ once: true }}
         >
           <ElectricList
             mode={mode}
@@ -91,26 +117,69 @@ const ElectricWH = () => {
           />
         </motion.section>
 
-        {/* ===== FORM THÊM VẬT TƯ ===== */}
+        {/* ===== THÊM VẬT TƯ ===== */}
         {canAddMaterial && (
           <motion.section
             ref={addRef}
             variants={revealUp}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            className="px-[120px]"
+            viewport={{ once: true }}
+            className="
+              mx-[80px]
+              p-[28px]
+            "
           >
-            <div className="mb-[24px]">
-              <h2 className="text-[34px] font-bold text-textpri">
-                Thêm vật tư
-              </h2>
-              <p className="text-gray-400 mt-1">
-                Nhập thông tin kỹ thuật và tự động thêm vào kho điện
-              </p>
-            </div>
-
             <AddElectric onReload={reloadList} />
+          </motion.section>
+        )}
+
+        {/* ===== PHIẾU MƯỢN ===== */}
+        {canSeeBorrowTickets && (
+          <motion.section
+            ref={ticketRef}
+            variants={revealUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="
+              mx-[80px]
+              bg-white
+              rounded-[24px]
+              p-[28px]
+              shadow-[0_12px_32px_rgba(0,0,0,0.06)]
+              border border-[var(--border-light)]
+            "
+          >
+            <BorrowList
+              repositoryId={repoId}
+              reload={reload}
+              onReloadTicket={reloadTicket}
+            />
+          </motion.section>
+        )}
+
+        {/* ===== FORM MƯỢN (LECTURER) ===== */}
+        {isLecturer && (
+          <motion.section
+            variants={revealUp}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            className="
+              mx-[80px]
+              bg-white
+              rounded-[24px]
+              p-[28px]
+              shadow-[0_12px_32px_rgba(0,0,0,0.06)]
+              border border-[var(--border-light)]
+            "
+          >
+            <BorrowForm
+              repositoryId={repoId}
+              borrowList={borrowList}
+              onUpdateQuantity={handleUpdateQuantity}
+            />
           </motion.section>
         )}
       </main>

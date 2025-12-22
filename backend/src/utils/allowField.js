@@ -7,6 +7,7 @@ export const baseFields = [
   "unit",
   "description",
   "maintenanceCycle",
+  "borrowType",
 ];
 
 export const electricFields = [

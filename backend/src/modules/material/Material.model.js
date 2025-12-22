@@ -44,9 +44,10 @@ const materialSchema = new mongoose.Schema(
       enum: ["Trong kho", "Quá hạn", "Thanh lý"],
       default: "Trong kho",
     },
-    isSpecial: {
-      type: Boolean,
-      default: false,
+    borrowType: {
+      type: String,
+      enum: ["free", "approval"],
+      default: "free",
     },
     quantity: {
       // Số lượng

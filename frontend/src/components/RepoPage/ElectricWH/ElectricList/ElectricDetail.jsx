@@ -1,33 +1,92 @@
-import React from "react";
-import { motion } from "framer-motion";
+import React, { useEffect, useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import axiosClient from "@/api/axiosClient";
+import { toast } from "sonner";
+
+import { useAuth } from "@/context/authContext";
+import ElectricEdit from "@/components/RepoPage/ElectricWH/ElectricEdit";
 import cadivi from "@/assets/images/cadivi225.png";
 
-const ElectricDetail = ({ item, open, onClose }) => {
+const ElectricDetail = ({ item, open, onClose, onReload }) => {
   if (!item) return null;
 
+  const { user } = useAuth();
+
+  /* =========================
+     CHECK PERMISSION
+  ========================= */
+  const canManage =
+    user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH_MANAGER";
+
+  /* =========================
+     BORROW TYPE
+  ========================= */
+  const [borrowType, setBorrowType] = useState("free");
+
+  useEffect(() => {
+    setBorrowType(item.borrowType || "free");
+  }, [item]);
+
+  const updateBorrowType = async () => {
+    if (!canManage) return;
+
+    try {
+      await axiosClient.put(`/material/${item.materialID}`, {
+        borrowType,
+      });
+    } catch (err) {
+      toast.error("Không thể cập nhật loại mượn!");
+    }
+  };
+
+  const handleClose = (val) => {
+    if (!val && canManage) updateBorrowType();
+    onClose(val);
+  };
+
   return (
-    <Dialog open={open} onOpenChange={onClose}>
+    <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
         className="
           bg-[#0f0f10] text-white border-none rounded-[24px] p-0 !max-w-none
-    w-[900px] max-w-none
-    max-h-[90vh] overflow-hidden
+          w-[900px] max-w-none max-h-[90vh] overflow-hidden
         "
       >
         <div className="flex gap-[48px] p-[40px]">
-          {/* LEFT – IMAGE */}
-          <div className="flex-shrink-0">
-            <div className="w-[360px] h-[360px] rounded-[20px] flex items-center justify-center">
+          {/* ================= LEFT ================= */}
+          <div className="flex-shrink-0 flex flex-col gap-4">
+            {/* IMAGE */}
+            <div className="w-[360px] h-[360px] rounded-[20px] flex items-center justify-center bg-[#1c1c1e]">
               <img
                 src={cadivi}
                 alt={item.name}
                 className="w-[85%] h-[85%] object-contain"
               />
             </div>
+
+            {/* ACTIONS BELOW IMAGE – CHỈ ADMIN & WH_MANAGER */}
+            {canManage && (
+              <div className="flex items-center justify-between gap-3 px-2">
+                {/* CHECKBOX */}
+                <label className="flex items-center gap-2 text-[14px] cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={borrowType === "approval"}
+                    onChange={(e) =>
+                      setBorrowType(e.target.checked ? "approval" : "free")
+                    }
+                    className="accent-pink-500 w-4 h-4 outline-none"
+                  />
+                  <span className="text-[#f472b6]">Cần duyệt khi mượn</span>
+                </label>
+
+                {/* EDIT BUTTON */}
+                <ElectricEdit item={item} onReload={onReload} />
+              </div>
+            )}
           </div>
 
-          {/* RIGHT – INFO */}
+          {/* ================= RIGHT ================= */}
           <div className="flex flex-col flex-1">
             {/* TITLE */}
             <h1 className="text-[36px] font-semibold leading-tight">
@@ -85,7 +144,7 @@ const ElectricDetail = ({ item, open, onClose }) => {
   );
 };
 
-/* -------- SPEC ROW -------- */
+/* ================= SPEC ROW ================= */
 const Spec = ({ label, value }) => (
   <div className="flex justify-between gap-6 text-[15px]">
     <span className="text-highlightcl">{label}</span>

@@ -32,18 +32,45 @@ const WeatherToday = () => {
     fetchWeather();
   }, []);
 
+  /* ===== ERROR ===== */
   if (error) {
     return (
-      <div className="w-full rounded-[14px] bg-[#0f0f0f] border border-gray-700 p-[16px] text-gray-400 text-sm text-center">
+      <div
+        className="
+          w-[360px]
+          h-[220px]
+          rounded-[24px]
+          bg-[var(--bg-panel)]
+          shadow-[var(--shadow-sm)]
+          flex
+          items-center
+          justify-center
+          text-[15px]
+          text-[var(--text-secondary)]
+        "
+      >
         Không thể tải thời tiết 🌫️
       </div>
     );
   }
 
+  /* ===== LOADING ===== */
   if (!weather) {
     return (
-      <div className="w-[350px] h-[250px] rounded-[12px] bg-[#0f0f0f] p-[20px] text-gray-400 text-sm text-center">
-        Đang tải thời tiết...
+      <div
+        className="
+          w-[360px]
+          h-[220px]
+          rounded-[24px]
+          
+          flex
+          items-center
+          justify-center
+          text-[15px]
+          text-[var(--text-secondary)]
+        "
+      >
+        Đang tải thời tiết…
       </div>
     );
   }
@@ -54,30 +81,42 @@ const WeatherToday = () => {
 
   return (
     <div
-      className="w-[350px] h-[250px] rounded-[12px] bg-[#121212] 
-                    p-[20px] flex flex-col gap-[6px]"
+      className="
+        w-[360px]
+        h-[220px]
+        rounded-[24px]
+        
+        p-[24px]
+        flex
+        flex-col
+        justify-between
+        font-googleSans
+      "
     >
-      <p className="text-left text-[#60A5FA] text-[20px] mb-[15px]">
-        Thời tiết hôm nay
-      </p>
-      <p className="text-gray-400 text-sm capitalize">
-        {weather.name}
-        {", "}
-        {weekday} {date}
-      </p>
+      {/* HEADER */}
+      <div className="flex flex-col gap-[6px]">
+        <p className="text-[30px] font-bold gradient-text">Thời tiết hôm nay</p>
 
-      <div className="flex flex-row w-[300px] items-center justify-between">
-        <p className="text-[60px] font-bold text-textpri leading-none mt-[6px]">
+        <p className="text-[14px] text-[var(--text-secondary)] capitalize">
+          {weather.name}, {weekday} {date}
+        </p>
+      </div>
+
+      {/* BODY */}
+      <div className="flex items-center justify-between">
+        {/* TEMP */}
+        <p className="text-[56px] font-bold text-[var(--text-primary)] leading-none">
           {Math.round(weather.main.temp)}°C
         </p>
 
-        <div className="flex flex-col items-center gap-[0px] mt-[4px]">
+        {/* ICON + DESC */}
+        <div className="flex flex-col items-center">
           <img
             src={`https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`}
             alt="weather"
-            className="w-[80px] h-[80px]"
+            className="w-[72px] h-[72px]"
           />
-          <span className="text-gray-300 text-sm capitalize">
+          <span className="text-[14px] text-[var(--text-secondary)] capitalize">
             {weather.weather[0].description}
           </span>
         </div>

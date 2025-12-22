@@ -5,15 +5,34 @@ import LoginButton from "./LoginButton";
 import { useLocation } from "react-router-dom";
 
 const Header = () => {
-  const location = useLocation(); // Kiểm tra URL hiện tại
+  const location = useLocation();
 
   return (
-    <div className="header__container sticky flex flex-row items-center justify-between text-center m-[0%_2.5%] py-[20px] h-[50px] gap-[40px] w-screen bg-[#f8f9fa">
+    <div
+      className="
+        header__container
+        sticky
+        top-0
+        z-50
+        flex
+        flex-row
+        items-center
+        justify-between
+        gap-[40px]
+        w-full
+        px-[2.5%]
+        h-[45px]
+        bg-[rgba(255,255,255,0.85)]
+        backdrop-blur-[18px]
+
+        text-[var(--text-primary)]
+      "
+    >
       <HeaderLogo />
 
       <Menu />
 
-      <div className="">{<LoginButton />}</div>
+      <LoginButton />
     </div>
   );
 };

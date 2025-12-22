@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import logoUneti from "../../assets/images/logo.png";
 
 const HeaderLogo = () => {
   const [roleID, setRoleID] = useState(null);
@@ -23,36 +22,46 @@ const HeaderLogo = () => {
 
   if (roleID === "ADMINISTRATOR") {
     logoContent = (
-      <p className="font-qurova font-bold text-[#0a84ff]">
-        AD<span className="text-textpri">ministrator</span>
-      </p>
+      <span>
+        <span className="text-[var(--accent-blue)]">AD</span>
+        <span className="text-[var(--text-primary)]">ministrator</span>
+      </span>
     );
   } else if (roleID === "WH MANAGER") {
     logoContent = (
-      <p className="font-qurova font-bold text-[#0a84ff]">
-        WareHouse<span className="text-[#ffffff]">Manager</span>
-      </p>
+      <span>
+        <span className="text-[var(--accent-blue)]">Warehouse</span>
+        <span className="text-[var(--text-primary)]">Manager</span>
+      </span>
     );
   } else if (roleID === "MT MANAGER") {
     logoContent = (
-      <p className="font-qurova font-bold text-[#0a84ff]">
-        MainTenance<span className="text-[#ffffff]">MANAGER</span>
-      </p>
+      <span>
+        <span className="text-[var(--accent-blue)]">Maintenance</span>
+        <span className="text-[var(--text-primary)]">Manager</span>
+      </span>
     );
   } else {
     logoContent = (
-      <p className="font-qurova font-bold text-textpri">
-        Uneti<span className="text-[#0a84ff]">Warehouse</span>
-      </p>
+      <span>
+        <span className="text-[var(--text-primary)]">Uneti</span>
+        <span className="text-[var(--accent-blue)]">Warehouse</span>
+      </span>
     );
   }
 
   return (
-    <header className="flex items-center justify-between mt-[10px]">
+    <header className="flex items-center">
       <Link
         to="/home"
-        className="header__logo font-qurova no-underline
-          text-[#FFFFFF] text-[20px] font-bold hover:text-[#E5E5E7]"
+        className="
+          font-qurova
+          text-[20px]
+          font-semibold
+          tracking-tight
+          transition-opacity
+          hover:opacity-80
+        "
       >
         {logoContent}
       </Link>
