@@ -12,12 +12,14 @@ import borrowRequestRoutes from "./modules/borrowRequest/borrowRequest.routes.js
 import authRoutes from "./modules/auth/auth.routes.js";
 import notificationRoutes from "./modules/Notification/notice.routes.js";
 import materialProblemRoutes from "./modules/materialProblem/materialProblem.routes.js";
+import reportRoutes from "./modules/report/report.routes.js";
 import { connectDB } from "./config/db.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import http from "http";
 import { initSocket } from "./utils/socket.js";
+import { report } from "process";
 
 dotenv.config();
 
@@ -64,6 +66,8 @@ app.use("/api/auth", authRoutes);
 app.use("/api/material-problem", materialProblemRoutes);
 
 app.use("/api/borrow-requests", borrowRequestRoutes);
+
+app.use("/api/report", reportRoutes);
 
 connectDB().then(() => {
   server.listen(PORT, () => {

@@ -24,6 +24,28 @@
   --warning: #ff9f0a;
   --danger: #ff3b30;
 
+  /* Weights (Apple vibe) */
+  --fw-regular: 400;
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  /* iOS point sizes -> px (1pt ~= 1px trên màn 1x; web cứ lấy px cho consistent) */
+  /* Titles */
+  --fs-large-title: 34px; /* .largeTitle */
+  --fs-title-1: 28px; /* .title1 */
+  --fs-title-2: 22px; /* .title2 */
+  --fs-title-3: 20px; /* .title3 */
+
+  /* Content */
+  --fs-headline: 17px; /* .headline (semibold) */
+  --fs-body: 17px; /* .body */
+  --fs-callout: 16px; /* .callout */
+  --fs-subheadline: 15px; /* .subheadline */
+  --fs-footnote: 13px; /* .footnote */
+  --fs-caption-1: 12px; /* .caption1 */
+  --fs-caption-2: 11px; /* .caption2 */
+
   /* ===== SHADOW ===== */
   --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.06);
   --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);

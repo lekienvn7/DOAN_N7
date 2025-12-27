@@ -307,7 +307,7 @@ const Input = ({ label, type = "text", value, onChange }) => (
       onChange={(e) => onChange(e.target.value)}
       className="
         w-[400px] px-[10px] py-[5px]
-        bg-[var(--bg-panel)]
+        bg-[var(--bg-subtle)]
         text-[var(--text-primary)]
         border border-[var(--border-light)]
         rounded-[12px]
@@ -328,7 +328,7 @@ const Textarea = ({ label, value, onChange }) => (
       onChange={(e) => onChange(e.target.value)}
       className="
         px-3 py-2 rounded-[12px]
-        bg-[var(--bg-panel)]
+        bg-[var(--bg-subtle)]
         border border-[var(--border-light)]
         text-[var(--text-primary)]
         focus:ring-2 focus:ring-[var(--accent-blue)]
@@ -342,7 +342,7 @@ const SelectBox = ({ label, value, onChange, options }) => (
   <div className="flex flex-col gap-1">
     <label className="text-sm text-[var(--text-tertiary)]">{label}</label>
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[400px] bg-[var(--bg-panel)] border border-[var(--border-light)] rounded-[12px] text-[var(--text-primary)]">
+      <SelectTrigger className="w-[400px] bg-[var(--bg-subtle)] border border-[var(--border-light)] rounded-[12px] text-[var(--text-primary)]">
         <SelectValue placeholder="-- Chọn --" />
       </SelectTrigger>
       <SelectContent className="bg-[var(--bg-panel)] text-[var(--text-primary)] border border-[var(--border-light)]">

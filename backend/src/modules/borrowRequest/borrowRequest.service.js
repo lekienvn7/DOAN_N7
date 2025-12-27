@@ -4,7 +4,7 @@ import Transaction from "../transaction/Transaction.model.js";
 import Repository from "../repository/Repository.model.js";
 import mongoose from "mongoose";
 import Material from "../material/Material.model.js";
-import MaterialProblem from "../materialProblem/MaterialProblem.model.js";
+import MaterialProblem from "../materialProblem/materialProblem.model.js";
 import { createNotification } from "../Notification/notice.service.js";
 
 export async function createBorrowRequest({

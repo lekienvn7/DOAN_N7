@@ -32,7 +32,7 @@ const HeaderDetail = ({ mode, setMode, sortMode, setSortMode }) => {
 
   return (
     <header
-      className="relative pt-[56px] pb-[44px] overflow-hidden page-ambient"
+      className="relative pt-[56px] pb-[44px] overflow-hidden"
       style={{ paddingInline: "var(--page-x)" }}
     >
       {/* ===== AMBIENT STRIP ===== */}
@@ -42,7 +42,7 @@ const HeaderDetail = ({ mode, setMode, sortMode, setSortMode }) => {
         {/* ===== TITLE ===== */}
         <div className="flex justify-between items-end">
           <div>
-            <h1 className="text-[74px] mt-[25px] font-googleSans font-bold tracking-[-0.02em]">
+            <h1 className="text-[70px] mt-[25px] font-googleSans font-bold tracking-[-0.02em]">
               <span className="text-blue-600">K</span>
               <span className="bg-gradient-to-r from-blue-600 via-indigo-400 to-orange-500 bg-clip-text text-transparent">
                 ho Điện
@@ -60,7 +60,7 @@ const HeaderDetail = ({ mode, setMode, sortMode, setSortMode }) => {
                   <button
                     className="
                   flex items-center gap-[6px]
-                  text-[15px]
+                  text-[20px]
                   text-[var(--accent-blue)]
                   hover:opacity-80
                   transition
@@ -74,14 +74,14 @@ const HeaderDetail = ({ mode, setMode, sortMode, setSortMode }) => {
                 {/* ===== DIALOG CONTENT ===== */}
                 <DialogContent className="bg-white text-[var(--text-primary)] rounded-[20px] border border-[var(--border-light)] shadow-[var(--shadow-md)] max-w-[480px]">
                   <DialogHeader>
-                    <DialogTitle className="flex items-center gap-2">
+                    <DialogTitle className="flex items-center gap-2 text-[20px]">
                       <ToolCase size={18} />
                       Thông tin chi tiết{" "}
                       <span className="text-[#fb923c]">kho điện</span>
                     </DialogTitle>
                   </DialogHeader>
 
-                  <ul className="mt-[20px] flex flex-col gap-[8px] text-[15px]">
+                  <ul className="mt-[20px] flex flex-col gap-[8px] text-[17px]">
                     <li>
                       <span className="text-[#60A5FA] font-semibold">
                         Vị trí:

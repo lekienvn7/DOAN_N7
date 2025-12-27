@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { toast } from "sonner";
 import axiosClient from "../../api/axiosClient";
 import { motion, AnimatePresence } from "framer-motion";
-import logoUneti from "../../assets/images/uneti_logo.png";
+import logoUneti from "../../assets/images/logo.png";
 
 const ChangePasswordBox = ({ user, navigate }) => {
   const [oldPass, setOldPass] = useState("");
@@ -18,12 +18,6 @@ const ChangePasswordBox = ({ user, navigate }) => {
 
     if (newPass === oldPass) {
       toast.error("Mật khẩu mới phải khác mật khẩu cũ!");
-      return;
-    }
-
-    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
-    if (!passwordRegex.test(newPass)) {
-      toast.error("Mật khẩu tối thiểu 8 ký tự, gồm chữ hoa và số!");
       return;
     }
 
@@ -49,16 +43,8 @@ const ChangePasswordBox = ({ user, navigate }) => {
 
       toast.success("Đổi mật khẩu thành công!");
 
-      const res = await axiosClient.post("/auth/login", {
-        username: user.username,
-        password: newPass,
-      });
-
-      localStorage.setItem("token", res.data.token);
-      localStorage.setItem("user", JSON.stringify(res.data.user));
-
-      toast.success("Đăng nhập lại thành công!");
-      navigate("/home");
+      toast.success("Vui lòng đăng nhập lại!");
+      window.location.reload();
     } catch (err) {
       toast.error(
         err.response?.data?.message || "Không thể kết nối đến server!"
@@ -78,20 +64,16 @@ const ChangePasswordBox = ({ user, navigate }) => {
         className="
           w-[560px] h-[560px]
           rounded-[28px]
-          bg-[#1C1C1E]
+          bg-[var(--bg-panel)]
           shadow-[0_30px_60px_rgba(0,0,0,0.55)]
           p-[36px]
           flex flex-col items-center
           gap-[22px]
         "
       >
-        <img
-          src={logoUneti}
-          alt="logo"
-          className="w-[90px] brightness-0 invert"
-        />
+        <img src={logoUneti} alt="logo" className="w-[64px] mb-[10px]" />
 
-        <h2 className="text-[28px] font-semibold text-white">
+        <h2 className="text-[28px] font-semibold text-[var(--text-primary)]">
           Cập nhật mật khẩu mới
         </h2>
 
@@ -117,19 +99,12 @@ const ChangePasswordBox = ({ user, navigate }) => {
               placeholder={label}
               value={value}
               onChange={(e) => setter(e.target.value)}
-              className="
-                w-[410px]
-                px-4 py-3
-                rounded-[14px]
-                bg-[#2C2C2E]
-                text-white
-                placeholder:text-[var(--text-quaternary)]
-                border border-[#3A3A3C]
-                focus:outline-none
-                focus:border-[var(--accent-blue)]
-                focus:ring-2 focus:ring-[rgba(10,132,255,0.35)]
-                transition
-              "
+              className="w-[410px] px-4 py-3 rounded-[12px] placeholder:text-textsec transition-all focus:outline-none"
+              style={{
+                background: "var(--bg-subtle)",
+                color: "var(--text-primary)",
+                border: "1.5px solid var(--border-light)",
+              }}
             />
           ))}
 

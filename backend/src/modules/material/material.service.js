@@ -206,19 +206,13 @@ async function updateMaterial(materialID, body, user) {
   }
 
   /* ===== UPDATE BASE ===== */
-  await Material.findOneAndUpdate(
-    { materialID },
-    cleanBase,
-    { new: true }
-  );
+  await Material.findOneAndUpdate({ materialID }, cleanBase, { new: true });
 
   /* ===== UPDATE DETAIL ===== */
   if (Object.keys(cleanChild).length > 0) {
-    await SelectedModel.findOneAndUpdate(
-      { materialID },
-      cleanChild,
-      { new: true }
-    );
+    await SelectedModel.findOneAndUpdate({ materialID }, cleanChild, {
+      new: true,
+    });
   }
 
   const populatedBase = await Material.findOne({ materialID })
@@ -235,7 +229,6 @@ async function updateMaterial(materialID, body, user) {
     },
   };
 }
-
 
 async function deleteMaterial(materialID) {
   const deleted = await Material.findOneAndDelete({ materialID });

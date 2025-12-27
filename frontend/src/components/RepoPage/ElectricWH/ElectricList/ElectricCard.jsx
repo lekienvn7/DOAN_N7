@@ -9,22 +9,28 @@ const ElectricCard = ({ item }) => {
     <>
       <div
         onClick={() => setOpen(true)}
-        className="
-          group relative flex flex-col justify-between
+        className={`group relative flex flex-col justify-between
           min-w-[450px] max-w-[320px]
           min-h-[500px]
-          bg-[var(--bg-panel)]
-          text-[var(--text-primary)]
-          border border-[var(--border-light)]
+          ${
+            item.borrowType === "approval"
+              ? "bg-[var(--text-primary)] text-[var(--bg-panel)]  border border-[var(--border-light)]"
+              : "bg-[var(--bg-panel)] text-[var(--text-primary)]  border border-[var(--border-light)]"
+          }
           rounded-[24px] p-8
           cursor-pointer
           transition-all duration-300 ease-out
           hover:scale-[1.02]
-          hover:shadow-[var(--shadow-md)]
-        "
+          hover:shadow-[var(--shadow-md)]`}
       >
         {/* TITLE */}
-        <h3 className="text-[20px] font-semibold text-[var(--text-primary)]">
+        <h3
+          className={`text-[20px] font-semibold ${
+            item.borrowType === "approval"
+              ? "text-[var(--bg-panel)]"
+              : "text-[var(--text-primary)]"
+          }`}
+        >
           {item.name}
         </h3>
 
@@ -41,20 +47,27 @@ const ElectricCard = ({ item }) => {
 
         {/* DESCRIPTION + QUANTITY */}
         <div className="flex flex-row justify-between items-center">
-          <p className="text-[13px] max-w-[260px] text-[var(--text-tertiary)] line-clamp-2">
+          <p
+            className={`text-[13px] max-w-[260px] ${
+              item.borrowType === "approval"
+                ? "text-[var(--bg-subtle)]"
+                : "text-[var(--text-tertiary)]"
+            } line-clamp-2`}
+          >
             {item.description || "Thiết bị điện phục vụ giảng dạy"}
           </p>
 
           <div
-            className="
-              px-[25px] py-[10px]
-              bg-[var(--bg-subtle)]
-              text-[var(--text-primary)]
-              border border-[var(--border-light)]
+            className={`px-[25px] py-[10px]
+              ${
+                item.borrowType === "approval"
+                  ? "bg-[var(--text-secondary)] text-[var(--bg-subtle)]  border border-[var(--text-primary)]"
+                  : "bg-[var(--bg-subtle)] text-[var(--text-primary)]  border border-[var(--border-light)]"
+              }
+              
               rounded-[48px]
               text-[13px]
-              font-medium
-            "
+              font-medium`}
           >
             {item.quantity} {item.unit}
           </div>

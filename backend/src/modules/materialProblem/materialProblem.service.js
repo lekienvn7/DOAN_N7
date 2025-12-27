@@ -1,5 +1,3 @@
-import MaterialProblem from "./MaterialProblem.model.js";
-
 export async function getAllProblems() {
   return await MaterialProblem.find()
     .populate("material", "name unit")
@@ -7,11 +5,11 @@ export async function getAllProblems() {
 }
 
 export async function deleteProblem(id) {
-  const item = await MaterialProblem.findById(id);
-  if (!item) throw new Error("Không tìm thấy vật tư hỏng");
+  const item = await MaterialProblem.findByIdAndDelete(id);
 
-  item.status = "discarded";
-  await item.save();
+  if (!item) {
+    throw new Error("Không tìm thấy vật tư hỏng");
+  }
 
   return item;
 }

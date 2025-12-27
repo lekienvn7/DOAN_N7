@@ -3,7 +3,14 @@ import CreateForm from "./CreateForm";
 
 const CreateUser = () => {
   return (
-    <div className="w-[25vw] h-[calc(80vh)]   bg-bgmain rounded-[12px] border-1 border-gray-600">
+    <div
+      className="w-[25vw] h-[80vh] rounded-[20px] flex items-center justify-center"
+      style={{
+        background: "var(--bg-panel)",
+        border: "1px solid var(--border-light)",
+        boxShadow: "var(--shadow-md)",
+      }}
+    >
       <CreateForm />
     </div>
   );

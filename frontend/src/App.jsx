@@ -5,6 +5,8 @@ import HomePage from "./pages/MenuPage/HomePage";
 import NotFound from "./pages/NotFound";
 import UserPage from "./pages/MenuPage/UserPage";
 import WHpage from "./pages/MenuPage/Warehouse";
+import BudgetPage from "./pages/BudgetPage/BudgetPage";
+import InfoPage from "./pages/InfoPage";
 
 import ElectricWH from "./pages/MenuPage/RepoPages/ElectricWH";
 import ChemicalWH from "./pages/MenuPage/RepoPages/ChemicalWH";
@@ -154,6 +156,24 @@ function App() {
               element={
                 <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
                   <UserPage />
+                </Layout>
+              }
+            />
+
+            <Route
+              path="/budget"
+              element={
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
+                  <BudgetPage />
+                </Layout>
+              }
+            />
+
+            <Route
+              path="/information"
+              element={
+                <Layout className="bg-[var(--bg-page)] text-[var(--text-primary)]">
+                  <InfoPage />
                 </Layout>
               }
             />

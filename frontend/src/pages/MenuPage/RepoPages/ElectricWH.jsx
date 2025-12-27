@@ -9,6 +9,7 @@ import QuickSectionNav from "@/components/RepoPage/ElectricWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/ElectricWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/ElectricWH/LecturerPage/BorrowForm";
 import ReportPage from "../ReportPage";
+import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {
   hidden: { opacity: 0, y: 28 },
@@ -33,7 +34,7 @@ const ElectricWH = () => {
 
   const isLecturer = user?.roleID === "LECTURER";
   const canAddMaterial =
-    user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH_MANAGER";
+    user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH MANAGER";
   const canSeeBorrowTickets = canAddMaterial;
 
   const reloadList = () => setReload((p) => p + 1);
@@ -184,16 +185,19 @@ const ElectricWH = () => {
           </motion.section>
         )}
 
-        <motion.section
-          ref={reportRef}
-          variants={revealUp}
-          initial="hidden"
-          whileInView="visible"
-          className="mx-[80px] p-[28px]"
-        >
-          <ReportPage canReturn={isLecturer} />
-        </motion.section>
+        {isLecturer && (
+          <motion.section
+            ref={reportRef}
+            variants={revealUp}
+            initial="hidden"
+            whileInView="visible"
+            className="mx-[80px] p-[28px]"
+          >
+            <ReportPage canReturn={isLecturer} />
+          </motion.section>
+        )}
       </main>
+      <InfoPage />
     </div>
   );
 };

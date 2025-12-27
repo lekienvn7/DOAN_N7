@@ -16,7 +16,7 @@ const ElectricDetail = ({ item, open, onClose, onReload }) => {
      CHECK PERMISSION
   ========================= */
   const canManage =
-    user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH_MANAGER";
+    user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH MANAGER";
 
   /* =========================
      BORROW TYPE
@@ -48,15 +48,23 @@ const ElectricDetail = ({ item, open, onClose, onReload }) => {
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
         className="
-          bg-[#0f0f10] text-white border-none rounded-[24px] p-0 !max-w-none
-          w-[900px] max-w-none max-h-[90vh] overflow-hidden
+          rounded-[24px] p-0 !max-w-none
+          w-[900px] max-h-[90vh] overflow-hidden
         "
+        style={{
+          background: "var(--bg-panel)",
+          color: "var(--text-primary)",
+          border: "1px solid var(--border-light)",
+        }}
       >
         <div className="flex gap-[48px] p-[40px]">
           {/* ================= LEFT ================= */}
           <div className="flex-shrink-0 flex flex-col gap-4">
             {/* IMAGE */}
-            <div className="w-[360px] h-[360px] rounded-[20px] flex items-center justify-center bg-[#1c1c1e]">
+            <div
+              className="w-[360px] h-[360px] rounded-[20px] flex items-center justify-center"
+              style={{ background: "var(--bg-subtle)" }}
+            >
               <img
                 src={cadivi}
                 alt={item.name}
@@ -64,23 +72,27 @@ const ElectricDetail = ({ item, open, onClose, onReload }) => {
               />
             </div>
 
-            {/* ACTIONS BELOW IMAGE – CHỈ ADMIN & WH_MANAGER */}
+            {/* ACTIONS BELOW IMAGE */}
             {canManage && (
               <div className="flex items-center justify-between gap-3 px-2">
                 {/* CHECKBOX */}
-                <label className="flex items-center gap-2 text-[14px] cursor-pointer">
+                <label
+                  className="flex items-center gap-2 text-[14px] cursor-pointer"
+                  style={{ color: "var(--text-secondary)" }}
+                >
                   <input
                     type="checkbox"
                     checked={borrowType === "approval"}
                     onChange={(e) =>
                       setBorrowType(e.target.checked ? "approval" : "free")
                     }
-                    className="accent-pink-500 w-4 h-4 outline-none"
+                    className="w-4 h-4"
+                    style={{ accentColor: "var(--accent-blue)" }}
                   />
-                  <span className="text-[#f472b6]">Cần duyệt khi mượn</span>
+                  <span>Cần duyệt khi mượn</span>
                 </label>
 
-                {/* EDIT BUTTON */}
+                {/* EDIT */}
                 <ElectricEdit item={item} onReload={onReload} />
               </div>
             )}
@@ -89,18 +101,27 @@ const ElectricDetail = ({ item, open, onClose, onReload }) => {
           {/* ================= RIGHT ================= */}
           <div className="flex flex-col flex-1">
             {/* TITLE */}
-            <h1 className="text-[36px] font-semibold leading-tight">
+            <h1
+              className="text-[36px] font-semibold leading-tight"
+              style={{ color: "var(--text-primary)" }}
+            >
               {item.name}
             </h1>
 
             {/* META */}
-            <p className="mt-2 text-[#a1a1a6] text-[15px]">
+            <p
+              className="mt-2 text-[15px]"
+              style={{ color: "var(--text-secondary)" }}
+            >
               {item.materialID} • {item.quantity} {item.unit}
               {item.maintenanceCycle ? ` • ${item.maintenanceCycle} tháng` : ""}
             </p>
 
             {/* DIVIDER */}
-            <div className="my-6 h-px bg-[#2c2c2e]" />
+            <div
+              className="my-6 h-px"
+              style={{ background: "var(--border-light)" }}
+            />
 
             {/* SCROLLABLE SPECS */}
             <div
@@ -111,6 +132,9 @@ const ElectricDetail = ({ item, open, onClose, onReload }) => {
                 space-y-3
                 scrollbar-thin
               "
+              style={{
+                scrollbarColor: "var(--border-strong) transparent",
+              }}
             >
               <Spec label="Thêm bởi" value={item.createdBy?.fullName} />
               <Spec label="Email" value={item.createdBy?.email} />
@@ -147,8 +171,10 @@ const ElectricDetail = ({ item, open, onClose, onReload }) => {
 /* ================= SPEC ROW ================= */
 const Spec = ({ label, value }) => (
   <div className="flex justify-between gap-6 text-[15px]">
-    <span className="text-highlightcl">{label}</span>
-    <span className="text-white text-right">{value || "—"}</span>
+    <span style={{ color: "var(--accent-blue)" }}>{label}</span>
+    <span className="text-right" style={{ color: "var(--text-primary)" }}>
+      {value || "—"}
+    </span>
   </div>
 );
 

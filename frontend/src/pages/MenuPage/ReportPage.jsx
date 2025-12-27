@@ -193,6 +193,51 @@ const ReportPage = ({ canReturn = false }) => {
                   {formatDate(item.expectedReturnDate)}
                 </p>
 
+                <div className="mt-4">
+                  <p className="text-xs font-semibold text-[var(--text-secondary)] mb-2">
+                    Vật tư đang mượn
+                  </p>
+
+                  <div
+                    className="h-[110px]
+      max-h-[110px]
+      overflow-y-auto
+      pr-1
+      space-y-1
+      scrollbar-thin
+      scrollbar-thumb-[#3a3a3c]
+      scrollbar-track-transparent
+    "
+                  >
+                    {item.items?.map((it, idx) => (
+                      <div
+                        key={idx}
+                        className="
+                            text-sm
+                            flex justify-between items-center
+                            text-[var(--text-secondary)]
+                            bg-[var(--bg-hover)]
+                            rounded-[8px]
+                            px-2 py-1
+        "
+                      >
+                        <span className="truncate max-w-[170px]">
+                          {it.material?.name || "—"}
+                        </span>
+                        <span className="text-[var(--text-tertiary)] shrink-0">
+                          × {it.quantity} {it.material?.unit || ""}
+                        </span>
+                      </div>
+                    ))}
+
+                    {item.items?.length === 0 && (
+                      <p className="text-xs text-[var(--text-tertiary)] italic">
+                        Không có vật tư
+                      </p>
+                    )}
+                  </div>
+                </div>
+
                 <p className="text-[var(--success)] font-medium">Đang mượn</p>
               </div>
 

@@ -32,14 +32,14 @@ const NoticePage = () => {
     >
       {/* ===== LOADING ===== */}
       {loading && (
-        <p className="text-[14px] text-[var(--text-secondary)]">
+        <p className="text-[17px] text-[var(--text-secondary)]">
           Đang tải thông báo…
         </p>
       )}
 
       {/* ===== EMPTY ===== */}
       {!loading && notifications.length === 0 && (
-        <p className="text-[14px] text-[var(--text-secondary)]">
+        <p className="text-[17px] text-[var(--text-secondary)]">
           Không có thông báo nào
         </p>
       )}
@@ -61,17 +61,17 @@ const NoticePage = () => {
           <div className="flex items-start justify-between gap-[12px]">
             {/* LEFT */}
             <div className="flex flex-col gap-[4px]">
-              <p className="text-[15px] font-semibold text-[var(--text-primary)]">
+              <p className="text-[17px] font-semibold text-[var(--text-primary)]">
                 {not.title}
               </p>
 
-              <p className="text-[14px] text-[var(--text-secondary)] leading-[1.4]">
+              <p className="text-[15px] text-[var(--text-secondary)] leading-[1.4]">
                 {not.message}
               </p>
             </div>
 
             {/* DATE */}
-            <span className="text-[12px] text-[var(--text-tertiary)] whitespace-nowrap">
+            <span className="text-[13px] text-[var(--text-tertiary)] whitespace-nowrap">
               {new Date(not.createdAt).toLocaleDateString("vi-VN")}
             </span>
           </div>

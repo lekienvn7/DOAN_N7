@@ -1,6 +1,5 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import { PencilLine, Trash2 } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { PencilLine, Trash2, Lock } from "lucide-react";
 import axiosClient from "@/api/axiosClient";
 import { toast } from "sonner";
 import {
@@ -15,7 +14,7 @@ import {
 } from "../ui/dialog";
 
 const UserList = ({ reload }) => {
-  const [users, setUser] = useState([]);
+  const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const RepoList = [
@@ -24,62 +23,75 @@ const UserList = ({ reload }) => {
     { type: "electric", name: "Kho điện" },
     { type: "mechanical", name: "Kho cơ khí" },
     { type: "fashion", name: "Kho thời trang" },
-    { type: "iot", name: "Kho nhúng & iot" },
+    { type: "iot", name: "Kho nhúng & IoT" },
     { type: "technical", name: "Kho CNTT" },
-    { type: "automotive", name: "Kho CN oto" },
+    { type: "automotive", name: "Kho CN ô tô" },
   ];
+
   const TrueFalse = {
     true: "Chưa đổi",
     false: "Đã đổi",
   };
 
+  /* ================= FETCH USERS ================= */
   useEffect(() => {
     setLoading(true);
 
-    const timer = setTimeout(() => {
-      const fetchUser = async () => {
-        try {
-          const res = await axiosClient.get("/user");
-
-          if (res.data.success) {
-            const sorted = [...res.data.data].sort((a, b) =>
-              a.userID.localeCompare(b.userID)
-            );
-            setUser(sorted);
-          }
-        } catch (error) {
-          console.error("Lỗi khi kết nối dữ liệu!");
-        } finally {
-          setLoading(false);
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axiosClient.get("/user");
+        if (res.data.success) {
+          const sorted = [...res.data.data].sort((a, b) =>
+            a.userID.localeCompare(b.userID)
+          );
+          setUsers(sorted);
         }
-      };
-      fetchUser();
+      } catch {
+        toast.error("Lỗi khi tải danh sách người dùng");
+      } finally {
+        setLoading(false);
+      }
     }, 300);
 
     return () => clearTimeout(timer);
   }, [reload]);
+
+  /* ================= UNLOCK USER ================= */
+  const handleUnlockUser = async (userID, username) => {
+    try {
+      await axiosClient.put(`/user/${userID}`, {
+        isLocked: false,
+        damageCount: 0,
+      });
+
+      toast.success(`Đã mở khóa tài khoản ${username}`);
+
+      // Update UI ngay, không cần reload
+      setUsers((prev) =>
+        prev.map((u) =>
+          u.userID === userID ? { ...u, isLocked: false, damageCount: 0 } : u
+        )
+      );
+    } catch {
+      toast.error("Mở khóa tài khoản thất bại");
+    }
+  };
 
   const handleResetPassword = async (userID) => {
     try {
       const res = await axiosClient.put(`user/reset/${userID}`);
       if (res.data.success) {
         toast.success("Reset mật khẩu thành công!");
-        setTimeout(() => {
-          window.location.reload();
-        }, 800);
-      } else {
-        toast.error(res.data.message || "Không thể reset tài khoản!");
-      }
-    } catch (error) {
-      console.error("Lỗi khi reset mật khẩu!", error);
-      toast.error("Reset thất bại! Vui lòng thử lại sau.");
+        setTimeout(() => window.location.reload(), 800);
+      } else toast.error(res.data.message);
+    } catch {
+      toast.error("Reset thất bại!");
     }
   };
 
   const handleDeleteUser = async (userID) => {
     try {
       const res = await axiosClient.delete(`/user/${userID}`);
-
       if (res.data.userID === "ADMIN") {
         toast.error("Không thể xóa tài khoản ADMIN");
         return;
@@ -87,40 +99,45 @@ const UserList = ({ reload }) => {
 
       if (res.data.success) {
         toast.success("Xóa tài khoản thành công!");
-
-        setUser((prev) => prev.filter((u) => u.userID !== userID));
-      } else {
-        toast.error(res.data.message || "Không thể xóa tài khoản!");
+        setUsers((prev) => prev.filter((u) => u.userID !== userID));
       }
-    } catch (error) {
-      console.error("Lỗi khi xóa tài khoản:", error);
-      toast.error("Xóa thất bại! Vui lòng thử lại sau.");
+    } catch {
+      toast.error("Xóa thất bại!");
     }
   };
 
+  /* ================= CONFIRM RESET ================= */
   const ConfirmReset = ({ username, onConfirm }) => {
     const [input, setInput] = useState("");
-
     const isMatch = input.trim() === username;
 
     return (
       <div className="mt-4 flex flex-col gap-3">
-        <label className="text-sm text-gray-300">
+        <label className="text-sm" style={{ color: "var(--text-secondary)" }}>
           Gõ lại tên tài khoản{" "}
-          <span className="font-semibold text-yellow-400">{username}</span> để
-          xác nhận:
+          <b style={{ color: "var(--accent-blue)" }}>{username}</b> để xác nhận:
         </label>
+
         <input
-          type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Nhập lại tên tài khoản..."
-          className="px-3 py-2 rounded-md bg-[#2a2a2a] border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-highlightcl transition"
+          className="px-3 py-2 rounded-md focus:outline-none"
+          style={{
+            background: "var(--bg-subtle)",
+            border: "1px solid var(--border-strong)",
+            color: "var(--text-primary)",
+          }}
         />
 
         <DialogFooter className="mt-3 flex justify-end gap-3">
           <DialogClose asChild>
-            <button className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition">
+            <button
+              className="px-4 py-2 rounded"
+              style={{
+                background: "var(--bg-hover)",
+                color: "var(--text-secondary)",
+              }}
+            >
               Hủy
             </button>
           </DialogClose>
@@ -129,13 +146,14 @@ const UserList = ({ reload }) => {
             <button
               onClick={onConfirm}
               disabled={!isMatch}
-              className={`px-4 py-2 rounded transition ${
-                isMatch
-                  ? "bg-[#ff5555] hover:bg-[#ff7676] text-white cursor-pointer"
-                  : "bg-gray-600 text-gray-400 cursor-not-allowed"
-              }`}
+              className="px-4 py-2 rounded"
+              style={{
+                background: isMatch ? "var(--danger)" : "var(--bg-hover)",
+                color: isMatch ? "#fff" : "var(--text-tertiary)",
+                cursor: isMatch ? "pointer" : "not-allowed",
+              }}
             >
-              {isMatch ? "Reset" : "Nhập đúng để reset"}
+              Reset
             </button>
           </DialogClose>
         </DialogFooter>
@@ -143,35 +161,38 @@ const UserList = ({ reload }) => {
     );
   };
 
+  /* ================= CONFIRM DELETE ================= */
   const ConfirmDelete = ({ username, onConfirm }) => {
     const [input, setInput] = useState("");
-
     const isMatch = input.trim() === username;
 
     return (
       <div className="mt-4 flex flex-col gap-3">
-        <label className="text-sm text-gray-300">
+        <label className="text-sm" style={{ color: "var(--text-secondary)" }}>
           Gõ lại tên tài khoản{" "}
-          <span className="font-semibold text-yellow-400">{username}</span> để
-          xác nhận:
+          <b style={{ color: "var(--danger)" }}>{username}</b> để xác nhận:
         </label>
-        <form
-          onSubmit={(e) => {
-            onConfirm();
+
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="px-3 py-2 rounded-md focus:outline-none"
+          style={{
+            background: "var(--bg-subtle)",
+            border: "1px solid var(--border-strong)",
+            color: "var(--text-primary)",
           }}
-        >
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Nhập lại tên tài khoản..."
-            className="px-3 py-2 w-[465px] rounded-md bg-[#2a2a2a] border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-highlightcl transition"
-          />
-        </form>
+        />
 
         <DialogFooter className="mt-3 flex justify-end gap-3">
           <DialogClose asChild>
-            <button className="px-4 py-2 bg-gray-700 text-white rounded hover:bg-gray-600 transition">
+            <button
+              className="px-4 py-2 rounded"
+              style={{
+                background: "var(--bg-hover)",
+                color: "var(--text-secondary)",
+              }}
+            >
               Hủy
             </button>
           </DialogClose>
@@ -180,13 +201,69 @@ const UserList = ({ reload }) => {
             <button
               onClick={onConfirm}
               disabled={!isMatch}
-              className={`px-4 py-2 rounded transition ${
-                isMatch
-                  ? "bg-[#ff5555] hover:bg-[#ff7676] text-white cursor-pointer"
-                  : "bg-gray-600 text-gray-400 cursor-not-allowed"
-              }`}
+              className="px-4 py-2 rounded"
+              style={{
+                background: isMatch ? "var(--danger)" : "var(--bg-hover)",
+                color: isMatch ? "#fff" : "var(--text-tertiary)",
+                cursor: isMatch ? "pointer" : "not-allowed",
+              }}
             >
-              {isMatch ? "Xóa" : "Nhập đúng để xóa"}
+              Xóa
+            </button>
+          </DialogClose>
+        </DialogFooter>
+      </div>
+    );
+  };
+
+  /* ================= CONFIRM UNLOCK ================= */
+  const ConfirmUnlock = ({ username, userID }) => {
+    const [input, setInput] = useState("");
+    const isMatch = input.trim() === username;
+
+    return (
+      <div className="mt-4 flex flex-col gap-3">
+        <label className="text-sm" style={{ color: "var(--text-secondary)" }}>
+          Nhập lại username{" "}
+          <b style={{ color: "var(--accent-blue)" }}>{username}</b> để mở khóa:
+        </label>
+
+        <input
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="px-3 py-2 rounded-md focus:outline-none"
+          style={{
+            background: "var(--bg-subtle)",
+            border: "1px solid var(--border-strong)",
+            color: "var(--text-primary)",
+          }}
+        />
+
+        <DialogFooter className="mt-3 flex justify-end gap-3">
+          <DialogClose asChild>
+            <button
+              className="px-4 py-2 rounded"
+              style={{
+                background: "var(--bg-hover)",
+                color: "var(--text-secondary)",
+              }}
+            >
+              Hủy
+            </button>
+          </DialogClose>
+
+          <DialogClose asChild>
+            <button
+              disabled={!isMatch}
+              onClick={() => handleUnlockUser(userID, username)}
+              className="px-4 py-2 rounded"
+              style={{
+                background: isMatch ? "var(--success)" : "var(--bg-hover)",
+                color: isMatch ? "#fff" : "var(--text-tertiary)",
+                cursor: isMatch ? "pointer" : "not-allowed",
+              }}
+            >
+              Mở khóa
             </button>
           </DialogClose>
         </DialogFooter>
@@ -196,144 +273,194 @@ const UserList = ({ reload }) => {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[300px] gap-4 text-textpri">
-        <div className="w-10 h-10 border-4 border-yellow-400 border-t-transparent rounded-full animate-spin"></div>
-        <p>Đang tải dữ liệu...</p>
+      <div className="flex items-center justify-center h-[300px] gap-3">
+        <div
+          className="w-10 h-10 border-4 rounded-full animate-spin"
+          style={{
+            borderColor: "var(--accent-blue)",
+            borderTopColor: "transparent",
+          }}
+        />
+        <span>Đang tải dữ liệu...</span>
       </div>
     );
   }
 
   return (
     <div className="w-full">
-      <table className=" border-collapse w-full text-[#fdd700]  ">
-        <thead className="sticky top-0 z-20 border-b border-gray-700 bg-[#1e1b11]">
-          <tr className="text-left  text-[14px] font-semibold">
-            <th className="relative p-[5px] w-[3%] ">UserID</th>
-            <th className="relative p-[5px] w-[10%]">Tên đầy đủ</th>
-            <th className="relative p-[5px] w-[8%]">Username</th>
-            <th className="relative p-[5px] w-[10%] ">Email</th>
-            <th className="relative p-[5px] w-[8%] ">Đổi mật khẩu?</th>
-            <th className="relative p-[5px] w-[8%]">Quyền hạn</th>
-            <th className="relative p-[5px] w-[10%] ">Phân kho (nếu có)</th>
-
-            <th colSpan={2} className="text-center p-[5px] w-[5%] ">
+      <table className="border-collapse w-full text-[14px]">
+        <thead
+          className="sticky top-0 z-20"
+          style={{
+            background: "var(--bg-subtle)",
+            borderBottom: "1px solid var(--border-light)",
+          }}
+        >
+          <tr className="font-semibold text-left">
+            <th className="p-[6px]">UserID</th>
+            <th className="p-[6px]">Tên đầy đủ</th>
+            <th className="p-[6px]">Username</th>
+            <th className="p-[6px]">Email</th>
+            <th className="p-[6px]">Đổi MK?</th>
+            <th className="p-[6px]">Quyền hạn</th>
+            <th className="p-[6px]">Phân kho</th>
+            <th colSpan={2} className="p-[6px] text-center">
               Lựa chọn
             </th>
           </tr>
         </thead>
 
-        <tbody className="">
-          {users.map((item) => {
-            let roleColor = "";
+        <tbody>
+          {users.map((item) => (
+            <tr
+              key={item.userID}
+              style={{
+                background: item.isLocked
+                  ? "rgba(239,68,68,0.12)"
+                  : "var(--bg-panel)",
+                borderBottom: "1px solid var(--border-light)",
+                opacity: item.isLocked ? 0.75 : 1,
+              }}
+            >
+              {/* USER ID + LOCK ICON */}
+              <td className="p-[6px] flex items-center gap-2">
+                {item.userID}
 
-            if (item.role.roleID === "ADMINISTRATOR") {
-              roleColor = "text-yellow-400";
-            } else if (item.role.roleID === "WH MANAGER") {
-              roleColor = "text-textpri";
-            } else if (item.role.roleID === "MT MANAGER") {
-              roleColor = "text-textpri";
-            }
-
-            let repoColor = "";
-
-            if (item.yourRepo === "all") {
-              repoColor = "text-yellow-400";
-            } else if (!item.yourRepo) {
-              repoColor = "text-red-400";
-            } else {
-              repoColor = "text-textpri";
-            }
-
-            return (
-              <tr className=" text-left text-[14px] text-[#e5e5e7] odd:bg-[#111111] even:bg-[#0d0d0d] hover:bg-[#1a1a1a]">
-                <td className="p-[5px]">{item.userID}</td>
-                <td className="p-[5px]">{item.fullName}</td>
-                <td className="p-[5px]">{item.username}</td>
-                <td
-                  className={`p-[5px] ${
-                    !item.email ? "text-red-400" : "text-textpri"
-                  } `}
-                >
-                  {item.email?.length > 0 ? item.email : "Chưa có email"}
-                </td>
-                <td
-                  className={`p-[5px] ${
-                    item.mustChangePassword ? "text-red-400" : "text-green-400"
-                  }`}
-                >
-                  {TrueFalse[item.mustChangePassword.toString()]}
-                </td>
-                <td className={`p-[5px] ${roleColor}`}>{item.role.roleName}</td>
-                <td className={`p-[5px] ${repoColor}`}>
-                  {item.yourRepo
-                    ? RepoList.find((repo) => repo.type === item.yourRepo)
-                        ?.name || item.yourRepo
-                    : "Không có"}
-                </td>
-                <td className="p-[5px] text-center border-gray-700">
+                {item.isLocked && (
                   <Dialog>
                     <DialogTrigger asChild>
-                      <button className="changeTool cursor-pointer p-[5px] justify-center text-[#ffd700] hover:text-[#ffb700]">
-                        <PencilLine size={15} />
+                      <button
+                        title="Mở khóa tài khoản"
+                        style={{ color: "var(--danger)" }}
+                      >
+                        <Lock size={14} />
                       </button>
                     </DialogTrigger>
 
-                    <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
+                    <DialogContent
+                      style={{
+                        background: "var(--bg-panel)",
+                        color: "var(--text-primary)",
+                      }}
+                    >
                       <DialogHeader>
-                        <DialogTitle className="text-[#fdd700]">
-                          Xác nhận reset mật khẩu
-                        </DialogTitle>
-
-                        <DialogDescription className="text-gray-400">
-                          Bạn có chắc chắn muốn reset mật khẩu tài khoản{" "}
-                          <span className="text-yellow-400 font-semibold">
-                            {item.username}
-                          </span>{" "}
-                          không? Hành động này không thể hoàn tác.
+                        <DialogTitle>Mở khóa tài khoản</DialogTitle>
+                        <DialogDescription>
+                          Tài khoản <b>{item.username}</b> đang bị khóa do vi
+                          phạm / hỏng hóc
                         </DialogDescription>
                       </DialogHeader>
 
-                      <ConfirmReset
+                      <ConfirmUnlock
                         username={item.username}
-                        onConfirm={() => handleResetPassword(item.userID)}
+                        userID={item.userID}
                       />
                     </DialogContent>
                   </Dialog>
-                </td>
+                )}
+              </td>
 
-                <td className="text-center p-[5px]">
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <button className="cursor-pointer p-[5px] text-[#ff5555] hover:text-[#ff7676]">
-                        <Trash2 size={15} />
-                      </button>
-                    </DialogTrigger>
+              <td className="p-[6px]">{item.fullName}</td>
+              <td className="p-[6px]">{item.username}</td>
+              <td className="p-[6px]">{item.email || "—"}</td>
 
-                    <DialogContent className="bg-[#1a1a1a] rounded-[12px] border-none text-white">
-                      <DialogHeader>
-                        <DialogTitle className="text-[#fdd700]">
-                          Xác nhận xoá tài khoản
-                        </DialogTitle>
+              <td
+                className="p-[6px]"
+                style={{
+                  color: item.mustChangePassword
+                    ? "var(--danger)"
+                    : "var(--success)",
+                }}
+              >
+                {TrueFalse[item.mustChangePassword.toString()]}
+              </td>
 
-                        <DialogDescription className="text-gray-400">
-                          Bạn có chắc chắn muốn xoá tài khoản{" "}
-                          <span className="text-yellow-400 font-semibold">
-                            {item.username}
-                          </span>{" "}
-                          không? Hành động này không thể hoàn tác.
-                        </DialogDescription>
-                      </DialogHeader>
+              <td className="p-[6px]">{item.role.roleName}</td>
 
-                      <ConfirmDelete
-                        username={item.username}
-                        onConfirm={() => handleDeleteUser(item.userID)}
-                      />
-                    </DialogContent>
-                  </Dialog>
-                </td>
-              </tr>
-            );
-          })}
+              <td className="p-[6px]">
+                {RepoList.find((r) => r.type === item.yourRepo)?.name ||
+                  "Không có"}
+              </td>
+
+              {/* RESET */}
+              <td className="text-center p-[6px]">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      disabled={item.isLocked}
+                      style={{
+                        color: item.isLocked
+                          ? "var(--text-tertiary)"
+                          : "var(--accent-blue)",
+                        cursor: item.isLocked ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      <PencilLine size={15} />
+                    </button>
+                  </DialogTrigger>
+
+                  <DialogContent
+                    className="rounded-[16px]"
+                    style={{
+                      background: "var(--bg-panel)",
+                      color: "var(--text-primary)",
+                    }}
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Reset mật khẩu</DialogTitle>
+                      <DialogDescription>
+                        Xác nhận reset mật khẩu cho <b>{item.username}</b>
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <ConfirmReset
+                      username={item.username}
+                      onConfirm={() => handleResetPassword(item.userID)}
+                    />
+                  </DialogContent>
+                </Dialog>
+              </td>
+
+              {/* DELETE */}
+              <td className="text-center p-[6px]">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button
+                      disabled={item.isLocked}
+                      style={{
+                        color: item.isLocked
+                          ? "var(--text-tertiary)"
+                          : "var(--danger)",
+                        cursor: item.isLocked ? "not-allowed" : "pointer",
+                      }}
+                    >
+                      <Trash2 size={15} />
+                    </button>
+                  </DialogTrigger>
+
+                  <DialogContent
+                    className="rounded-[16px]"
+                    style={{
+                      background: "var(--bg-subtle)",
+                      color: "var(--text-primary)",
+                    }}
+                  >
+                    <DialogHeader>
+                      <DialogTitle>Xóa tài khoản</DialogTitle>
+                      <DialogDescription>
+                        Xác nhận xóa tài khoản <b>{item.username}</b>
+                      </DialogDescription>
+                    </DialogHeader>
+
+                    <ConfirmDelete
+                      username={item.username}
+                      onConfirm={() => handleDeleteUser(item.userID)}
+                    />
+                  </DialogContent>
+                </Dialog>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

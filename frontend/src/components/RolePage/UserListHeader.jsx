@@ -11,20 +11,50 @@ const UserListHeader = () => {
   };
 
   return (
-    <div className="w-[75vw] p-[25px] text-textpri h-[calc(80vh)] bg-bgmain rounded-[12px] border-1 border-gray-600">
+    <div
+      className="w-[75vw] p-[25px] h-[80vh] rounded-[20px]"
+      style={{
+        background: "var(--bg-panel)",
+        color: "var(--text-primary)",
+        border: "1px solid var(--border-light)",
+        boxShadow: "var(--shadow-md)",
+      }}
+    >
       <div className="flex flex-col gap-[25px]">
-        <div className="flex flex-row justify-between">
-          <p className="text-[25px] font-bold">Danh sách tài khoản</p>
+        <div className="flex flex-row justify-between items-center">
+          <p
+            className="text-[25px] font-bold"
+            style={{ color: "var(--text-primary)" }}
+          >
+            Danh sách tài khoản
+          </p>
+
           <button
             onClick={reList}
-            className="bg-highlightcl text-textpri text-[14px] font-bold rounded-[12px] flex flex-row gap-[5px] items-center hover:bg-[#0a60ff] px-[10px] cursor-pointer"
+            className="text-[14px] font-semibold rounded-[12px] flex flex-row gap-[6px] items-center px-[12px] py-[8px] transition-all"
+            style={{
+              background: "var(--accent-blue)",
+              color: "#fff",
+            }}
           >
-            <RotateCcw size={14} strokeWidth={3} /> <span>Làm mới</span>
+            <RotateCcw size={14} strokeWidth={2.5} />
+            <span>Làm mới</span>
           </button>
         </div>
-        <hr className="text-gray-700" />
+
+        <hr
+          style={{
+            borderColor: "var(--border-light)",
+          }}
+        />
       </div>
-      <div className="max-h-[490px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60 ">
+
+      <div
+        className="mt-2 max-h-[490px] overflow-y-auto scrollbar-thin"
+        style={{
+          scrollbarColor: "var(--border-strong) transparent",
+        }}
+      >
         <UserList reload={reload} />
       </div>
     </div>

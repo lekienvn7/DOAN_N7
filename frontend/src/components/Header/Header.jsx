@@ -23,7 +23,7 @@ const Header = () => {
         px-[2.5%]
         h-[45px]
         bg-[rgba(255,255,255,0.85)]
-        backdrop-blur-[18px]
+        backdrop-blur-md
 
         text-[var(--text-primary)]
       "

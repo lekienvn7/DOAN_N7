@@ -1,6 +1,11 @@
 import { Trash2 } from "lucide-react";
+import { useAuth } from "@/context/authContext";
 
 const ProblematicCard = ({ item, onDelete }) => {
+  const { user } = useAuth();
+  const isAdmin =
+    user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH MANAGER";
+
   return (
     <div
       className="
@@ -33,9 +38,10 @@ const ProblematicCard = ({ item, onDelete }) => {
       </div>
 
       {/* ACTION */}
-      <button
-        onClick={() => onDelete(item._id)}
-        className="
+      {isAdmin && (
+        <button
+          onClick={() => onDelete(item._id)}
+          className="
           mt-6 inline-flex items-center justify-center gap-2
           px-4 py-2
           rounded-[12px]
@@ -45,10 +51,11 @@ const ProblematicCard = ({ item, onDelete }) => {
           hover:text-textpri
           transition
         "
-      >
-        <Trash2 size={16} />
-        Tiêu hủy
-      </button>
+        >
+          <Trash2 size={16} />
+          Tiêu hủy
+        </button>
+      )}
 
       {/* OVERLAY */}
       <div

@@ -86,10 +86,10 @@ const RepoMenu = () => {
 
   return (
     <motion.ul
-      initial={{ x: -200, opacity: 0 }}
-      animate={{ x: 0, opacity: 1 }}
-      exit={{ x: 200, opacity: 0 }}
-      transition={{ type: "spring", stiffness: 90, damping: 12 }}
+      initial={{ y: 20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      exit={{ y: 20, opacity: 0 }}
+      transition={{ type: "spring", stiffness: 160, damping: 18 }}
       className="flex flex-row gap-[25px] items-center justify-center gpu"
     >
       {repos.map((repo) => {

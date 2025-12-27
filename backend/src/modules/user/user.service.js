@@ -93,29 +93,51 @@ async function changePassword(userID, data) {
 }
 
 async function updateUser(userID, data) {
-  const { fullName, yourRepo, role, email, phone, username } = data;
+  const {
+    fullName,
+    yourRepo,
+    role,
+    email,
+    phone,
+    username,
+    isLocked,
+    damageCount,
+  } = data;
 
-  // Tạo đối tượng update trống để chỉ thêm field nào được gửi lên
   const updateData = {};
 
-  if (fullName) {
+  if (fullName !== undefined) {
     updateData.fullName = fullName;
   }
-  if (username) {
+
+  if (username !== undefined) {
     updateData.username = username;
   }
-  if (email) {
+
+  if (email !== undefined) {
     updateData.email = email;
   }
-  if (phone) {
+
+  if (phone !== undefined) {
     updateData.phone = phone;
   }
-  if (yourRepo) {
+
+  if (yourRepo !== undefined) {
     updateData.yourRepo = yourRepo;
   }
 
-  // Nếu có role mới thì mới update, còn không thì bỏ qua
-  if (role) {
+  // ✅ FIX CHUẨN
+  if (isLocked !== undefined) {
+    updateData.isLocked = isLocked;
+  }
+
+  // ✅ FIX CHUẨN
+  if (damageCount !== undefined) {
+    updateData.damageCount = damageCount;
+  }
+
+  // role
+  if (role !== undefined) {
     const existingRole = await Role.findOne({ roleID: role });
     if (!existingRole) {
       const error = new Error(`Vai trò '${role}' không tồn tại!`);
@@ -125,7 +147,6 @@ async function updateUser(userID, data) {
     updateData.role = existingRole._id;
   }
 
-  // Cập nhật người dùng
   const updatedUser = await User.findOneAndUpdate({ userID }, updateData, {
     new: true,
     runValidators: true,
@@ -137,7 +158,10 @@ async function updateUser(userID, data) {
     throw error;
   }
 
-  return { message: "Cập nhật tài khoản thành công!" };
+  return {
+    message: "Cập nhật tài khoản thành công!",
+    user: updatedUser,
+  };
 }
 
 async function resetUserPassword(data) {

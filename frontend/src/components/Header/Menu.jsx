@@ -20,14 +20,15 @@ const Menu = () => {
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Thanh lý vật tư", path: "/material/problematic", key: "3" },
     { name: "Chỉnh sửa thông tin", path: "/user", key: "4" },
-    { name: "Quản lý / Phân quyền", path: "/role", key: "5" },
+    { name: "Báo cáo", path: "/budget", key: "5" },
+    { name: "Quản lý / Phân quyền", path: "/role", key: "6" },
   ];
 
   const managerMenuItems = [
     { name: "Trang chủ", path: "/home", key: "1" },
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Thanh lý vật tư", path: "/material/problematic", key: "3" },
-    { name: "Vật tư đang mượn", path: "/report", key: "4" },
+    { name: "Ngân sách kho", path: "/budget", key: "4" },
     { name: "Chỉnh sửa thông tin", path: "/user", key: "5" },
   ];
 

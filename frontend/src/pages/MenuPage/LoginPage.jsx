@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 const LoginPage = () => {
   return (
-    <div className="flex justify-center items-center min-h-[calc(100vh-80px)] page-ambient">
+    <div className="flex justify-center items-center min-h-[calc(100vh-80px)]">
       <AnimatePresence mode="wait">
         <motion.div
           initial={{ x: -200, opacity: 0 }} // Bắt đầu lệch trái + mờ

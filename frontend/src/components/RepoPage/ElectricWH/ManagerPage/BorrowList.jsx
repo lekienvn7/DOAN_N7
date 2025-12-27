@@ -169,39 +169,51 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
             initial={{ opacity: 0, x: -40 }}
             animate={{ opacity: 1, x: 0 }}
             className="
-              shrink-0 w-[360px] h-[420px]
-              bg-[var(--bg-panel)]
-              rounded-xl p-4
-              border border-[var(--border-light)]
-              flex flex-col
-              text-[var(--text-primary)]
+              group relative flex flex-col justify-between
+          min-w-[450px] max-w-[320px]
+          min-h-[500px]
+          bg-[var(--bg-panel)]
+          text-[var(--text-primary)]
+          border border-[var(--border-light)]
+          rounded-[24px] p-8
+          cursor-pointer
+          transition-all duration-300 ease-out
+          hover:scale-[1.02]
             "
           >
             {/* HEADER */}
-            <p className="text-[var(--accent-blue)] font-semibold">
-              Phiếu #{item._id.slice(-5)}
+            <p className="text-[var(--text-primary)] font-bold text-[20px]">
+              Phiếu BR-{(item._id.slice(-5)).toUpperCase()}
             </p>
 
             <p className="mt-2 text-sm text-[var(--text-secondary)]">
-              <span className="text-[var(--text-tertiary)]">GV:</span>{" "}
+              <span className="text-[var(--accent-blue)] font-semibold">
+                GV:
+              </span>{" "}
               {item.teacher?.fullName}
+            </p>
+
+            <p className="mt-2 text-sm text-[var(--text-secondary)]">
+              <span className="text-[var(--accent-blue)] font-semibold">
+                Ghi chú:
+              </span>{" "}
+              {item.note ? item.note : "Mượn vật tư"}
             </p>
 
             {/* ITEMS – SCROLL */}
             <div
               className="
-                mt-3 flex-1 space-y-2 overflow-y-auto pr-1
-                scrollbar-none
+                mt-3 flex-1 max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60
               "
             >
               {item.items.map((it, i) => (
                 <div
                   key={i}
                   className="
-                    flex justify-between
+                    flex justify-between 
                     bg-[var(--bg-subtle)]
                     border border-[var(--border-light)]
-                    p-2 rounded
+                    p-2 rounded-[12px]
                     text-sm
                   "
                 >
@@ -221,10 +233,12 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
                 onClick={() => handleApprove(item._id)}
                 className="
                   flex-1
-                  bg-[var(--success)]
-                  text-white
-                  rounded py-2
-                  hover:opacity-90
+                  
+                  rounded-[12px] py-2
+                  border border-[var(--success)]
+                  text-[var(--success)]
+                  hover:bg-[var(--success)]
+                  hover:text-textpri
                   transition
                 "
               >
@@ -234,10 +248,11 @@ const BorrowList = ({ repositoryId, onBellChange = () => {}, reload }) => {
                 onClick={() => handleReject(item._id)}
                 className="
                   flex-1
-                  bg-[var(--danger)]
-                  text-white
-                  rounded py-2
-                  hover:opacity-90
+                  rounded-[12px] py-2
+                  border border-[var(--danger)]
+                  text-[var(--danger)]
+                  hover:bg-[var(--danger)]
+                  hover:text-textpri
                   transition
                 "
               >
