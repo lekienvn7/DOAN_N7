@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axiosClient from "@/api/axiosClient";
-import { DialogFooter, DialogClose } from "../../ui/dialog";
-import ColorField from "@/lib/ColorInputField";
 import {
   Select,
   SelectTrigger,
@@ -13,359 +11,319 @@ import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 
 const AddTelecom = ({ onReload }) => {
-  const [name, setName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("");
-  const [description, setDescription] = useState("");
-  const [materialID, setMaterialID] = useState("");
-  const [maintenanceCycle, setMaintenanceCycle] = useState("");
+  const { user } = useAuth();
+  const createdBy = user?.userID;
 
-  const [signalType, setSignalType] = useState("");
-  const [frequency, setFrequency] = useState("");
-  const [bandwidth, setBandwidth] = useState("");
-  const [connectorType, setConnectorType] = useState("");
-  const [cableType, setCableType] = useState("");
-  const [transmissionRate, setTransmissionRate] = useState("");
-  const [range, setRange] = useState("");
-  const [impedance, setImpedance] = useState("");
-  const [modulationType, setModulationType] = useState("");
-  const [attenuation, setAttenuation] = useState("");
-  const [polarization, setPolarization] = useState("");
-  const [noiseFigure, setNoiseFigure] = useState("");
+  /* ================= STATE ================= */
+  const [basic, setBasic] = useState({
+    name: "",
+    materialID: "",
+    quantity: "",
+    unit: "",
+    description: "",
+    maintenanceCycle: "",
+  });
 
-  const { user } = useAuth(); // lấy thông tin người dùng đăng nhập
-  const createdBy = user?.userID || "unknown"; // fallback nếu chưa có
+  const [spec, setSpec] = useState({
+    signalType: "",
+    frequency: "",
+    bandwidth: "",
+    connectorType: "",
+    cableType: "",
+    transmissionRate: "",
+    range: "",
+    impedance: "",
+    modulationType: "",
+    attenuation: "",
+    polarization: "",
+    noiseFigure: "",
+  });
+
   const [loading, setLoading] = useState(false);
 
-  // Kiểm tra hợp lệ
+  /* ================= VALIDATION ================= */
   const isValid =
-    name.trim() !== "" &&
-    materialID.trim() !== "" &&
-    quantity !== "" &&
-    !isNaN(quantity) &&
-    Number(quantity) >= 0 &&
-    unit.trim() !== "";
+    basic.name.trim() &&
+    basic.materialID.trim() &&
+    basic.unit.trim() &&
+    !isNaN(basic.quantity) &&
+    Number(basic.quantity) > 0 &&
+    !isNaN(basic.maintenanceCycle);
 
-  // Focus vào ô tên vật tư khi dialog vừa mở
-  useEffect(() => {
-    const firstInput = document.querySelector('input[name="materialName"]');
-    if (firstInput) firstInput.focus();
-  }, []);
+  /* ================= HANDLERS ================= */
+  const handleBasicChange = (key, value) =>
+    setBasic((p) => ({ ...p, [key]: value }));
 
+  const handleSpecChange = (key, value) =>
+    setSpec((p) => ({ ...p, [key]: value }));
+
+  /* ================= SUBMIT ================= */
   const handleSubmit = async () => {
     if (!isValid) {
-      toast.error("Vui lòng nhập đầy đủ và hợp lệ các thông tin bắt buộc!");
+      toast.error("Vui lòng nhập đầy đủ thông tin bắt buộc!");
       return;
     }
 
     try {
       setLoading(true);
+
       const res = await axiosClient.post("/material", {
-        name: name,
-        quantity,
-        unit,
-        description,
-        maintenanceCycle,
-        materialID,
-
-        signalType,
-        frequency,
-        bandwidth,
-        connectorType,
-        cableType,
-        transmissionRate,
-        range,
-        impedance,
-        modulationType,
-        attenuation,
-        polarization,
-        noiseFigure,
-
-        type: "telecom", // cố định là “electric”
-        createdBy, // lấy id người nhập từ context
-        status: "Trong kho", // mặc định “Trong kho”
+        ...basic,
+        ...spec,
+        type: "telecom",
+        createdBy,
       });
 
-      if (res.data.success) {
-        toast.success("Thêm vật tư thành công!");
-        // Reset form
-        setName("");
-        setQuantity("");
-        setUnit("");
-        setDescription("");
-        setMaintenanceCycle("");
-        setMaterialID("");
+      const newMaterialID = res.data?.data?.materialID;
+      if (!newMaterialID) throw new Error("Không tạo được vật tư");
 
-        setSignalType("");
-        setFrequency("");
-        setBandwidth("");
-        setConnectorType("");
-        setCableType("");
-        setTransmissionRate("");
-        setRange("");
-        setImpedance("");
-        setModulationType("");
-        setAttenuation("");
-        setPolarization("");
-        setNoiseFigure("");
+      await axiosClient.put("/repository/telecom", {
+        materials: [
+          { material: newMaterialID, quantity: Number(basic.quantity) },
+        ],
+      });
 
-        const materialID = res.data.data.materialID; // lấy ID vừa tạo
+      toast.success("Thêm vật tư điện tử viễn thông thành công!");
 
-        // Sau 3 giây tự thêm vào kho điện
-        setTimeout(async () => {
-          try {
-            setLoading(true);
-            const repoRes = await axiosClient.put(`/repository/telecom`, {
-              materials: [{ material: materialID, quantity: Number(quantity) }],
-            });
+      setBasic({
+        name: "",
+        materialID: "",
+        quantity: "",
+        unit: "",
+        description: "",
+        maintenanceCycle: "",
+      });
 
-            if (repoRes.data.success) {
-              toast.success(
-                `Vật tư ${materialID} đã được thêm vào kho điện tử viễn thông!`
-              );
-              setTimeout(() => onReload(), 500);
-            } else {
-              toast.error("Không thể thêm vào kho: " + repoRes.data.message);
-            }
-          } catch (err) {
-            console.error("Lỗi thêm vào kho:", err);
-            toast.error("Không thể kết nối máy chủ khi thêm vào kho!");
-          } finally {
-            setLoading(false);
-          }
-        }, 1000);
-      } else {
-        toast.error("Thêm vật tư thất bại!");
-      }
-    } catch (error) {
-      console.error("Lỗi thêm vật tư:", error);
-      toast.error(error.response?.data?.message || "Lỗi kết nối!");
+      setSpec({
+        signalType: "",
+        frequency: "",
+        bandwidth: "",
+        connectorType: "",
+        cableType: "",
+        transmissionRate: "",
+        range: "",
+        impedance: "",
+        modulationType: "",
+        attenuation: "",
+        polarization: "",
+        noiseFigure: "",
+      });
+
+      onReload?.();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Lỗi khi thêm vật tư!");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ================= RENDER ================= */
   return (
-    <div>
-      <div className="flex flex-row gap-[20px]">
-        <div className="flex flex-col gap-[20px] justify-center text-textpri">
-          <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#ff3434]">
-              <InputField
-                label="Tên vật tư"
-                placeholder="Tên vật tư"
-                value={name}
-                onChange={setName}
-              />
-            </div>
-            <div className="text-[#ff3434]">
-              <InputField
-                label="Mã vật tư"
-                placeholder="VD: VT001"
-                type="text"
-                value={materialID}
-                onChange={setMaterialID}
-              />
-            </div>
-            <div className="text-[#ff3434]">
-              <InputField
-                label="Số lượng"
-                placeholder="Số lượng"
-                type="number"
-                value={quantity}
-                onChange={setQuantity}
-              />
-            </div>
-          </div>
+    <div className="flex flex-col gap-[50px]">
+      <p className="text-[35px] font-bold font-googleSans text-[var(--text-tertiary)]">
+        <span className="gradient-text">Phiếu nhập</span> vật tư
+      </p>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#ff3434]">
-              <InputField
-                label="Đơn vị"
-                placeholder="VD: cái, mét..."
-                value={unit}
-                onChange={setUnit}
-              />
-            </div>
+      <div className="flex flex-col gap-[40px]">
+        {/* ===== BASIC INFO ===== */}
+        <Section title="Thông tin cơ bản">
+          <Row>
+            <Input
+              label="Tên vật tư"
+              value={basic.name}
+              onChange={(v) => handleBasicChange("name", v)}
+            />
+            <Input
+              label="Mã vật tư"
+              value={basic.materialID}
+              onChange={(v) => handleBasicChange("materialID", v)}
+            />
+            <Input
+              type="number"
+              label="Số lượng"
+              value={basic.quantity}
+              onChange={(v) => handleBasicChange("quantity", v)}
+            />
+          </Row>
 
-            <div className="flex flex-col gap-[5px] items-left">
-              <p className="ml-[10px]">Ghi chú:</p>
-              <input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ghi chú thêm"
-                className="w-[420px] py-[5px] px-[10px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
-                       focus:outline-none focus:ring-2 focus:ring-blue-500
-                       placeholder:text-gray-400 transition-all duration-200"
-              />
-            </div>
-          </div>
+          <Row>
+            <Input
+              label="Đơn vị"
+              value={basic.unit}
+              onChange={(v) => handleBasicChange("unit", v)}
+            />
+            <Input
+              type="number"
+              label="Hạn bảo trì (tháng)"
+              value={basic.maintenanceCycle}
+              onChange={(v) =>
+                handleBasicChange("maintenanceCycle", v)
+              }
+            />
+          </Row>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <InputField
+          <Textarea
+            label="Ghi chú"
+            value={basic.description}
+            onChange={(v) => handleBasicChange("description", v)}
+          />
+        </Section>
+
+        {/* ===== TELECOM SPECS ===== */}
+        <Section title="Thông số viễn thông">
+          <Row>
+            <Input
               label="Loại tín hiệu"
-              placeholder="VD: Analog, Digital..."
-              value={signalType}
-              onChange={setSignalType}
+              value={spec.signalType}
+              onChange={(v) => handleSpecChange("signalType", v)}
             />
-
-            <InputField
+            <Input
               label="Tần số"
-              placeholder="VD: 2.4 GHz (WiFi), 900 MHz (GSM)..."
-              value={frequency}
-              onChange={setFrequency}
+              value={spec.frequency}
+              onChange={(v) => handleSpecChange("frequency", v)}
             />
-
-            <InputField
+            <Input
               label="Băng thông"
-              placeholder="VD: 20 MHz, 40 MHz..."
-              value={bandwidth}
-              onChange={setBandwidth}
+              value={spec.bandwidth}
+              onChange={(v) => handleSpecChange("bandwidth", v)}
             />
-          </div>
+          </Row>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <InputField
+          <Row>
+            <Input
               label="Loại đầu nối"
-              placeholder="VD: SMA, RJ45,..."
-              value={connectorType}
-              onChange={setConnectorType}
+              value={spec.connectorType}
+              onChange={(v) =>
+                handleSpecChange("connectorType", v)
+              }
             />
-
-            <InputField
+            <Input
               label="Loại cáp"
-              placeholder="VD: Coaxial RG-6, UTP Cat6..."
-              value={cableType}
-              onChange={setCableType}
+              value={spec.cableType}
+              onChange={(v) => handleSpecChange("cableType", v)}
             />
-
-            <InputField
-              label="Tốc độ truyền tải"
-              placeholder="VD: 100 Mbps, 1 Gbps,..."
-              value={transmissionRate}
-              onChange={setTransmissionRate}
+            <Input
+              label="Tốc độ truyền"
+              value={spec.transmissionRate}
+              onChange={(v) =>
+                handleSpecChange("transmissionRate", v)
+              }
             />
-          </div>
+          </Row>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <InputField
+          <Row>
+            <Input
               label="Tầm hoạt động"
-              placeholder="VD: 30m, 5km,..."
-              value={range}
-              onChange={setRange}
+              value={spec.range}
+              onChange={(v) => handleSpecChange("range", v)}
             />
-
-            <InputField
+            <Input
               label="Trở kháng"
-              placeholder="VD: 50Ω (RF), 75Ω (truyền hình),..."
-              value={impedance}
-              onChange={setImpedance}
+              value={spec.impedance}
+              onChange={(v) => handleSpecChange("impedance", v)}
             />
-
-            <InputField
+            <Input
               label="Kiểu điều chế"
-              placeholder="VD: QAM, OFDM,..."
-              value={modulationType}
-              onChange={setModulationType}
+              value={spec.modulationType}
+              onChange={(v) =>
+                handleSpecChange("modulationType", v)
+              }
             />
-          </div>
-        </div>
-        <div className="flex flex-col gap-[20px]">
-          <InputField
-            label="Suy hao"
-            placeholder="VD: 6 dB/100m, 0.4 dB/km..."
-            value={attenuation}
-            onChange={setAttenuation}
-          />
+          </Row>
 
-          <InputField
-            label="Phân cực sóng"
-            placeholder="VD: Vertical, Horizontal,..."
-            value={polarization}
-            onChange={setPolarization}
-          />
+          <Row>
+            <Input
+              label="Suy hao"
+              value={spec.attenuation}
+              onChange={(v) => handleSpecChange("attenuation", v)}
+            />
+            <Input
+              label="Phân cực"
+              value={spec.polarization}
+              onChange={(v) => handleSpecChange("polarization", v)}
+            />
+            <Input
+              label="Hệ số nhiễu"
+              value={spec.noiseFigure}
+              onChange={(v) => handleSpecChange("noiseFigure", v)}
+            />
+          </Row>
+        </Section>
 
-          <InputField
-            label="Hệ số nhiễu"
-            placeholder="VD: 1.2 dB,..."
-            value={noiseFigure}
-            onChange={setNoiseFigure}
-          />
-
-          <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#ff3434]">
-              <InputField
-                label="Hạn bảo trì"
-                placeholder="VD: 6 tháng,..."
-                value={maintenanceCycle}
-                onChange={setMaintenanceCycle}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <DialogFooter className="!flex-row !justify-between !items-center mt-5">
-        <p className="w-fit text-[22px] font-vegan text-textsec drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
-          <span
-            className="text-[#ff3434]/70 drop-shadow-[0_0_14px_rgba(255,52,52,1)]
-"
-          >
-            U
-          </span>
-          neti{" "}
-          <span
-            className="text-[#ff3434]/70 drop-shadow-[0_0_14px_rgba(255,52,52,1)]
-"
-          >
-            T
-          </span>
-          elecom
-        </p>
-
-        <div className="flex flex-row gap-3">
-          <DialogClose asChild>
-            <button className="px-4 py-2 bg-gray-700 text-white rounded-[12px] hover:bg-gray-600 transition">
-              Hủy
-            </button>
-          </DialogClose>
-
+        {/* ===== ACTION ===== */}
+        <div className="flex justify-end pt-6 border-t border-[var(--border-light)]">
           <button
             onClick={handleSubmit}
-            disabled={!isValid}
-            className={`px-4 py-2 rounded-[12px] transition font-semibold ${
+            disabled={!isValid || loading}
+            className={`px-6 py-3 rounded-[14px] font-semibold transition ${
               isValid
-                ? "bg-[#a78bfa] text-black hover:bg-[#916df4] cursor-pointer"
-                : "bg-gray-600 text-gray-300 cursor-not-allowed"
+                ? "bg-[var(--accent-blue)] text-white hover:bg-[var(--accent-blue-hover)]"
+                : "bg-[var(--bg-hover)] text-[var(--text-quaternary)] cursor-not-allowed"
             }`}
           >
             {loading ? "Đang thêm..." : "Nhập vật tư"}
           </button>
         </div>
-      </DialogFooter>
+      </div>
     </div>
   );
 };
 
-// Component con cho input (tái sử dụng)
-const InputField = ({
-  label,
-  placeholder,
-  type = "text",
-  value,
-  onChange,
-  width = "200px",
-}) => (
-  <div className="flex flex-col gap-[5px] items-left">
-    <p className="ml-[10px]">{label}:</p>
+/* ================= SUB COMPONENTS (GIỮ NGUYÊN) ================= */
+
+const Section = ({ title, children }) => (
+  <div className="flex flex-col gap-6">
+    <h3 className="text-[20px] font-bold text-[var(--text-primary)]">
+      {title}
+    </h3>
+    {children}
+  </div>
+);
+
+const Row = ({ children }) => (
+  <div className="grid grid-cols-3 gap-6">{children}</div>
+);
+
+const Input = ({ label, type = "text", value, onChange }) => (
+  <div className="flex flex-col gap-[5px]">
+    <label className="text-sm text-[var(--text-secondary)]">
+      {label}
+    </label>
     <input
       type={type}
-      placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-[${width}] px-[10px] py-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
-                   focus:outline-none focus:ring-2 focus:ring-blue-500
-                   placeholder:text-gray-400 transition-all duration-200`}
+      className="
+        w-[400px] px-[10px] py-[5px]
+        bg-[var(--bg-subtle)]
+        text-[var(--text-primary)]
+        border border-[var(--border-light)]
+        rounded-[12px]
+        focus:outline-none
+        focus:ring-2 focus:ring-[var(--accent-blue)]
+        placeholder:text-[var(--text-quaternary)]
+        transition-all duration-200
+      "
+    />
+  </div>
+);
+
+const Textarea = ({ label, value, onChange }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm text-[var(--text-tertiary)]">
+      {label}
+    </label>
+    <textarea
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="
+        px-3 py-2 rounded-[12px]
+        bg-[var(--bg-subtle)]
+        border border-[var(--border-light)]
+        text-[var(--text-primary)]
+        focus:ring-2 focus:ring-[var(--accent-blue)]
+        outline-none min-h-[40px]
+      "
     />
   </div>
 );

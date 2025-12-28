@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/context/authContext";
 
@@ -6,6 +6,10 @@ import HeaderDetail from "@/components/RepoPage/ChemicalWH/HeaderDetail";
 import ChemicalList from "@/components/RepoPage/ChemicalWH/ChemicalList/ChemicalList";
 import AddChemical from "@/components/RepoPage/ChemicalWH/AddChemical";
 import QuickSectionNav from "@/components/RepoPage/ChemicalWH/QuickSectionNav";
+import BorrowList from "@/components/RepoPage/ChemicalWH/ManagerPage/BorrowList";
+import BorrowForm from "@/components/RepoPage/ChemicalWH/LecturePage/BorrowForm";
+import ReportPage from "../ReportPage";
+import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {
   hidden: { opacity: 0, y: 28 },
@@ -23,39 +27,66 @@ const ChemicalWH = () => {
   const [reload, setReload] = useState(0);
   const [searchData, setSearchData] = useState("");
   const [sortMode, setSortMode] = useState(false);
+
   const [borrowList, setBorrowList] = useState([]);
 
   const repoId = "69230a5e163002521d0aa697";
 
   const isLecturer = user?.roleID === "LECTURER";
   const canAddMaterial =
-    user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH_MANAGER";
+    user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH MANAGER";
+  const canSeeBorrowTickets = canAddMaterial;
 
   const reloadList = () => setReload((p) => p + 1);
+  const reloadTicket = () => setReload((p) => p + 1);
 
-  /* ===== BORROW SELECT ===== */
   const handleBorrowSelect = (item, quantity) => {
     setBorrowList((prev) => {
-      if (quantity === 0) return prev.filter((i) => i._id !== item._id);
-      if (prev.find((i) => i._id === item._id)) return prev;
+      if (!quantity || quantity <= 0)
+        return prev.filter((i) => i._id !== item._id);
+
+      const existed = prev.find((i) => i._id === item._id);
+      if (existed)
+        return prev.map((i) =>
+          i._id === item._id ? { ...i, borrowQty: quantity } : i
+        );
+
       return [...prev, { ...item, borrowQty: quantity }];
     });
   };
 
-  /* ===== SECTION REFS ===== */
+  const handleUpdateQuantity = (id, qty) => {
+    setBorrowList((prev) =>
+      prev
+        .map((i) => (i._id === id ? { ...i, borrowQty: qty } : i))
+        .filter((i) => i.borrowQty > 0)
+    );
+  };
+
   const listRef = useRef(null);
   const addRef = useRef(null);
+  const ticketRef = useRef(null);
+  const borrowFormRef = useRef(null);
+  const reportRef = useRef(null);
 
-  const sections = [
-    { id: "list", label: "Danh sách hóa chất", ref: listRef },
-    ...(canAddMaterial
-      ? [{ id: "add", label: "Thêm hóa chất", ref: addRef }]
-      : []),
-  ];
+  const sections = useMemo(() => {
+    return [
+      { id: "list", label: "Danh sách vật tư", ref: listRef },
+      ...(canAddMaterial
+        ? [{ id: "add", label: "Thêm vật tư", ref: addRef }]
+        : []),
+      ...(canSeeBorrowTickets
+        ? [{ id: "tickets", label: "Phiếu mượn", ref: ticketRef }]
+        : []),
+      ...(isLecturer
+        ? [{ id: "borrow", label: "Mượn vật tư", ref: borrowFormRef }]
+        : []),
+      { id: "report", label: "Vật tư đang mượn", ref: reportRef },
+    ];
+  }, [canAddMaterial, canSeeBorrowTickets, isLecturer]);
 
   return (
-    <div className="min-h-screen bg-bgmain text-white flex flex-col">
-      {/* ===== HEADER ===== */}
+    <div className="min-h-screen bg-[var(--bg-page)] text-[var(--text-primary)] flex flex-col">
       <HeaderDetail
         mode={mode}
         setMode={setMode}
@@ -68,19 +99,17 @@ const ChemicalWH = () => {
         borrowList={borrowList}
         repositoryId={repoId}
         reload={reload}
+        onUpdateQuantity={handleUpdateQuantity}
       />
 
-      {/* ===== QUICK NAV ===== */}
       <QuickSectionNav sections={sections} />
 
-      <main className="mt-[56px] flex flex-col gap-[96px]">
-        {/* ===== DANH SÁCH HÓA CHẤT ===== */}
+      <main className="mt-[56px] flex flex-col gap-[20px]">
         <motion.section
           ref={listRef}
           variants={revealUp}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
         >
           <ChemicalList
             mode={mode}
@@ -92,29 +121,64 @@ const ChemicalWH = () => {
           />
         </motion.section>
 
-        {/* ===== FORM THÊM HÓA CHẤT ===== */}
         {canAddMaterial && (
           <motion.section
             ref={addRef}
             variants={revealUp}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            className="px-[120px]"
+            className="mx-[80px] p-[28px]"
           >
-            <div className="mb-[24px]">
-              <h2 className="text-[34px] font-bold text-textpri">
-                Thêm hóa chất
-              </h2>
-              <p className="text-gray-400 mt-1">
-                Nhập thông tin an toàn và thông số kỹ thuật của hóa chất
-              </p>
-            </div>
-
             <AddChemical onReload={reloadList} />
           </motion.section>
         )}
+
+        {canSeeBorrowTickets && (
+          <motion.section
+            ref={ticketRef}
+            variants={revealUp}
+            initial="hidden"
+            whileInView="visible"
+            className="mx-[80px] p-[28px]"
+          >
+            <BorrowList
+              repositoryId={repoId}
+              reload={reload}
+              onReloadTicket={reloadTicket}
+            />
+          </motion.section>
+        )}
+
+        {isLecturer && (
+          <motion.section
+            ref={borrowFormRef}
+            variants={revealUp}
+            initial="hidden"
+            whileInView="visible"
+            className="mx-[80px] p-[28px]"
+          >
+            <BorrowForm
+              repositoryId={repoId}
+              borrowList={borrowList}
+              onUpdateQuantity={handleUpdateQuantity}
+            />
+          </motion.section>
+        )}
+
+        {isLecturer && (
+          <motion.section
+            ref={reportRef}
+            variants={revealUp}
+            initial="hidden"
+            whileInView="visible"
+            className="mx-[80px] p-[28px]"
+          >
+            <ReportPage canReturn={isLecturer} />
+          </motion.section>
+        )}
       </main>
+
+      <InfoPage />
     </div>
   );
 };

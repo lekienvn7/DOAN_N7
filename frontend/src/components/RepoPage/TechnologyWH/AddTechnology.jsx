@@ -1,7 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axiosClient from "@/api/axiosClient";
-import { DialogFooter, DialogClose } from "../../ui/dialog";
-import ColorField from "@/lib/ColorInputField";
 import {
   Select,
   SelectTrigger,
@@ -13,355 +11,307 @@ import { useAuth } from "@/context/authContext";
 import { toast } from "sonner";
 
 const AddTechnology = ({ onReload }) => {
-  const [name, setName] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [unit, setUnit] = useState("");
-  const [description, setDescription] = useState("");
-  const [materialID, setMaterialID] = useState("");
-  const [maintenanceCycle, setMaintenanceCycle] = useState("");
+  const { user } = useAuth();
+  const createdBy = user?.userID;
 
-  const [deviceType, setDeviceType] = useState("");
-  const [capacity, setCapacity] = useState("");
-  const [speed, setSpeed] = useState("");
-  const [brand, setBrand] = useState("");
-  const [connectorType, setConnectorType] = useState("");
-  const [powerConsumption, setPowerConsumption] = useState("");
-  const [protocol, setProtocol] = useState("");
-  const [networkInterface, setNetworkInterface] = useState("");
-  const [operatingSystem, setOperatingSystem] = useState("");
-  const [durabilityRating, setDurabilityRating] = useState("");
-  const [formFactor, setFormFactor] = useState("");
-  const [dataTransferRate, setDataTransferRate] = useState("");
+  /* ================= STATE ================= */
+  const [basic, setBasic] = useState({
+    name: "",
+    materialID: "",
+    quantity: "",
+    unit: "",
+    description: "",
+    maintenanceCycle: "",
+  });
 
-  const { user } = useAuth(); // lấy thông tin người dùng đăng nhập
-  const createdBy = user?.userID || "unknown"; // fallback nếu chưa có
+  const [spec, setSpec] = useState({
+    deviceType: "",
+    capacity: "",
+    speed: "",
+    brand: "",
+    connectorType: "",
+    powerConsumption: "",
+    protocol: "",
+    networkInterface: "",
+    operatingSystem: "",
+    durabilityRating: "",
+    formFactor: "",
+    dataTransferRate: "",
+  });
+
   const [loading, setLoading] = useState(false);
 
-  // Kiểm tra hợp lệ
+  /* ================= VALIDATION ================= */
   const isValid =
-    name.trim() !== "" &&
-    materialID.trim() !== "" &&
-    quantity !== "" &&
-    !isNaN(quantity) &&
-    Number(quantity) >= 0 &&
-    unit.trim() !== "";
+    basic.name.trim() &&
+    basic.materialID.trim() &&
+    basic.unit.trim() &&
+    !isNaN(basic.quantity) &&
+    Number(basic.quantity) > 0 &&
+    !isNaN(basic.maintenanceCycle);
 
-  // Focus vào ô tên vật tư khi dialog vừa mở
-  useEffect(() => {
-    const firstInput = document.querySelector('input[name="materialName"]');
-    if (firstInput) firstInput.focus();
-  }, []);
+  /* ================= HANDLERS ================= */
+  const handleBasicChange = (key, value) =>
+    setBasic((p) => ({ ...p, [key]: value }));
 
+  const handleSpecChange = (key, value) =>
+    setSpec((p) => ({ ...p, [key]: value }));
+
+  /* ================= SUBMIT ================= */
   const handleSubmit = async () => {
     if (!isValid) {
-      toast.error("Vui lòng nhập đầy đủ và hợp lệ các thông tin bắt buộc!");
+      toast.error("Vui lòng nhập đầy đủ thông tin bắt buộc!");
       return;
     }
 
     try {
       setLoading(true);
+
       const res = await axiosClient.post("/material", {
-        name: name,
-        quantity,
-        unit,
-        description,
-        maintenanceCycle,
-        materialID,
-
-        deviceType,
-        capacity,
-        speed,
-        brand,
-        connectorType,
-        powerConsumption,
-        protocol,
-        networkInterface,
-        operatingSystem,
-        durabilityRating,
-        formFactor,
-        dataTransferRate,
-
-        type: "technology", // cố định là “electric”
-        createdBy, // lấy id người nhập từ context
-        status: "Trong kho", // mặc định “Trong kho”
+        ...basic,
+        ...spec,
+        type: "technology",
+        createdBy,
       });
 
-      if (res.data.success) {
-        toast.success("Thêm vật tư thành công!");
-        // Reset form
-        setName("");
-        setQuantity("");
-        setUnit("");
-        setDescription("");
-        setMaintenanceCycle("");
-        setMaterialID("");
+      const newMaterialID = res.data?.data?.materialID;
+      if (!newMaterialID) throw new Error("Không tạo được vật tư");
 
-        setDeviceType("");
-        setCapacity("");
-        setSpeed("");
-        setBrand("");
-        setConnectorType("");
-        setPowerConsumption("");
-        setProtocol("");
-        setNetworkInterface("");
-        setOperatingSystem("");
-        setDurabilityRating("");
-        setFormFactor("");
-        setDataTransferRate("");
+      await axiosClient.put("/repository/technology", {
+        materials: [
+          { material: newMaterialID, quantity: Number(basic.quantity) },
+        ],
+      });
 
-        const materialID = res.data.data.materialID; // lấy ID vừa tạo
+      toast.success("Thêm vật tư công nghệ thông tin thành công!");
 
-        // Sau 3 giây tự thêm vào kho điện
-        setTimeout(async () => {
-          try {
-            setLoading(true);
-            const repoRes = await axiosClient.put(`/repository/technology`, {
-              materials: [{ material: materialID, quantity: Number(quantity) }],
-            });
+      setBasic({
+        name: "",
+        materialID: "",
+        quantity: "",
+        unit: "",
+        description: "",
+        maintenanceCycle: "",
+      });
 
-            if (repoRes.data.success) {
-              toast.success(
-                `Vật tư ${materialID} đã được thêm vào kho công nghệ thông tin!`
-              );
-              setTimeout(() => onReload(), 500);
-            } else {
-              toast.error("Không thể thêm vào kho: " + repoRes.data.message);
-            }
-          } catch (err) {
-            console.error("Lỗi thêm vào kho:", err);
-            toast.error("Không thể kết nối máy chủ khi thêm vào kho!");
-          } finally {
-            setLoading(false);
-          }
-        }, 1000);
-      } else {
-        toast.error("Thêm vật tư thất bại!");
-      }
-    } catch (error) {
-      console.error("Lỗi thêm vật tư:", error);
-      toast.error(error.response?.data?.message || "Lỗi kết nối!");
+      setSpec({
+        deviceType: "",
+        capacity: "",
+        speed: "",
+        brand: "",
+        connectorType: "",
+        powerConsumption: "",
+        protocol: "",
+        networkInterface: "",
+        operatingSystem: "",
+        durabilityRating: "",
+        formFactor: "",
+        dataTransferRate: "",
+      });
+
+      onReload?.();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Lỗi khi thêm vật tư!");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ================= RENDER ================= */
   return (
-    <div>
-      <div className="flex flex-row gap-[20px]">
-        <div className="flex flex-col gap-[20px] justify-center text-textpri">
-          <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#60a5fa]">
-              <InputField
-                label="Tên vật tư"
-                placeholder="Tên vật tư"
-                value={name}
-                onChange={setName}
-              />
-            </div>
-            <div className="text-[#60a5fa]">
-              <InputField
-                label="Mã vật tư"
-                placeholder="VD: VT001"
-                type="text"
-                value={materialID}
-                onChange={setMaterialID}
-              />
-            </div>
-            <div className="text-[#60a5fa]">
-              <InputField
-                label="Số lượng"
-                placeholder="Số lượng"
-                type="number"
-                value={quantity}
-                onChange={setQuantity}
-              />
-            </div>
-          </div>
+    <div className="flex flex-col gap-[50px]">
+      <p className="text-[35px] font-bold font-googleSans text-[var(--text-tertiary)]">
+        <span className="gradient-text">Phiếu nhập</span> vật tư
+      </p>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#60a5fa]">
-              <InputField
-                label="Đơn vị"
-                placeholder="VD: cái, mét..."
-                value={unit}
-                onChange={setUnit}
-              />
-            </div>
+      <div className="flex flex-col gap-[40px]">
+        {/* ===== BASIC INFO ===== */}
+        <Section title="Thông tin cơ bản">
+          <Row>
+            <Input
+              label="Tên vật tư"
+              value={basic.name}
+              onChange={(v) => handleBasicChange("name", v)}
+            />
+            <Input
+              label="Mã vật tư"
+              value={basic.materialID}
+              onChange={(v) => handleBasicChange("materialID", v)}
+            />
+            <Input
+              type="number"
+              label="Số lượng"
+              value={basic.quantity}
+              onChange={(v) => handleBasicChange("quantity", v)}
+            />
+          </Row>
 
-            <div className="flex flex-col gap-[5px] items-left">
-              <p className="ml-[10px]">Ghi chú:</p>
-              <input
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Ghi chú thêm"
-                className="w-[420px] py-[5px] px-[10px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
-                       focus:outline-none focus:ring-2 focus:ring-blue-500
-                       placeholder:text-gray-400 transition-all duration-200"
-              />
-            </div>
-          </div>
+          <Row>
+            <Input
+              label="Đơn vị"
+              value={basic.unit}
+              onChange={(v) => handleBasicChange("unit", v)}
+            />
+            <Input
+              type="number"
+              label="Hạn bảo trì (tháng)"
+              value={basic.maintenanceCycle}
+              onChange={(v) => handleBasicChange("maintenanceCycle", v)}
+            />
+          </Row>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <InputField
+          <Textarea
+            label="Ghi chú"
+            value={basic.description}
+            onChange={(v) => handleBasicChange("description", v)}
+          />
+        </Section>
+
+        {/* ===== TECHNOLOGY SPECS ===== */}
+        <Section title="Thông số công nghệ">
+          <Row>
+            <Input
               label="Loại thiết bị"
-              placeholder="VD: RAM, Card mạng..."
-              value={deviceType}
-              onChange={setDeviceType}
+              value={spec.deviceType}
+              onChange={(v) => handleSpecChange("deviceType", v)}
             />
-
-            <InputField
+            <Input
               label="Dung lượng"
-              placeholder="VD: 512GB SSD, 8GB RAM..."
-              value={capacity}
-              onChange={setCapacity}
+              value={spec.capacity}
+              onChange={(v) => handleSpecChange("capacity", v)}
             />
-
-            <InputField
+            <Input
               label="Tốc độ"
-              placeholder="VD: 3200MHz , 540MB/s..."
-              value={speed}
-              onChange={setSpeed}
+              value={spec.speed}
+              onChange={(v) => handleSpecChange("speed", v)}
             />
-          </div>
+          </Row>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <InputField
+          <Row>
+            <Input
               label="Thương hiệu"
-              placeholder="VD: Dell, Asus,..."
-              value={brand}
-              onChange={setBrand}
+              value={spec.brand}
+              onChange={(v) => handleSpecChange("brand", v)}
             />
-
-            <InputField
+            <Input
               label="Chuẩn kết nối"
-              placeholder="VD: NVMe, USB-C,..."
-              value={connectorType}
-              onChange={setConnectorType}
+              value={spec.connectorType}
+              onChange={(v) => handleSpecChange("connectorType", v)}
             />
-
-            <InputField
+            <Input
               label="Mức tiêu thụ điện"
-              placeholder="VD: 15W, 65W,..."
-              value={powerConsumption}
-              onChange={setPowerConsumption}
+              value={spec.powerConsumption}
+              onChange={(v) => handleSpecChange("powerConsumption", v)}
             />
-          </div>
+          </Row>
 
-          <div className="flex flex-row gap-[20px] items-center">
-            <InputField
-              label="Giao thức hỗ trợ"
-              placeholder="VD: TCP/IP, HTTP,..."
-              value={protocol}
-              onChange={setProtocol}
+          <Row>
+            <Input
+              label="Giao thức"
+              value={spec.protocol}
+              onChange={(v) => handleSpecChange("protocol", v)}
             />
-
-            <InputField
+            <Input
               label="Giao diện mạng"
-              placeholder="VD: Ethernet 1GbE, Wi-Fi 6,..."
-              value={networkInterface}
-              onChange={setNetworkInterface}
+              value={spec.networkInterface}
+              onChange={(v) => handleSpecChange("networkInterface", v)}
             />
-
-            <InputField
-              label="Hệ điều hành hỗ trợ"
-              placeholder="VD: Window, Linux,..."
-              value={operatingSystem}
-              onChange={setOperatingSystem}
+            <Input
+              label="Hệ điều hành"
+              value={spec.operatingSystem}
+              onChange={(v) => handleSpecChange("operatingSystem", v)}
             />
-          </div>
-        </div>
-        <div className="flex flex-col gap-[20px]">
-          <InputField
-            label="Chuẩn kích thước"
-            placeholder="VD: 2.5-inch SSD, M.2 2280,..."
-            value={formFactor}
-            onChange={setFormFactor}
-          />
+          </Row>
 
-          <InputField
-            label="Độ bền"
-            placeholder="VD: MTBF 1.5 triệu giờ, Class A,..."
-            value={durabilityRating}
-            onChange={setDurabilityRating}
-          />
+          <Row>
+            <Input
+              label="Độ bền"
+              value={spec.durabilityRating}
+              onChange={(v) => handleSpecChange("durabilityRating", v)}
+            />
+            <Input
+              label="Chuẩn kích thước"
+              value={spec.formFactor}
+              onChange={(v) => handleSpecChange("formFactor", v)}
+            />
+            <Input
+              label="Tốc độ truyền dữ liệu"
+              value={spec.dataTransferRate}
+              onChange={(v) => handleSpecChange("dataTransferRate", v)}
+            />
+          </Row>
+        </Section>
 
-          <InputField
-            label="Tốc độ truyền dữ liệu"
-            placeholder="VD: PCIe 4.0 x4 ~ 7.5GB/s,..."
-            value={dataTransferRate}
-            onChange={setDataTransferRate}
-          />
-
-          <div className="flex flex-row gap-[20px] items-center">
-            <div className="text-[#60a5fa]">
-              <InputField
-                label="Hạn bảo trì"
-                placeholder="VD: 6 tháng,..."
-                value={maintenanceCycle}
-                onChange={setMaintenanceCycle}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <DialogFooter className="!flex-row !justify-between !items-center mt-5">
-        <p className="w-fit text-[22px] font-vegan text-textsec drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]">
-          <span className="text-[#60a5fa]/70 drop-shadow-[0_0_14px_rgba(96,165,250,1)]
-">
-            U
-          </span>
-          neti{" "}
-          <span className="text-[#60a5fa]/70 drop-shadow-[0_0_14px_rgba(96,165,250,1)]
-">
-            T
-          </span>
-          echnology
-        </p>
-
-        <div className="flex flex-row gap-3">
-          <DialogClose asChild>
-            <button className="px-4 py-2 bg-gray-700 text-white rounded-[12px] hover:bg-gray-600 transition">
-              Hủy
-            </button>
-          </DialogClose>
-
+        {/* ===== ACTION ===== */}
+        <div className="flex justify-end pt-6 border-t border-[var(--border-light)]">
           <button
             onClick={handleSubmit}
-            disabled={!isValid}
-            className={`px-4 py-2 rounded-[12px] transition font-semibold ${
+            disabled={!isValid || loading}
+            className={`px-6 py-3 rounded-[14px] font-semibold transition ${
               isValid
-                ? "bg-[#60a5fa] text-black hover:bg-[#3184f3] cursor-pointer"
-                : "bg-gray-600 text-gray-300 cursor-not-allowed"
+                ? "bg-[var(--accent-blue)] text-white hover:bg-[var(--accent-blue-hover)]"
+                : "bg-[var(--bg-hover)] text-[var(--text-quaternary)] cursor-not-allowed"
             }`}
           >
             {loading ? "Đang thêm..." : "Nhập vật tư"}
           </button>
         </div>
-      </DialogFooter>
+      </div>
     </div>
   );
 };
 
-// Component con cho input (tái sử dụng)
-const InputField = ({
-  label,
-  placeholder,
-  type = "text",
-  value,
-  onChange,
-  width = "200px",
-}) => (
-  <div className="flex flex-col gap-[5px] items-left">
-    <p className="ml-[10px]">{label}:</p>
+/* ================= SUB COMPONENTS (GIỮ NGUYÊN) ================= */
+
+const Section = ({ title, children }) => (
+  <div className="flex flex-col gap-6">
+    <h3 className="text-[20px] font-bold text-[var(--text-primary)]">
+      {title}
+    </h3>
+    {children}
+  </div>
+);
+
+const Row = ({ children }) => (
+  <div className="grid grid-cols-3 gap-6">{children}</div>
+);
+
+const Input = ({ label, type = "text", value, onChange }) => (
+  <div className="flex flex-col gap-[5px]">
+    <label className="text-sm text-[var(--text-secondary)]">{label}</label>
     <input
       type={type}
-      placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className={`w-[${width}] px-[10px] py-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
-                   focus:outline-none focus:ring-2 focus:ring-blue-500
-                   placeholder:text-gray-400 transition-all duration-200`}
+      className="
+        w-[400px] px-[10px] py-[5px]
+        bg-[var(--bg-subtle)]
+        text-[var(--text-primary)]
+        border border-[var(--border-light)]
+        rounded-[12px]
+        focus:outline-none
+        focus:ring-2 focus:ring-[var(--accent-blue)]
+        placeholder:text-[var(--text-quaternary)]
+        transition-all duration-200
+      "
+    />
+  </div>
+);
+
+const Textarea = ({ label, value, onChange }) => (
+  <div className="flex flex-col gap-1">
+    <label className="text-sm text-[var(--text-tertiary)]">{label}</label>
+    <textarea
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="
+        px-3 py-2 rounded-[12px]
+        bg-[var(--bg-subtle)]
+        border border-[var(--border-light)]
+        text-[var(--text-primary)]
+        focus:ring-2 focus:ring-[var(--accent-blue)]
+        outline-none min-h-[40px]
+      "
     />
   </div>
 );

@@ -1,6 +1,6 @@
 import React from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import AutomotiveList from "./AutomotiveList";
+import AutomotiveList from "./AutomotiveList/AutomotiveList";
 
 const RepoDetail = ({
   mode,

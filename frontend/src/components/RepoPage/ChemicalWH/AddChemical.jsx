@@ -122,154 +122,160 @@ const AddChemical = ({ onReload }) => {
 
   /* ================= RENDER ================= */
   return (
-    <div className="flex flex-col gap-[40px] text-white">
-      {/* ===== BASIC INFO ===== */}
-      <Section title="Thông tin cơ bản">
-        <Row>
-          <Input
-            label="Tên hóa chất"
-            value={basic.name}
-            onChange={(v) => handleBasicChange("name", v)}
-          />
-          <Input
-            label="Mã vật tư"
-            value={basic.materialID}
-            onChange={(v) => handleBasicChange("materialID", v)}
-          />
-          <Input
-            type="number"
-            label="Số lượng"
-            value={basic.quantity}
-            onChange={(v) => handleBasicChange("quantity", v)}
-          />
-        </Row>
+    <div className="flex flex-col gap-[50px]">
+      <p className="text-[35px] font-bold font-googleSans text-[var(--text-tertiary)]">
+        <span className="gradient-text">Phiếu nhập</span> vật tư
+      </p>
 
-        <Row>
-          <Input
-            label="Đơn vị"
-            value={basic.unit}
-            onChange={(v) => handleBasicChange("unit", v)}
-          />
-          <Input
-            label="Hạn sử dụng"
-            value={basic.expiryDate}
-            onChange={(v) => handleBasicChange("expiryDate", v)}
-          />
-        </Row>
+      <div className="flex flex-col gap-[40px]">
+        {/* ===== BASIC INFO ===== */}
+        <Section title="Thông tin cơ bản">
+          <Row>
+            <Input
+              label="Tên hóa chất"
+              value={basic.name}
+              onChange={(v) => handleBasicChange("name", v)}
+            />
+            <Input
+              label="Mã vật tư"
+              value={basic.materialID}
+              onChange={(v) => handleBasicChange("materialID", v)}
+            />
+            <Input
+              type="number"
+              label="Số lượng"
+              value={basic.quantity}
+              onChange={(v) => handleBasicChange("quantity", v)}
+            />
+          </Row>
 
-        <Textarea
-          label="Ghi chú"
-          value={basic.description}
-          onChange={(v) => handleBasicChange("description", v)}
-        />
-      </Section>
+          <Row>
+            <Input
+              label="Đơn vị"
+              value={basic.unit}
+              onChange={(v) => handleBasicChange("unit", v)}
+            />
+            <Input
+              label="Hạn sử dụng"
+              value={basic.expiryDate}
+              onChange={(v) => handleBasicChange("expiryDate", v)}
+            />
+          </Row>
 
-      {/* ===== CHEMICAL SPECS ===== */}
-      <Section title="Thông tin hóa chất">
-        <Row>
-          <Input
-            label="Công thức hóa học"
-            value={spec.chemicalFormula}
-            onChange={(v) => handleSpecChange("chemicalFormula", v)}
+          <Textarea
+            label="Ghi chú"
+            value={basic.description}
+            onChange={(v) => handleBasicChange("description", v)}
           />
-          <Input
-            label="Nồng độ"
-            value={spec.concentration}
-            onChange={(v) => handleSpecChange("concentration", v)}
-          />
-          <SelectBox
-            label="Mức độ nguy hiểm"
-            value={spec.hazardLevel}
-            onChange={(v) => handleSpecChange("hazardLevel", v)}
-            options={[
-              { value: "low", label: "Thấp" },
-              { value: "medium", label: "Trung bình" },
-              { value: "high", label: "Cao" },
-              { value: "extreme", label: "Cực cao" },
-            ]}
-          />
-        </Row>
+        </Section>
 
-        <Row>
-          <Input
-            label="Nhiệt độ bảo quản"
-            value={spec.storageTemperature}
-            onChange={(v) => handleSpecChange("storageTemperature", v)}
-          />
-          <Input
-            label="Điểm sôi"
-            value={spec.boilingPoint}
-            onChange={(v) => handleSpecChange("boilingPoint", v)}
-          />
-          <Input
-            label="Điểm nóng chảy"
-            value={spec.meltingPoint}
-            onChange={(v) => handleSpecChange("meltingPoint", v)}
-          />
-        </Row>
+        {/* ===== CHEMICAL SPECS ===== */}
+        <Section title="Thông tin hóa chất">
+          <Row>
+            <Input
+              label="Công thức hóa học"
+              value={spec.chemicalFormula}
+              onChange={(v) => handleSpecChange("chemicalFormula", v)}
+            />
+            <Input
+              label="Nồng độ"
+              value={spec.concentration}
+              onChange={(v) => handleSpecChange("concentration", v)}
+            />
+            <SelectBox
+              label="Mức độ nguy hiểm"
+              value={spec.hazardLevel}
+              onChange={(v) => handleSpecChange("hazardLevel", v)}
+              options={[
+                { value: "low", label: "Thấp" },
+                { value: "medium", label: "Trung bình" },
+                { value: "high", label: "Cao" },
+                { value: "extreme", label: "Cực cao" },
+              ]}
+            />
+          </Row>
 
-        <Row>
-          <Input
-            label="Khối lượng mol"
-            value={spec.molarMass}
-            onChange={(v) => handleSpecChange("molarMass", v)}
-          />
-          <Input
-            label="Độ pH"
-            value={spec.phLevel}
-            onChange={(v) => handleSpecChange("phLevel", v)}
-          />
-          <SelectBox
-            label="Tính dễ cháy"
-            value={spec.flammability}
-            onChange={(v) => handleSpecChange("flammability", v)}
-            options={[
-              { value: "Không", label: "Không dễ cháy" },
-              { value: "Thấp", label: "Thấp" },
-              { value: "Trung bình", label: "Trung bình" },
-              { value: "Cao", label: "Cao" },
-            ]}
-          />
-        </Row>
+          <Row>
+            <Input
+              label="Nhiệt độ bảo quản"
+              value={spec.storageTemperature}
+              onChange={(v) => handleSpecChange("storageTemperature", v)}
+            />
+            <Input
+              label="Điểm sôi"
+              value={spec.boilingPoint}
+              onChange={(v) => handleSpecChange("boilingPoint", v)}
+            />
+            <Input
+              label="Điểm nóng chảy"
+              value={spec.meltingPoint}
+              onChange={(v) => handleSpecChange("meltingPoint", v)}
+            />
+          </Row>
 
-        <Row>
-          <SelectBox
-            label="Độc tính"
-            value={spec.toxicity}
-            onChange={(v) => handleSpecChange("toxicity", v)}
-            options={[
-              { value: "Nhẹ", label: "Nhẹ" },
-              { value: "Trung bình", label: "Trung bình" },
-              { value: "Độc", label: "Độc" },
-              { value: "Cực độc", label: "Cực độc" },
-            ]}
-          />
-          <Input
-            label="Số CAS"
-            value={spec.casNumber}
-            onChange={(v) => handleSpecChange("casNumber", v)}
-          />
-          <Input
-            label="Hướng dẫn an toàn"
-            value={spec.safetyNote}
-            onChange={(v) => handleSpecChange("safetyNote", v)}
-          />
-        </Row>
-      </Section>
+          <Row>
+            <Input
+              label="Khối lượng mol"
+              value={spec.molarMass}
+              onChange={(v) => handleSpecChange("molarMass", v)}
+            />
+            <Input
+              label="Độ pH"
+              value={spec.phLevel}
+              onChange={(v) => handleSpecChange("phLevel", v)}
+            />
+            <SelectBox
+              label="Tính dễ cháy"
+              value={spec.flammability}
+              onChange={(v) => handleSpecChange("flammability", v)}
+              options={[
+                { value: "Không", label: "Không dễ cháy" },
+                { value: "Thấp", label: "Thấp" },
+                { value: "Trung bình", label: "Trung bình" },
+                { value: "Cao", label: "Cao" },
+              ]}
+            />
+          </Row>
 
-      {/* ===== ACTION ===== */}
-      <div className="flex justify-end pt-6 border-t border-[#2a2a2a]">
-        <button
-          onClick={handleSubmit}
-          disabled={!isValid || loading}
-          className={`px-6 py-3 rounded-[14px] font-semibold transition ${
-            isValid
-              ? "bg-[#c7a7ff] text-black hover:bg-[#e8d6ff]"
-              : "bg-gray-600 text-gray-300 cursor-not-allowed"
-          }`}
-        >
-          {loading ? "Đang thêm..." : "Nhập hóa chất"}
-        </button>
+          <Row>
+            <SelectBox
+              label="Độc tính"
+              value={spec.toxicity}
+              onChange={(v) => handleSpecChange("toxicity", v)}
+              options={[
+                { value: "Nhẹ", label: "Nhẹ" },
+                { value: "Trung bình", label: "Trung bình" },
+                { value: "Độc", label: "Độc" },
+                { value: "Cực độc", label: "Cực độc" },
+              ]}
+            />
+            <Input
+              label="Số CAS"
+              value={spec.casNumber}
+              onChange={(v) => handleSpecChange("casNumber", v)}
+            />
+            <Input
+              label="Hướng dẫn an toàn"
+              value={spec.safetyNote}
+              onChange={(v) => handleSpecChange("safetyNote", v)}
+            />
+          </Row>
+        </Section>
+
+        {/* ===== ACTION ===== */}
+        <div className="flex justify-end pt-6 border-t border-[var(--border-light)]">
+          <button
+            onClick={handleSubmit}
+            disabled={!isValid || loading}
+            className={`px-6 py-3 rounded-[14px] font-semibold transition ${
+              isValid
+                ? "bg-[var(--accent-blue)] text-white hover:bg-[var(--accent-blue-hover)]"
+                : "bg-[var(--bg-hover)] text-[var(--text-quaternary)] cursor-not-allowed"
+            }`}
+          >
+            {loading ? "Đang thêm..." : "Nhập vật tư"}
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -279,7 +285,9 @@ const AddChemical = ({ onReload }) => {
 
 const Section = ({ title, children }) => (
   <div className="flex flex-col gap-6">
-    <h3 className="text-[20px] font-semibold text-[#c7a7ff]">{title}</h3>
+    <h3 className="text-[20px] font-bold text-[var(--text-primary)]">
+      {title}
+    </h3>
     {children}
   </div>
 );
@@ -290,38 +298,52 @@ const Row = ({ children }) => (
 
 const Input = ({ label, type = "text", value, onChange }) => (
   <div className="flex flex-col gap-[5px]">
-    <label className="text-sm text-gray-300">{label}</label>
+    <label className="text-sm text-[var(--text-secondary)]">{label}</label>
     <input
       type={type}
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="w-[400px] px-[10px] py-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#3F3F46] rounded-[12px]
-                 focus:outline-none focus:ring-2 focus:ring-[#c7a7ff]
-                 placeholder:text-gray-400 transition-all duration-200"
+      className="
+        w-[400px] px-[10px] py-[5px]
+        bg-[var(--bg-subtle)]
+        text-[var(--text-primary)]
+        border border-[var(--border-light)]
+        rounded-[12px]
+        focus:outline-none
+        focus:ring-2 focus:ring-[var(--accent-blue)]
+        placeholder:text-[var(--text-quaternary)]
+        transition-all duration-200
+      "
     />
   </div>
 );
 
 const Textarea = ({ label, value, onChange }) => (
   <div className="flex flex-col gap-1">
-    <label className="text-sm text-gray-300">{label}</label>
+    <label className="text-sm text-[var(--text-tertiary)]">{label}</label>
     <textarea
       value={value}
       onChange={(e) => onChange(e.target.value)}
-      className="px-3 py-2 rounded-[12px] bg-[#2c2c2e] border border-[#3f3f46]
-                 focus:ring-2 focus:ring-[#c7a7ff] outline-none min-h-[40px]"
+      className="
+        px-3 py-2 rounded-[12px]
+        bg-[var(--bg-subtle)]
+        border border-[var(--border-light)]
+        text-[var(--text-primary)]
+        focus:ring-2 focus:ring-[var(--accent-blue)]
+        outline-none min-h-[40px]
+      "
     />
   </div>
 );
 
 const SelectBox = ({ label, value, onChange, options }) => (
   <div className="flex flex-col gap-1">
-    <label className="text-sm text-gray-300">{label}</label>
+    <label className="text-sm text-[var(--text-tertiary)]">{label}</label>
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[400px] bg-[#2c2c2e] border border-[#3f3f46] rounded-[12px]">
+      <SelectTrigger className="w-[400px] bg-[var(--bg-subtle)] border border-[var(--border-light)] rounded-[12px] text-[var(--text-primary)]">
         <SelectValue placeholder="-- Chọn --" />
       </SelectTrigger>
-      <SelectContent className="bg-[#1a1a1a] text-white">
+      <SelectContent className="bg-[var(--bg-panel)] text-[var(--text-primary)] border border-[var(--border-light)]">
         {options.map((o) => (
           <SelectItem key={o.value} value={o.value}>
             {o.label}
