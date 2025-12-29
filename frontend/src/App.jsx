@@ -34,7 +34,7 @@ import MaterialRepair from "./components/MaterialPage/TelecomMaterial/MaterialRe
 import MaterialRepairing from "./components/MaterialPage/TelecomMaterial/MaterialRepairing";
 
 import RolePage from "./pages/MenuPage/RolePage";
-import ReportPage from "./pages/MenuPage/ReportPage";
+import ReportPage from "./components/RepoPage/FashionWH/ReportPage";
 import NoticePage from "./pages/MenuPage/NoticePage";
 import ProblematicMaterialPage from "./pages/MenuPage/ProblematicMaterialPage/ProblematicMaterialPage";
 

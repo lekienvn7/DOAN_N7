@@ -12,16 +12,16 @@ import {
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
-/* ================= MOCK CHART DATA ================= */
-const mockRepoChart = [
-  { name: "Kho Điện", total: 420, damaged: 18 },
-  { name: "Kho Cơ khí", total: 360, damaged: 12 },
-  { name: "Kho CNTT", total: 300, damaged: 6 },
-  { name: "Kho Thời trang", total: 390, damaged: 14 },
-  { name: "Kho Hóa chất", total: 390, damaged: 14 },
-  { name: "Kho Điện tử", total: 390, damaged: 14 },
-  { name: "Kho Iot", total: 390, damaged: 14 },
-  { name: "Kho Ô tô", total: 390, damaged: 68 },
+/* ================= CONST MAP TÊN KHO ================= */
+const REPO_NAME = [
+  { repoID: "electric", name: "Điện" },
+  { repoID: "chemical", name: "Hóa chất" },
+  { repoID: "automotive", name: "CN ô tô" },
+  { repoID: "mechanical", name: "Cơ khí" },
+  { repoID: "fashion", name: "Thời trang" },
+  { repoID: "telecom", name: "Điện tử viễn thông" },
+  { repoID: "technology", name: "CNTT" },
+  { repoID: "iot", name: "Nhúng & IoT" },
 ];
 
 const Monthly = () => {
@@ -29,92 +29,139 @@ const Monthly = () => {
   const [month, setMonth] = useState(now.getMonth() + 1);
   const [year, setYear] = useState(now.getFullYear());
   const [loading, setLoading] = useState(false);
-  const [newMaterials, setNewMaterials] = useState({
-    total: 0,
-    list: [],
-  });
 
-  /* ===== REAL DATA FROM BACKEND ===== */
+  /* ===== REAL DATA ===== */
   const [borrowTop, setBorrowTop] = useState([]);
   const [damagedTop, setDamagedTop] = useState([]);
+  const [repoSummary, setRepoSummary] = useState([]);
+  const [newMaterials, setNewMaterials] = useState({ total: 0, list: [] });
 
-  /* ================= FETCH REAL REPORT ================= */
+  /* ================= FETCH REPORT ================= */
   useEffect(() => {
     setLoading(true);
 
-    axiosClient
-      .get(`/report/monthly?month=${month}&year=${year}`)
-      .then((res) => {
-        const data = res.data.data;
+    const timer = setTimeout(async () => {
+      try {
+        const res = await axiosClient.get(
+          `/report/monthly?month=${month}&year=${year}`
+        );
+
+        const data = res.data?.data || {};
+
         setBorrowTop(data.borrowFrequency || []);
         setDamagedTop(data.damagedMaterials || []);
+        setRepoSummary(data.repoSummary || []);
         setNewMaterials(data.newMaterials || { total: 0, list: [] });
-      })
-      .catch((err) => {
+      } catch (err) {
         console.error("Lỗi lấy báo cáo:", err);
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        setLoading(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
   }, [month, year]);
 
-  /* ================= FILTER REAL LIST ================= */
+  /* ================= FILTER ================= */
   const borrowList = borrowTop.filter((i) => i.borrowCount > 0);
   const damagedList = damagedTop.filter((i) => i.damagedQuantity > 0);
 
-  /* ================= MOCK CHART ================= */
+  /* ================= MAP TÊN KHO ================= */
+  const repoNameMap = useMemo(
+    () => Object.fromEntries(REPO_NAME.map((r) => [r.repoID, r.name])),
+    []
+  );
+
+  /* ================= CHART DATA ================= */
   const repoChartData = useMemo(() => {
     return {
-      labels: mockRepoChart.map((r) => r.name),
+      labels: repoSummary.map(
+        (r) => repoNameMap[r.repoID] ?? r.repoName ?? "Không rõ"
+      ),
       datasets: [
         {
           label: "Vật tư gốc",
-          data: mockRepoChart.map((r) => r.total),
+          data: repoSummary.map((r) => r.total || 0),
           backgroundColor: "#3b82f6",
           borderRadius: 6,
         },
         {
           label: "Vật tư hỏng",
-          data: mockRepoChart.map((r) => r.damaged),
+          data: repoSummary.map((r) => r.damaged || 0),
           backgroundColor: "#ef4444",
           borderRadius: 6,
         },
       ],
     };
-  }, []);
+  }, [repoSummary, repoNameMap]);
 
+  /* ================= CHART OPTIONS (ANIMATION TỪ 0) ================= */
   const repoChartOptions = {
     responsive: true,
     animation: {
       duration: 1200,
       easing: "easeOutQuart",
-      delay: (ctx) => ctx.dataIndex * 120,
+    },
+    animations: {
+      y: {
+        from: (ctx) => {
+          // ÉP CHẠY TỪ ĐÁY TRỤC (0)
+          if (ctx.type === "data") {
+            return ctx.chart.scales.y.getPixelForValue(0);
+          }
+        },
+      },
     },
     scales: {
-      y: { beginAtZero: true },
+      x: {
+        ticks: {
+          maxRotation: 0,
+          minRotation: 0,
+          autoSkip: false,
+        },
+      },
+      y: {
+        beginAtZero: true,
+      },
+    },
+    plugins: {
+      tooltip: {
+        callbacks: {
+          label: (ctx) => `${ctx.dataset.label}: ${ctx.formattedValue}`,
+        },
+      },
     },
   };
 
-  const RepoName = [
-    { type: "ElectricMaterial", name: "Kho Điện" },
-    { type: "ChemicalMaterial", name: "Kho Hóa chất" },
-    { type: "AutomotiveMaterial", name: "Kho Công nghệ ô tô" },
-    { type: "MechanicalMaterial", name: "Kho Cơ khí" },
-    { type: "FashionMaterial", name: "Kho Thời trang" },
-    { type: "TelecomMaterial", name: "Kho Điện tử viễn thông" },
-    { type: "TechnologyMaterial", name: "Kho Công nghệ thông tin" },
-    { type: "IotMaterial", name: "Kho Nhúng & Iot" },
-  ];
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-[300px] gap-3">
+        <div
+          className="w-10 h-10 border-4 rounded-full animate-spin"
+          style={{
+            borderColor: "var(--accent-blue)",
+            borderTopColor: "transparent",
+          }}
+        />
+        <span>Đang tải dữ liệu...</span>
+      </div>
+    );
+  }
 
   return (
     <div className="w-screen px-[100px] py-[20px]">
       {/* ================= HEADER ================= */}
       <div className="flex items-center justify-between mb-[30px]">
-        <h2 className="font-bold text-[34px]">Báo cáo theo tháng</h2>
+        <h2 className="font-bold text-[34px]">
+          Báo cáo tháng{" "}
+          <span className="text-[var(--accent-blue)]">{month}</span>
+        </h2>
 
         <div className="flex gap-4">
           <select
             value={month}
             onChange={(e) => setMonth(Number(e.target.value))}
-            className="border-[var(--border-light)] bg-[var(--bg-panel)] px-3 py-2 rounded-[12px] outline-none"
+            className="border-[var(--border-light)] bg-[var(--bg-panel)] px-3 py-2 rounded-[12px]"
           >
             {Array.from({ length: 12 }).map((_, i) => (
               <option key={i} value={i + 1}>
@@ -126,7 +173,7 @@ const Monthly = () => {
           <select
             value={year}
             onChange={(e) => setYear(Number(e.target.value))}
-            className="border-[var(--border-light)] bg-[var(--bg-panel)] px-3 py-2 rounded-[12px] outline-none"
+            className="border-[var(--border-light)] bg-[var(--bg-panel)] px-3 py-2 rounded-[12px]"
           >
             {[2024, 2025, 2026].map((y) => (
               <option key={y} value={y}>
@@ -137,38 +184,38 @@ const Monthly = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-3 gap-8">
-        {/* ================= CHART (MOCK) ================= */}
-        <div className="col-span-2 bg-[var(--bg-panel)] p-6 rounded-[12px] shadow-[var(--shadow-sm)]">
+      <div className="grid grid-cols-3 gap-[50px]">
+        {/* ================= CHART ================= */}
+        <div className="col-span-2 bg-[var(--bg-panel)] p-6 rounded-[12px] shadow-[var(--shadow-md)]">
           <h3 className="font-bold text-[20px] mb-4">
-            Bảng dữ liệu vật tư (minh hoạ)
+            Thống kê vật tư theo kho
           </h3>
-          <Bar data={repoChartData} options={repoChartOptions} />
+
+          {loading ? (
+            <div className="h-[360px] animate-pulse bg-gray-200/20 rounded-xl" />
+          ) : (
+            <Bar data={repoChartData} options={repoChartOptions} />
+          )}
         </div>
 
-        {/* ================= LIST (REAL DATA) ================= */}
+        {/* ================= LISTS ================= */}
         <div className="flex flex-col gap-6">
           {/* BORROW TOP */}
-          <div className="bg-[var(--bg-panel)] p-5 rounded-[12px] shadow-[var(--shadow-sm)]">
+          <div className="bg-[var(--bg-panel)] h-[510px] p-5 rounded-[12px] shadow-[var(--shadow-md)]">
             <h3 className="font-bold text-[20px] mb-3">
               Vật tư mượn nhiều nhất
             </h3>
+
             {loading ? (
-              <p className="text-gray-400 text-sm h-[300px]">Đang tải...</p>
+              <p className="text-gray-400 h-[400px]">Đang tải...</p>
             ) : borrowList.length === 0 ? (
-              <p className="text-gray-400 text-sm h-[300px]">
-                Không có dữ liệu
-              </p>
+              <p className="text-gray-400 h-[400px]">Không có dữ liệu</p>
             ) : (
-              <ul className="flex flex-col gap-[5px] h-[300px] max-h-[300px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60">
+              <ul className="h-[400px] overflow-y-auto space-y-2">
                 {borrowList.map((i) => (
                   <li
                     key={i.materialId}
-                    className="flex justify-between 
-                    bg-[var(--bg-subtle)]
-                    border border-[var(--border-light)]
-                    p-2 rounded-[12px]
-                    text-[15px]"
+                    className="flex justify-between bg-[var(--bg-subtle)] p-2 rounded-lg"
                   >
                     <span>{i.name}</span>
                     <span className="font-semibold">{i.borrowCount} lượt</span>
@@ -177,86 +224,75 @@ const Monthly = () => {
               </ul>
             )}
           </div>
-
-          {/* DAMAGED TOP */}
-          <div className="bg-white p-5 rounded-lg shadow">
-            <h3 className="font-bold text-[20px] mb-3">
-              Vật tư hỏng nhiều nhất
-            </h3>
-            {loading ? (
-              <p className="text-gray-400 text-sm h-[100px]">Đang tải...</p>
-            ) : damagedList.length === 0 ? (
-              <p className="text-gray-400 text-sm h-[100px]">
-                Không có dữ liệu
-              </p>
-            ) : (
-              <ul className="flex flex-col gap-[5px] h-[100px] max-h-[100px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60">
-                {damagedList.map((i) => (
-                  <li
-                    key={i.materialId}
-                    className="flex justify-between 
-                    bg-[var(--bg-subtle)]
-                    border border-[var(--border-light)]
-                    p-2 rounded-[12px]
-                    text-[15px]"
-                  >
-                    <span>{i.name}</span>
-                    <span className="font-semibold text-red-500">
-                      {i.damagedQuantity} cái
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
         </div>
       </div>
 
-      <p className="text-sm text-gray-500 mt-6">
-        * Danh sách vật tư lấy từ dữ liệu thực tế theo tháng được chọn.
-      </p>
+      {/* ================= NEW MATERIALS ================= */}
+      <div className="flex flex-row items-center justify-between">
+        <div className="bg-[var(--bg-panel)] w-[650px] h-[350px] p-5 rounded-[12px] shadow-[var(--shadow-md)] mt-[50px]">
+          <h3 className="font-bold text-[20px] mb-3">
+            Vật tư được thêm mới trong tháng
+          </h3>
 
-      <div className="bg-[var(--bg-panel)] p-5 rounded-[12px] shadow-[var(--shadow-sm)] mt-[50px]">
-        <h3 className="font-bold text-[20px] mb-3">
-          Vật tư được thêm mới trong tháng
-        </h3>
+          {newMaterials.total === 0 ? (
+            <p className="text-gray-400">Không có vật tư mới</p>
+          ) : (
+            <>
+              <p className="text-sm mb-3">
+                Tổng cộng:{" "}
+                <span className="font-semibold">{newMaterials.total}</span> vật
+                tư
+              </p>
 
-        {newMaterials.total === 0 ? (
-          <p className="text-gray-400 text-sm">Không có vật tư mới</p>
-        ) : (
-          <>
-            <p className="text-sm text-gray-600 mb-3">
-              Tổng cộng:{" "}
-              <span className="font-semibold">{newMaterials.total}</span> vật tư
-            </p>
+              <ul className="h-[200px] overflow-y-auto space-y-2">
+                {newMaterials.list.map((m) => (
+                  <li
+                    key={m._id}
+                    className="bg-[var(--bg-subtle)] p-2 rounded-lg"
+                  >
+                    <div className="flex justify-between">
+                      <span className="font-semibold">{m.name}</span>
+                      <span className="text-sm">{m.materialID}</span>
+                    </div>
+                    <div className="text-xs text-gray-500 flex justify-between">
+                      <span>{repoNameMap[m.category] || "Không rõ"}</span>
+                      <span>
+                        {new Date(m.createdAt).toLocaleDateString("vi-VN")}
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+        </div>
 
-            <ul className="h-[250px] max-h-[250px] overflow-y-auto scrollbar-thin scrollbar-thumb-[#caa93e]/50 hover:scrollbar-thumb-[#f9d65c]/60">
-              {newMaterials.list.map((m) => (
+        {/* DAMAGED TOP */}
+        <div className="bg-[var(--bg-panel)] w-[650px] h-[350px] p-5 rounded-[12px] shadow-[var(--shadow-md)] mt-[50px]">
+          <h3 className="font-bold text-[20px] mb-[40px]">
+            Vật tư hỏng nhiều nhất
+          </h3>
+
+          {loading ? (
+            <p className="text-gray-400 h-[200px]">Đang tải...</p>
+          ) : damagedList.length === 0 ? (
+            <p className="text-gray-400 h-[200px]">Không có dữ liệu</p>
+          ) : (
+            <ul className="h-[200px] overflow-y-auto space-y-2">
+              {damagedList.map((i) => (
                 <li
-                  key={m._id}
-                  className="flex flex-col justify-between 
-                    bg-[var(--bg-subtle)]
-                    border border-[var(--border-light)]
-                    p-2 rounded-[12px]
-                    text-[15px]"
+                  key={i.materialId}
+                  className="flex justify-between bg-[var(--bg-subtle)] p-2 rounded-lg"
                 >
-                  <div className="flex justify-between">
-                    <span className="font-semibold">{m.name}</span>
-                    <span className="text-[var(--text-tertiary)] font-semibold">{m.materialID}</span>
-                  </div>
-                  <div className="flex justify-between text-xs text-gray-500">
-                    <span>
-                      {RepoName.find((r) => r.type === m.category)?.name}
-                    </span>
-                    <span>
-                      {new Date(m.createdAt).toLocaleDateString("vi-VN")}
-                    </span>
-                  </div>
+                  <span>{i.name}</span>
+                  <span className="font-semibold text-red-500">
+                    {i.damagedQuantity} cái
+                  </span>
                 </li>
               ))}
             </ul>
-          </>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );

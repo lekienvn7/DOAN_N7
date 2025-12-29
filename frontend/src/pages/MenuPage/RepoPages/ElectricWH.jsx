@@ -8,7 +8,7 @@ import AddElectric from "@/components/RepoPage/ElectricWH/AddElectric";
 import QuickSectionNav from "@/components/RepoPage/ElectricWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/ElectricWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/ElectricWH/LecturerPage/BorrowForm";
-import ReportPage from "../ReportPage";
+import ReportPage from "../../../components/RepoPage/ElectricWH/ReportPage";
 import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {

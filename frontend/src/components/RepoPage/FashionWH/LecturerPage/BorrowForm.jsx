@@ -30,7 +30,7 @@ const BorrowForm = ({ repositoryId }) => {
   /* ================= FETCH MATERIAL ================= */
   useEffect(() => {
     axiosClient
-      .get("/repository/material/electric", { params: { repositoryId } })
+      .get("/repository/material/fashion", { params: { repositoryId } })
       .then((res) => {
         if (res.data?.success) setMaterials(res.data.materials || []);
         else setMaterials(res.data?.materials || []);

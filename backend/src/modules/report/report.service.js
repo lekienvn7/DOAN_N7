@@ -2,6 +2,7 @@ import Material from "../material/Material.model.js";
 import BorrowRequest from "../borrowRequest/BorrowRequest.model.js";
 import Transaction from "../transaction/Transaction.model.js";
 import MaterialProblem from "../materialProblem/materialProblem.model.js";
+import Repository from "../repository/Repository.model.js";
 
 /* =========================
    HELPER: TẠO RANGE THÁNG
@@ -18,11 +19,13 @@ function getMonthRange(month, year) {
 export async function getMonthlyReport(month, year) {
   const { start, end } = getMonthRange(month, year);
 
-  const [borrowFrequency, newMaterials, damagedMaterials] = await Promise.all([
-    getBorrowFrequency(start, end),
-    getNewMaterials(start, end),
-    getDamagedMaterials(start, end),
-  ]);
+  const [borrowFrequency, newMaterials, damagedMaterials, repoSummary] =
+    await Promise.all([
+      getBorrowFrequency(start, end),
+      getNewMaterials(start, end),
+      getDamagedMaterials(start, end),
+      getRepoSummary(start, end),
+    ]);
 
   return {
     month,
@@ -30,6 +33,7 @@ export async function getMonthlyReport(month, year) {
     borrowFrequency,
     newMaterials,
     damagedMaterials,
+    repoSummary,
   };
 }
 
@@ -157,5 +161,51 @@ async function getDamagedMaterials(start, end) {
 
     // 5️⃣ Hay hỏng nhất lên đầu
     { $sort: { damagedQuantity: -1 } },
+  ]);
+}
+
+async function getRepoSummary(start, end) {
+  return Repository.aggregate([
+    {
+      $lookup: {
+        from: "materialproblems",
+        localField: "materials.material",
+        foreignField: "material",
+        as: "damagedLogs",
+      },
+    },
+    {
+      $addFields: {
+        total: { $sum: "$materials.quantity" },
+        damaged: {
+          $sum: {
+            $map: {
+              input: {
+                $filter: {
+                  input: "$damagedLogs",
+                  as: "d",
+                  cond: {
+                    $and: [
+                      { $gte: ["$$d.createdAt", start] },
+                      { $lt: ["$$d.createdAt", end] },
+                    ],
+                  },
+                },
+              },
+              as: "d",
+              in: "$$d.quantity",
+            },
+          },
+        },
+      },
+    },
+    {
+      $project: {
+        repoID: "$repoType",
+        repoName: 1,
+        total: 1,
+        damaged: 1,
+      },
+    },
   ]);
 }

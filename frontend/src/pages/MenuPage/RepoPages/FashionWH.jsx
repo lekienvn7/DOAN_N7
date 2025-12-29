@@ -8,7 +8,7 @@ import AddFashion from "@/components/RepoPage/FashionWH/AddFashion";
 import QuickSectionNav from "@/components/RepoPage/FashionWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/FashionWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/FashionWH/LecturerPage/BorrowForm";
-import ReportPage from "../ReportPage";
+import ReportPage from "../../../components/RepoPage/FashionWH/ReportPage";
 import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {

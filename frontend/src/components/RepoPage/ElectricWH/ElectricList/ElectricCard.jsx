@@ -14,8 +14,8 @@ const ElectricCard = ({ item }) => {
           min-h-[500px]
           ${
             item.borrowType === "approval"
-              ? "bg-[var(--text-primary)] text-[var(--bg-panel)]  border border-[var(--border-light)]"
-              : "bg-[var(--bg-panel)] text-[var(--text-primary)]  border border-[var(--border-light)]"
+              ? "bg-[var(--text-primary)] text-[var(--bg-panel)] shadow-[var(--shadow-md)]"
+              : "bg-[var(--bg-panel)] text-[var(--text-primary)] shadow-[var(--shadow-md)]"
           }
           rounded-[24px] p-8
           cursor-pointer

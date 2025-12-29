@@ -8,7 +8,7 @@ import AddChemical from "@/components/RepoPage/ChemicalWH/AddChemical";
 import QuickSectionNav from "@/components/RepoPage/ChemicalWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/ChemicalWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/ChemicalWH/LecturePage/BorrowForm";
-import ReportPage from "../ReportPage";
+import ReportPage from "../../../components/RepoPage/ChemicalWH/ReportPage";
 import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {

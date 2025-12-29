@@ -8,7 +8,7 @@ import AddTelecom from "@/components/RepoPage/TelecomWH/AddTelecom";
 import QuickSectionNav from "@/components/RepoPage/TelecomWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/TelecomWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/TelecomWH/LecturerPage/BorrowForm";
-import ReportPage from "../ReportPage";
+import ReportPage from "../../../components/RepoPage/TelecomWH/ReportPage";
 import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {
@@ -30,7 +30,7 @@ const TelecomWH = () => {
 
   const [borrowList, setBorrowList] = useState([]);
 
-  // ⚠️ thay bằng repoId kho telecom trong DB
+  // thay bằng repoId kho telecom trong DB
   const repoId = "690981765de9a612110089fe";
 
   const isLecturer = user?.roleID === "LECTURER";

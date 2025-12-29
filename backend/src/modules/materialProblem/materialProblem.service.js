@@ -1,3 +1,5 @@
+import MaterialProblem from "./materialProblem.model.js";
+
 export async function getAllProblems() {
   return await MaterialProblem.find()
     .populate("material", "name unit")

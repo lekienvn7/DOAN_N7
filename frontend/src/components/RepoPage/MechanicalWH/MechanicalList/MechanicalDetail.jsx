@@ -129,7 +129,7 @@ const MechanicalDetail = ({ item, open, onClose, onReload }) => {
 /* ================= SPEC ROW ================= */
 const Spec = ({ label, value }) => (
   <div className="flex justify-between gap-6 text-sm">
-    <span className="text-[#e6eef2]">{label}</span>
+    <span className="text-[var(--text-primary)] font-semibold">{label}</span>
     <span className="text-right">{value || "—"}</span>
   </div>
 );

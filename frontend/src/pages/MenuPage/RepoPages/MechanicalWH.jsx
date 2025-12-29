@@ -8,7 +8,7 @@ import AddMechanical from "@/components/RepoPage/MechanicalWH/AddMechanical";
 import QuickSectionNav from "@/components/RepoPage/MechanicalWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/MechanicalWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/MechanicalWH/LecturerPage/BorrowForm";
-import ReportPage from "../ReportPage";
+import ReportPage from "../../../components/RepoPage/MechanicalWH/ReportPage";
 import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {
@@ -30,7 +30,7 @@ const MechanicalWH = () => {
 
   const [borrowList, setBorrowList] = useState([]);
 
-  // ⚠️ thay bằng repoId kho mechanical trong DB
+  // thay bằng repoId kho mechanical trong DB
   const repoId = "690980f15de9a612110089ce";
 
   const isLecturer = user?.roleID === "LECTURER";

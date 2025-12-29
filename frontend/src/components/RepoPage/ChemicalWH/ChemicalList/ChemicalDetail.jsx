@@ -9,15 +9,23 @@ const ChemicalDetail = ({ item, open, onClose }) => {
     <Dialog open={open} onOpenChange={onClose}>
       <DialogContent
         className="
-          bg-[#0f0f10] text-white border-none rounded-[24px] p-0
-          w-[900px] max-w-none
-          max-h-[90vh] overflow-hidden
+          rounded-[24px] p-0 !max-w-none
+          w-[900px] max-h-[90vh] overflow-hidden
         "
+        style={{
+          background: "var(--bg-panel)",
+          color: "var(--text-primary)",
+          border: "1px solid var(--border-light)",
+        }}
       >
         <div className="flex gap-[48px] p-[40px]">
-          {/* ===== LEFT – IMAGE ===== */}
-          <div className="flex-shrink-0">
-            <div className="w-[360px] h-[360px] rounded-[20px] flex items-center justify-center">
+          {/* ================= LEFT ================= */}
+          <div className="flex-shrink-0 flex flex-col gap-4">
+            {/* IMAGE */}
+            <div
+              className="w-[360px] h-[360px] rounded-[20px] flex items-center justify-center"
+              style={{ background: "var(--bg-subtle)" }}
+            >
               <img
                 src={cadivi}
                 alt={item.name}
@@ -25,8 +33,9 @@ const ChemicalDetail = ({ item, open, onClose }) => {
               />
             </div>
 
+            {/* SAFETY NOTE */}
             {item.safetyNote && (
-              <p className="mt-4 text-[14px] text-[#a1a1a6] leading-relaxed">
+              <p className="text-[14px] leading-relaxed text-[var(--text-secondary)]">
                 <span className="text-[#c7a7ff] font-medium">
                   Hướng dẫn an toàn:
                 </span>{" "}
@@ -35,7 +44,7 @@ const ChemicalDetail = ({ item, open, onClose }) => {
             )}
           </div>
 
-          {/* ===== RIGHT – INFO ===== */}
+          {/* ================= RIGHT ================= */}
           <div className="flex flex-col flex-1">
             {/* TITLE */}
             <h1 className="text-[36px] font-semibold leading-tight">
@@ -43,13 +52,16 @@ const ChemicalDetail = ({ item, open, onClose }) => {
             </h1>
 
             {/* META */}
-            <p className="mt-2 text-[#a1a1a6] text-[15px]">
+            <p className="mt-2 text-[15px] text-[var(--text-secondary)]">
               {item.materialID} • {item.quantity} {item.unit}
               {item.expiryDate ? ` • HSD: ${item.expiryDate}` : ""}
             </p>
 
             {/* DIVIDER */}
-            <div className="my-6 h-px bg-[#2c2c2e]" />
+            <div
+              className="my-6 h-px"
+              style={{ background: "var(--border-light)" }}
+            />
 
             {/* SCROLLABLE SPECS */}
             <div
@@ -60,14 +72,16 @@ const ChemicalDetail = ({ item, open, onClose }) => {
                 space-y-3
                 scrollbar-thin
               "
+              style={{
+                scrollbarColor: "var(--border-strong) transparent",
+              }}
             >
+              {/* ===== NGUỒN GỐC ===== */}
               <Spec label="Thêm bởi" value={item.createdBy?.fullName} />
               <Spec label="Email" value={item.createdBy?.email} />
 
-              <Spec
-                label="Công thức hóa học"
-                value={item.chemicalFormula}
-              />
+              {/* ===== HÓA HỌC ===== */}
+              <Spec label="Công thức hóa học" value={item.chemicalFormula} />
               <Spec
                 label="Nồng độ"
                 value={item.concentration && `${item.concentration}%`}
@@ -88,6 +102,7 @@ const ChemicalDetail = ({ item, open, onClose }) => {
                 value={item.molarMass && `${item.molarMass} g/mol`}
               />
 
+              {/* ===== AN TOÀN ===== */}
               <Spec label="Nhiệt độ bảo quản" value={item.storageTemperature} />
               <Spec label="Mức độ nguy hiểm" value={item.hazardLevel} />
               <Spec label="Tính dễ cháy" value={item.flammability} />
@@ -100,11 +115,13 @@ const ChemicalDetail = ({ item, open, onClose }) => {
   );
 };
 
-/* ===== SPEC ROW ===== */
+/* ================= SPEC ROW ================= */
 const Spec = ({ label, value }) => (
   <div className="flex justify-between gap-6 text-[15px]">
     <span className="text-[#c7a7ff]">{label}</span>
-    <span className="text-white text-right">{value || "—"}</span>
+    <span className="text-right text-[var(--text-primary)]">
+      {value || "—"}
+    </span>
   </div>
 );
 

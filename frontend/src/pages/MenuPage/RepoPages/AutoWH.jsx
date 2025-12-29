@@ -8,7 +8,7 @@ import AddAutomotive from "@/components/RepoPage/AutomotiveWH/AddAutomotive";
 import QuickSectionNav from "@/components/RepoPage/AutomotiveWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/AutomotiveWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/AutomotiveWH/LecturerPage/BorrowForm";
-import ReportPage from "../ReportPage";
+import ReportPage from "../../../components/RepoPage/AutomotiveWH/ReportPage";
 import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {

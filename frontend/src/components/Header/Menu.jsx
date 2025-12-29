@@ -11,7 +11,7 @@ const Menu = () => {
     { name: "Trang chủ", path: "/home", key: "1" },
     { name: "Kho vật tư", path: "/error-repo", key: "2" },
     { name: "Bảo trì thiết bị", path: "/error-material", key: "3" },
-    { name: "Báo cáo", path: "/error-report", key: "4" },
+    { name: "Báo cáo tháng", path: "/error-report", key: "4" },
     { name: "Chỉnh sửa thông tin", path: "/user", key: "5" },
   ];
 
@@ -20,7 +20,7 @@ const Menu = () => {
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Thanh lý vật tư", path: "/material/problematic", key: "3" },
     { name: "Chỉnh sửa thông tin", path: "/user", key: "4" },
-    { name: "Báo cáo", path: "/budget", key: "5" },
+    { name: "Báo cáo tháng", path: "/budget", key: "5" },
     { name: "Quản lý / Phân quyền", path: "/role", key: "6" },
   ];
 
@@ -28,7 +28,7 @@ const Menu = () => {
     { name: "Trang chủ", path: "/home", key: "1" },
     { name: "Kho vật tư", path: "/repository/electric", key: "2" },
     { name: "Thanh lý vật tư", path: "/material/problematic", key: "3" },
-    { name: "Ngân sách kho", path: "/budget", key: "4" },
+    { name: "Báo cáo tháng", path: "/budget", key: "4" },
     { name: "Chỉnh sửa thông tin", path: "/user", key: "5" },
   ];
 

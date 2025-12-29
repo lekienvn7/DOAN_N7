@@ -8,7 +8,7 @@ import AddTechnology from "@/components/RepoPage/TechnologyWH/AddTechnology";
 import QuickSectionNav from "@/components/RepoPage/TechnologyWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/TechnologyWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/TechnologyWH/LecturerPage/BorrowForm";
-import ReportPage from "../ReportPage";
+import ReportPage from "../../../components/RepoPage/TechnologyWH/ReportPage";
 import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {
@@ -30,7 +30,7 @@ const TechnologyWH = () => {
 
   const [borrowList, setBorrowList] = useState([]);
 
-  // ⚠️ thay bằng repoId kho technology trong DB
+  // thay bằng repoId kho technology trong DB
   const repoId = "690981265de9a612110089d8";
 
   const isLecturer = user?.roleID === "LECTURER";

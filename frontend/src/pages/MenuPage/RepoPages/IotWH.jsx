@@ -8,7 +8,7 @@ import AddIot from "@/components/RepoPage/IotWH/AddIot";
 import QuickSectionNav from "@/components/RepoPage/IotWH/QuickSectionNav";
 import BorrowList from "@/components/RepoPage/IotWH/ManagerPage/BorrowList";
 import BorrowForm from "@/components/RepoPage/IotWH/LecturerPage/BorrowForm";
-import ReportPage from "../ReportPage";
+import ReportPage from "../../../components/RepoPage/IotWH/ReportPage";
 import InfoPage from "@/pages/InfoPage";
 
 const revealUp = {
@@ -30,7 +30,7 @@ const IotWH = () => {
 
   const [borrowList, setBorrowList] = useState([]);
 
-  // ⚠️ thay bằng repoId kho iot trong DB
+  // thay bằng repoId kho iot trong DB
   const repoId = "6909810f5de9a612110089d3";
 
   const isLecturer = user?.roleID === "LECTURER";

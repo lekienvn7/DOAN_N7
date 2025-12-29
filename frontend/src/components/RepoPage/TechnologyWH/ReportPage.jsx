@@ -11,6 +11,8 @@ const ReportPage = ({ canReturn = false }) => {
   const [requests, setRequests] = useState([]);
   const [returningId, setReturningId] = useState(null);
 
+  const repoId = "690981265de9a612110089d8";
+
   const [openReturn, setOpenReturn] = useState(false);
   const [currentRequest, setCurrentRequest] = useState(null);
   const [returnItems, setReturnItems] = useState([]);
@@ -33,7 +35,12 @@ const ReportPage = ({ canReturn = false }) => {
       const res = await axiosClient.get(
         `/borrow-requests/my-borrowing/${user._id}`
       );
-      setRequests(res.data || []);
+
+      const filtered = (res.data || []).filter(
+        (r) => r.repository?._id === repoId || r.repository === repoId
+      );
+
+      setRequests(filtered);
     } catch (err) {
       toast.error(err?.response?.data?.message || "Lỗi khi tải dữ liệu!");
     } finally {
