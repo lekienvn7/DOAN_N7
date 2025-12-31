@@ -8,6 +8,8 @@ export const baseFields = [
   "description",
   "maintenanceCycle",
   "borrowType",
+  "test",
+  "imageUrl",
 ];
 
 export const electricFields = [

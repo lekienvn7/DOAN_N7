@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/context/authContext";
 import axiosClient from "@/api/axiosClient";
 import { Pen, Pencil } from "lucide-react";
 import { motion } from "framer-motion";
@@ -39,6 +40,7 @@ const AutomotiveEdit = ({ item, onReload }) => {
   const originalFluidSpec = item.fluidSpec || "";
 
   const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
 
   // Đồng bộ lại state mỗi khi đổi vật tư
   useEffect(() => {
@@ -67,6 +69,9 @@ const AutomotiveEdit = ({ item, onReload }) => {
     fluidSpec !== originalFluidSpec;
 
   const disabled = item.partType !== "Fluids";
+
+  const isRepoAllowed =
+    user?.repository === "all" || user?.repository === "automotive";
 
   const handleChange = async () => {
     if (!isValid) {
@@ -104,7 +109,10 @@ const AutomotiveEdit = ({ item, onReload }) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="cursor-pointer p-[5px] justify-center text-red-500 hover:text-red-400">
+        <button
+          disabled={!isRepoAllowed}
+          className="cursor-pointer p-[5px] justify-center text-red-500 hover:text-red-400 outline-none"
+        >
           <Pencil size={15} />{" "}
         </button>
       </DialogTrigger>

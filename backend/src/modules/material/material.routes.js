@@ -5,16 +5,16 @@ import {
   updateMaterial,
   deleteMaterial,
 } from "./material.controller.js";
+import upload from "../../middlewares/upload.js";
 
 const router = express.Router();
 
 router.get("/", getAllMaterials);
 
-router.post("/", addMaterial);
+router.post("/", upload.single("image"), addMaterial);
 
-router.put("/:id", updateMaterial);
+router.put("/:id", upload.single("image"), updateMaterial);
 
 router.delete("/:id", deleteMaterial);
-
 
 export default router;

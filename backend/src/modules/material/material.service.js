@@ -42,6 +42,10 @@ async function getAllMaterials() {
     .populate("updatedBy", "fullName")
     .lean();
 
+  materials.forEach((m) => {
+    console.log("material:", m.materialID, "test:", m.test);
+  });
+
   const clean = materials.map((m) => ({
     ...removeNull(m),
     modelType: m.category || "Material",
@@ -50,7 +54,7 @@ async function getAllMaterials() {
   return clean;
 }
 
-async function addMaterial(data) {
+async function addMaterial(data, file) {
   const {
     name,
     materialID,
@@ -63,7 +67,6 @@ async function addMaterial(data) {
     maintenanceCycle,
   } = data;
 
-  /* ================= VALIDATE CƠ BẢN ================= */
   if (!name || quantity == null || !createdBy) {
     const err = new Error("Thiếu thông tin bắt buộc!");
     err.status = 400;
@@ -77,18 +80,22 @@ async function addMaterial(data) {
     throw err;
   }
 
-  /* =================================================
-     1️⃣ KIỂM TRA VẬT TƯ ĐÃ TỒN TẠI CHƯA
-  ================================================= */
+  const imageUrl = file?.path || ""; // 🌩️ CLOUDINARY URL
+
+  /* ===== 1. KIỂM TRA ĐÃ TỒN TẠI ===== */
   const existedMaterial = await Material.findOne({
     $or: [materialID ? { materialID } : null, { name }].filter(Boolean),
   });
 
-  /* =================================================
-     2️⃣ NẾU ĐÃ TỒN TẠI → CỘNG SỐ LƯỢNG
-  ================================================= */
+  /* ===== 2. ĐÃ TỒN TẠI → NHẬP THÊM ===== */
   if (existedMaterial) {
     existedMaterial.quantity += Number(quantity);
+
+    // nếu có upload ảnh mới → cập nhật
+    if (imageUrl) {
+      existedMaterial.imageUrl = imageUrl;
+    }
+
     await existedMaterial.save();
 
     return {
@@ -98,9 +105,7 @@ async function addMaterial(data) {
     };
   }
 
-  /* =================================================
-     3️⃣ CHƯA TỒN TẠI → TẠO MỚI
-  ================================================= */
+  /* ===== 3. TẠO MỚI ===== */
   if (!type || !unit) {
     const err = new Error("Thiếu thông tin tạo vật tư mới!");
     err.status = 400;
@@ -128,10 +133,10 @@ async function addMaterial(data) {
     description,
     status,
     maintenanceCycle,
+    imageUrl, // 🌩️ LƯU ẢNH
     createdBy: user._id,
   });
 
-  /* ================= NOTIFICATION ================= */
   try {
     await createNotification({
       type: "material",
@@ -150,9 +155,8 @@ async function addMaterial(data) {
   };
 }
 
-async function updateMaterial(materialID, body, user) {
+async function updateMaterial(materialID, body, user, file) {
   const material = await Material.findOne({ materialID });
-
   if (!material) {
     const err = new Error("Vật tư không tồn tại!");
     err.status = 404;
@@ -162,13 +166,6 @@ async function updateMaterial(materialID, body, user) {
   const type = Array.isArray(material.type) ? material.type[0] : material.type;
   const SelectedModel = modelMap[type];
 
-  if (!SelectedModel) {
-    const err = new Error(`Không tìm thấy model con cho loại '${type}'!`);
-    err.status = 500;
-    throw err;
-  }
-
-  /* ===== BASE & CHILD FIELDS ===== */
   const baseFields = [
     "name",
     "quantity",
@@ -177,6 +174,7 @@ async function updateMaterial(materialID, body, user) {
     "description",
     "maintenanceCycle",
     "borrowType",
+    "test",
   ];
 
   const childFieldMap = {
@@ -190,29 +188,24 @@ async function updateMaterial(materialID, body, user) {
     iot: iotFields,
   };
 
-  const childFields = childFieldMap[type];
-
   const cleanBase = filterFields(body, baseFields);
-  const cleanChild = filterFields(body, childFields);
+  const cleanChild = filterFields(body, childFieldMap[type]);
 
-  delete cleanBase.materialID;
-  delete cleanChild.materialID;
-
-  cleanBase.updatedAt = Date.now();
-
-  if (user?.userID) {
-    cleanBase.updatedBy = user.userID;
-    cleanChild.updatedBy = user.userID;
+  // 🌩️ CẬP NHẬT ẢNH NẾU CÓ
+  if (file?.path) {
+    cleanBase.imageUrl = file.path;
   }
 
-  /* ===== UPDATE BASE ===== */
-  await Material.findOneAndUpdate({ materialID }, cleanBase, { new: true });
+  cleanBase.updatedAt = Date.now();
+  if (user?.userID) {
+    cleanBase.updatedBy = user._id;
+    cleanChild.updatedBy = user._id;
+  }
 
-  /* ===== UPDATE DETAIL ===== */
+  await Material.findOneAndUpdate({ materialID }, cleanBase);
+
   if (Object.keys(cleanChild).length > 0) {
-    await SelectedModel.findOneAndUpdate({ materialID }, cleanChild, {
-      new: true,
-    });
+    await SelectedModel.findOneAndUpdate({ materialID }, cleanChild);
   }
 
   const populatedBase = await Material.findOne({ materialID })

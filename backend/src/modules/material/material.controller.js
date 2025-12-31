@@ -19,7 +19,10 @@ export const getAllMaterials = async (req, res) => {
 
 export const addMaterial = async (req, res) => {
   try {
-    const result = await materialService.addMaterial(req.body);
+    const result = await materialService.addMaterial(
+      req.body,
+      req.file // 👈 ảnh
+    );
 
     return res.status(201).json({
       success: true,
@@ -36,10 +39,14 @@ export const addMaterial = async (req, res) => {
 
 export const updateMaterial = async (req, res) => {
   try {
+    console.log("PARAM:", req.params.id);
+    console.log("BODY:", req.body);
+    console.log("FILE:", req.file);
     const result = await materialService.updateMaterial(
       req.params.id,
       req.body,
-      req.user
+      req.user,
+      req.file // 👈 ảnh
     );
 
     return res.status(200).json({
@@ -48,6 +55,9 @@ export const updateMaterial = async (req, res) => {
       data: result.result,
     });
   } catch (error) {
+    console.error("UPDATE MATERIAL ERROR:", error);
+    console.error("STACK:", error.stack);
+
     return res.status(error.status || 500).json({
       success: false,
       message: error.message,

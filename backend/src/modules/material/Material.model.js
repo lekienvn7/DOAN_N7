@@ -56,11 +56,10 @@ const materialSchema = new mongoose.Schema(
       min: 0,
     },
 
-    avatarMaterialUrl: {
+    imageUrl: {
       type: String,
-    },
-    avatarMaterialID: {
-      type: String,
+      default: "/images/material-default.png",
+      trim: true,
     },
     unit: {
       type: String,

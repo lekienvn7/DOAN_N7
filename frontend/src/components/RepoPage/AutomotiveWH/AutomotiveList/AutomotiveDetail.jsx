@@ -17,6 +17,9 @@ const AutomotiveDetail = ({ item, open, onClose, onReload }) => {
   const canManage =
     user?.roleID === "ADMINISTRATOR" || user?.roleID === "WH MANAGER";
 
+  const isRepoAllowed =
+    user?.repository === "all" || user?.repository === "automotive";
+
   /* =========================
      BORROW TYPE
   ========================= */
@@ -71,6 +74,7 @@ const AutomotiveDetail = ({ item, open, onClose, onReload }) => {
                 <label className="flex items-center gap-2 text-sm">
                   <input
                     type="checkbox"
+                    disabled={!isRepoAllowed}
                     checked={borrowType === "approval"}
                     onChange={(e) =>
                       setBorrowType(e.target.checked ? "approval" : "free")

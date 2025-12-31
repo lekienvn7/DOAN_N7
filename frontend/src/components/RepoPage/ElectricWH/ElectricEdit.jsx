@@ -25,6 +25,7 @@ const ElectricEdit = ({ item, onReload }) => {
   const [current, setCurrent] = useState(item.current || "");
   const [frequency, setFrequency] = useState(item.frequency || "");
   const [resistance, setResistance] = useState(item.resistance || "");
+  const [imageFile, setImageFile] = useState(null);
   const [phaseType, setPhaseType] = useState(item.phaseType || "");
   const [conductorMaterial, setConductorMaterial] = useState(
     item.conductorMaterial || ""
@@ -87,7 +88,8 @@ const ElectricEdit = ({ item, onReload }) => {
     resistance != originalResistance ||
     conductorMaterial != originalConductorMaterial ||
     insulationMaterial != originalInsulationMaterial ||
-    cableDiameter != originalCableDiameter;
+    cableDiameter != originalCableDiameter ||
+    !!imageFile;
 
   const handleChange = async () => {
     if (!isValid) {
@@ -96,31 +98,38 @@ const ElectricEdit = ({ item, onReload }) => {
 
     try {
       setLoading(true);
-      const body = {
-        description,
-        voltageRange,
-        power,
-        materialInsulation,
-        current,
-        frequency,
-        resistance,
-        phaseType,
-        conductorMaterial,
-        insulationMaterial,
-        fireResistance,
-        cableDiameter,
-        waterproofLevel,
-        operatingTemp,
-      };
 
-      const res = await axiosClient.put(`/material/${item.materialID}`, body);
+      const formData = new FormData();
+      formData.append("description", description);
+      formData.append("voltageRange", voltageRange);
+      formData.append("power", power);
+      formData.append("materialInsulation", materialInsulation);
+      formData.append("current", current);
+      formData.append("frequency", frequency);
+      formData.append("resistance", resistance);
+      formData.append("phaseType", phaseType);
+      formData.append("conductorMaterial", conductorMaterial);
+      formData.append("insulationMaterial", insulationMaterial);
+      formData.append("fireResistance", fireResistance);
+      formData.append("cableDiameter", cableDiameter);
+      formData.append("waterproofLevel", waterproofLevel);
+      formData.append("operatingTemp", operatingTemp);
+
+      if (imageFile) {
+        formData.append("image", imageFile); // 👈 QUAN TRỌNG
+      }
+
+      const res = await axiosClient.put(
+        `/material/${item.materialID}`,
+        formData,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
 
       if (res.data.success) {
         toast.success(`Đã cập nhật vật tư ${item.materialID}!`);
         setTimeout(() => onReload(), 500);
       }
     } catch (error) {
-      console.log(error);
       toast.error("Lỗi khi sửa vật tư!");
     } finally {
       setLoading(false);
@@ -150,112 +159,159 @@ const ElectricEdit = ({ item, onReload }) => {
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col gap-[15px]">
-          <div className="flex flex-col gap-[5px] text-left">
-            <p
-              className={`ml-[10px] ${
-                description == originalDescription
-                  ? "text-textsec"
-                  : "text-[#fdd700]"
-              }`}
-            >
-              Ghi chú
-            </p>
+        <div className="flex flex-row gap-[15px]">
+          <div
+            onDragOver={(e) => e.preventDefault()}
+            onDrop={(e) => {
+              e.preventDefault();
+              const file = e.dataTransfer.files?.[0];
+              if (file) setImageFile(file);
+            }}
+            className="
+    w-[420px]
+    border-2 border-dashed border-[var(--border-light)]
+    rounded-[12px]
+    p-4 text-center
+    cursor-pointer
+    hover:border-[var(--accent-blue)]
+    transition
+  "
+          >
             <input
-              type="text"
-              placeholder="Ghi chú thêm..."
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              className={`w-[420px] p-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#5E5E60] rounded-[12px]
-                   focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                     description == originalDescription
-                       ? "text-textsec"
-                       : "text-white"
-                   }
-    ${
-      description == originalDescription ? "border-textsec" : "border-[#ffd700]"
-    }
-                   placeholder:text-gray-400 transition-all duration-200`}
+              type="file"
+              accept="image/*"
+              hidden
+              id="editImageInput"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setImageFile(file);
+              }}
             />
+
+            <label htmlFor="editImageInput" className="cursor-pointer">
+              <p className="text-sm text-[var(--text-tertiary)]">
+                Kéo & thả ảnh hoặc{" "}
+                <span className="text-[var(--accent-blue)] font-medium">
+                  click để chọn
+                </span>
+              </p>
+
+              {imageFile && (
+                <p className="mt-1 text-xs text-[var(--text-secondary)]">
+                  Đã chọn ảnh: {imageFile.name}
+                </p>
+              )}
+            </label>
           </div>
-          <div className={`flex flex-row gap-[20px] `}>
-            <InputField
-              label="Công suất định mức"
-              placeholder="VD: 10W"
-              recent={power}
-              original={originalPower}
-              value={power}
-              onChange={setPower}
-            />
+          <div className="flex flex-col gap-[15px]">
+            <div className="flex flex-col gap-[5px] text-left">
+              <p
+                className={`ml-[10px] ${
+                  description == originalDescription
+                    ? "text-textsec"
+                    : "text-[#fdd700]"
+                }`}
+              >
+                Ghi chú
+              </p>
+              <input
+                type="text"
+                placeholder="Ghi chú thêm..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                className={`w-[420px] p-[5px] bg-[#2c2c2e] text-pri border-[2px] border-[#5E5E60] rounded-[12px]
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                       description == originalDescription
+                         ? "text-textsec"
+                         : "text-white"
+                     }
+      ${
+        description == originalDescription
+          ? "border-textsec"
+          : "border-[#ffd700]"
+      }
+                     placeholder:text-gray-400 transition-all duration-200`}
+              />
+            </div>
+            <div className={`flex flex-row gap-[20px] `}>
+              <InputField
+                label="Công suất định mức"
+                placeholder="VD: 10W"
+                recent={power}
+                original={originalPower}
+                value={power}
+                onChange={setPower}
+              />
 
-            <InputField
-              label="Điện áp"
-              placeholder="VD: 20A"
-              value={voltageRange}
-              recent={voltageRange}
-              original={originalVoltageRange}
-              onChange={setVoltageRange}
-            />
-          </div>
+              <InputField
+                label="Điện áp"
+                placeholder="VD: 20A"
+                value={voltageRange}
+                recent={voltageRange}
+                original={originalVoltageRange}
+                onChange={setVoltageRange}
+              />
+            </div>
 
-          <div className={`flex flex-row gap-[20px] `}>
-            <InputField
-              label="Dòng điện định mức"
-              placeholder="VD: 10W"
-              value={current}
-              recent={current}
-              original={originalCurrent}
-              onChange={setCurrent}
-            />
+            <div className={`flex flex-row gap-[20px] `}>
+              <InputField
+                label="Dòng điện định mức"
+                placeholder="VD: 10W"
+                value={current}
+                recent={current}
+                original={originalCurrent}
+                onChange={setCurrent}
+              />
 
-            <InputField
-              label="Tần số"
-              placeholder="VD: 60Hz"
-              value={frequency}
-              recent={frequency}
-              original={originalFrequency}
-              onChange={setFrequency}
-            />
-          </div>
+              <InputField
+                label="Tần số"
+                placeholder="VD: 60Hz"
+                value={frequency}
+                recent={frequency}
+                original={originalFrequency}
+                onChange={setFrequency}
+              />
+            </div>
 
-          <div className={`flex flex-row gap-[20px] `}>
-            <InputField
-              label="Điện trở"
-              placeholder="VD: 200Ω"
-              value={resistance}
-              recent={resistance}
-              original={originalResistance}
-              onChange={setResistance}
-            />
+            <div className={`flex flex-row gap-[20px] `}>
+              <InputField
+                label="Điện trở"
+                placeholder="VD: 200Ω"
+                value={resistance}
+                recent={resistance}
+                original={originalResistance}
+                onChange={setResistance}
+              />
 
-            <InputField
-              label="Vật liệu lõi"
-              placeholder="VD: lõi đồng, nhôm,..."
-              value={conductorMaterial}
-              recent={conductorMaterial}
-              original={originalConductorMaterial}
-              onChange={setConductorMaterial}
-            />
-          </div>
+              <InputField
+                label="Vật liệu lõi"
+                placeholder="VD: lõi đồng, nhôm,..."
+                value={conductorMaterial}
+                recent={conductorMaterial}
+                original={originalConductorMaterial}
+                onChange={setConductorMaterial}
+              />
+            </div>
 
-          <div className={`flex flex-row gap-[20px] `}>
-            <InputField
-              label="Lớp bọc ngoài"
-              placeholder="VD: PVC, XLPE,..."
-              value={insulationMaterial}
-              recent={insulationMaterial}
-              original={originalInsulationMaterial}
-              onChange={setInsulationMaterial}
-            />
+            <div className={`flex flex-row gap-[20px] `}>
+              <InputField
+                label="Lớp bọc ngoài"
+                placeholder="VD: PVC, XLPE,..."
+                value={insulationMaterial}
+                recent={insulationMaterial}
+                original={originalInsulationMaterial}
+                onChange={setInsulationMaterial}
+              />
 
-            <InputField
-              label="Đường kính dây cáp"
-              placeholder="VD: 2.5mm²"
-              value={cableDiameter}
-              recent={cableDiameter}
-              original={originalCableDiameter}
-              onChange={setCableDiameter}
-            />
+              <InputField
+                label="Đường kính dây cáp"
+                placeholder="VD: 2.5mm²"
+                value={cableDiameter}
+                recent={cableDiameter}
+                original={originalCableDiameter}
+                onChange={setCableDiameter}
+              />
+            </div>
           </div>
         </div>
 

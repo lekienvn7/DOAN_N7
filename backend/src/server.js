@@ -1,3 +1,4 @@
+import dotenv from "dotenv";
 import express from "express";
 import homeRoutes from "./routes/homeRoutes.js";
 import materialRoutes from "./modules/material/material.routes.js";
@@ -14,7 +15,7 @@ import notificationRoutes from "./modules/Notification/notice.routes.js";
 import materialProblemRoutes from "./modules/materialProblem/materialProblem.routes.js";
 import reportRoutes from "./modules/report/report.routes.js";
 import { connectDB } from "./config/db.js";
-import dotenv from "dotenv";
+
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import http from "http";

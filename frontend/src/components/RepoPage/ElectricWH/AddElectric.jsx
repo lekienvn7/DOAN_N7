@@ -40,6 +40,9 @@ const AddElectric = ({ onReload }) => {
     operatingTemp: "",
   });
 
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+
   const [loading, setLoading] = useState(false);
 
   /* ================= VALIDATION ================= */
@@ -68,11 +71,20 @@ const AddElectric = ({ onReload }) => {
     try {
       setLoading(true);
 
-      const res = await axiosClient.post("/material", {
-        ...basic,
-        ...spec,
-        type: "electric",
-        createdBy,
+      const formData = new FormData();
+
+      Object.entries(basic).forEach(([k, v]) => formData.append(k, v));
+      Object.entries(spec).forEach(([k, v]) => formData.append(k, v));
+
+      formData.append("type", "electric");
+      formData.append("createdBy", createdBy);
+
+      if (imageFile) {
+        formData.append("image", imageFile);
+      }
+
+      const res = await axiosClient.post("/material", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
       const newMaterialID = res.data?.data?.materialID;
@@ -111,6 +123,9 @@ const AddElectric = ({ onReload }) => {
         operatingTemp: "",
       });
 
+      setImageFile(null);
+      setImagePreview("");
+
       onReload?.();
     } catch (err) {
       toast.error(err.response?.data?.message || "Lỗi khi thêm vật tư!");
@@ -127,7 +142,6 @@ const AddElectric = ({ onReload }) => {
       </p>
 
       <div className="flex flex-col gap-[40px]">
-        {/* ===== BASIC INFO ===== */}
         <Section title="Thông tin cơ bản">
           <Row>
             <Input
@@ -169,7 +183,22 @@ const AddElectric = ({ onReload }) => {
           />
         </Section>
 
-        {/* ===== TECH SPECS ===== */}
+        <Section title="Ảnh vật tư">
+          <ImageDropzone
+            onSelect={(file) => {
+              setImageFile(file);
+              setImagePreview(URL.createObjectURL(file));
+            }}
+          />
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="preview"
+              className="mt-4 w-[200px] h-[200px] object-contain rounded-[12px] border"
+            />
+          )}
+        </Section>
+
         <Section title="Thông số kỹ thuật">
           <Row>
             <Input
@@ -264,7 +293,6 @@ const AddElectric = ({ onReload }) => {
           </Row>
         </Section>
 
-        {/* ===== ACTION ===== */}
         <div className="flex justify-end pt-6 border-t border-[var(--border-light)]">
           <button
             onClick={handleSubmit}
@@ -355,5 +383,47 @@ const SelectBox = ({ label, value, onChange, options }) => (
     </Select>
   </div>
 );
+
+const ImageDropzone = ({ onSelect }) => {
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) onSelect(file);
+  };
+
+  const handlePick = (e) => {
+    const file = e.target.files?.[0];
+    if (file) onSelect(file);
+  };
+
+  return (
+    <div
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={handleDrop}
+      className="
+        border-2 border-dashed border-[var(--border-light)]
+        rounded-[16px] p-6 text-center cursor-pointer
+        hover:border-[var(--accent-blue)]
+        transition
+      "
+    >
+      <input
+        type="file"
+        accept="image/*"
+        onChange={handlePick}
+        hidden
+        id="imageInput"
+      />
+      <label htmlFor="imageInput" className="cursor-pointer">
+        <p className="text-sm text-[var(--text-secondary)]">
+          Kéo & thả ảnh vào đây hoặc{" "}
+          <span className="text-[var(--accent-blue)] font-medium">
+            click để chọn
+          </span>
+        </p>
+      </label>
+    </div>
+  );
+};
 
 export default AddElectric;
